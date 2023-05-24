@@ -63,7 +63,7 @@ If you're comfortable with Git and would like to contribute code, you can submit
 
 ### Styling
 
-Please use MUI for styling and make sure to follow the [MUI guidelines](https://github.com/devcareer/Website-v3/MUI-GUIDELINES.md)
+Please use MUI for styling and make sure to follow the [MUI guidelines](https://github.com/devcareer/Website-v3/blob/main/MUI-GUIDELINES.md)
 
 ### Components
 
