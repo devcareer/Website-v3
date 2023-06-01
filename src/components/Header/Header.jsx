@@ -10,6 +10,8 @@ const Header = () => {
       pt="24px"
       pb="128px"
       gap="40px"
+      width="85%"
+      mx="auto"
     >
       <Box pt="36px">
         <Typography color="misc.100" fontSize="72px" fontWeight="700">
