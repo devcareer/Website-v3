@@ -11,3 +11,4 @@ export { default as github } from './github.svg';
 export { default as instagram } from './instagram.svg';
 export { default as linkedin } from './linkedin.png';
 export { default as twitter } from './twitter.svg';
+export { default as mission } from './mission.png';
