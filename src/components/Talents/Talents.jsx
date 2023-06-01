@@ -27,14 +27,9 @@ const Track=[
 ]
 const Talents = () => {
 
-  const [isBlue,setIsBlue]=useState(null)
+  const [isBlue,setIsBlue]=useState(1)
   const handleClick=(id)=>{
-    
-       if(isBlue===null){
-        setIsBlue(id)
-       }else{
-        setIsBlue(null)
-       }
+         setIsBlue(id)
   }
   return (
     <Box pt={3} pb={10} sx={{maxWidth:"1200px",mx:"auto"}}>
@@ -64,8 +59,10 @@ const Talents = () => {
        <Stack direction='row' py={3} gap={2}>
              {Track.map(item=>{
               return(
-                <Button  onClick={()=>handleClick(item.id)}  variant='outlined' key={item.id}  sx={{ borderRadius:'80px',p:"1rem",color:"#1E6091",border:"1px solid #1E6091",":hover":{
-                  border:"1px solid #1E6091"
+                <Button  onClick={()=>handleClick(item.id)}  variant='outlined' key={item.id}  sx={{backgroundColor:`${isBlue===item.id?"#1E6091":'#fff'}`, borderRadius:'80px',p:"1rem",color:`${isBlue===item.id?"#fff":"#1E6091"}`,border:"1px solid #1E6091",":hover":{
+                  border:"1px solid #1E6091",
+                  backgroundColor:`${isBlue===item.id?"#1e6091":""}`,
+                  color:`${isBlue===item.id?"#fff":"#1e6091"}`
                 }}}>{item.title}</Button>
               )
              })}
