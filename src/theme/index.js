@@ -13,7 +13,10 @@ export const theme = createTheme({
     },
     text: {
       primary: '#000000',
+
       grey: {
+        300: '#212121',
+        400: '#B2B2B2',
         800: '#363636',
         700: '#6D6D6D',
         600: '#888888',
@@ -24,6 +27,9 @@ export const theme = createTheme({
     background: {
       offwhite: '#FEFEFE',
       whitesmoke: '#F4F4F4',
+    },
+    misc: {
+      100: '#131313',
     },
   },
   components: {
