@@ -1,5 +1,16 @@
 export { default as Logo } from './Logo.svg';
 export { default as hero } from './hero-section.png';
+export {default as briefcase} from './briefcase.svg'
+export {default as magicpen} from './magicpen.svg'
+export {default as ranking} from './ranking.svg'
+export {default as search} from './search-normal.svg'
+export {default as talentLinkedin} from './talent-linkedin.png'
+export {default as talentWeb} from './talent-web.png'
+
+
+
+
+
 export { default as isams } from './isams.png';
 export { default as kuda } from './Kuda.png';
 export { default as peerigon } from './peerigon.png';
