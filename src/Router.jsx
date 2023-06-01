@@ -1,5 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { Home, Root } from './Pages';
+import Talents from './components/Talents/Talents';
 
 export const router = createBrowserRouter([
   {
@@ -9,6 +10,10 @@ export const router = createBrowserRouter([
       {
         index: true,
         element: <Home />,
+      },
+      {
+        path:'/talent',
+        element: <Talents />,
       },
     ],
   },
