@@ -1,9 +1,10 @@
 import { Stack, Typography, Box } from '@mui/material';
+import { processBg } from '../../assets/Images';
 import React from 'react';
 
 const Process = (props) => {
   const { process, title } = props;
-  const bg = "url('./src/assets/Images/processBg.svg')";
+  const bg = `url(${processBg})`;
   return (
     <Box
       bgcolor="#FEFEFE"
