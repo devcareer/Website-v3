@@ -8,7 +8,6 @@ export { default as talentLinkedin } from './talent-linkedin.png';
 export { default as talentWeb } from './talent-web.png';
 
 export { default as isams } from './isams.png';
-export { default as kuda } from './Kuda.png';
 export { default as peerigon } from './peerigon.png';
 export { default as revivn } from './revivn.png';
 export { default as eden } from './eden.png';
