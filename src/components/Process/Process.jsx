@@ -3,7 +3,7 @@ import React from 'react';
 
 const Process = (props) => {
   const { process, title } = props;
-  const bg = "url('/src/assets/Images/processBg.svg')";
+  const bg = "url('./src/assets/Images/processBg.svg')";
   return (
     <Box
       bgcolor="#FEFEFE"
