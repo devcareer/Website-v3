@@ -1,3 +1,4 @@
+
 import {
   Box,
   Button,
@@ -96,8 +97,10 @@ const Footer = () => {
             />
             <FooterLink title="CAREERS" link={['Come Work with Us']} />
           </Grid>
-          <Box>
+          <Box  >
+            <Link href='/'>
             <img src={Logo} alt="devcareers Logo" />
+            </Link>
           </Box>
         </Stack>
         <Stack mt={17} direction="row" justifyContent="space-between">
