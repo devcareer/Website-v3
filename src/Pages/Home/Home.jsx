@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header } from '../../components';
+import { Header, Process } from '../../components';
 import { Box, Stack, Typography } from '@mui/material';
 import {
   revivn,
@@ -9,14 +9,40 @@ import {
   isams,
   gofundme,
   mission,
+  teacher,
+  profile,
+  jobPack,
 } from '../../assets/Images';
 
 const Home = () => {
+  const processTitle =
+    'Your journey of a thousand miles, starts with a one tweet pitch..';
+  const process = [
+    {
+      icon: profile,
+      title: 'Join Program',
+      description:
+        'Pass our four-level stage assessment and join DevCareer. Assessment will be based on several criteria; aptitude test, coding test and a physical interview.',
+    },
+    {
+      icon: teacher,
+      title: 'Resources & Mentors',
+      description:
+        'Get a laptop, get a course, get paired with a mentor in your field to support and progress your skill',
+    },
+    {
+      icon: jobPack,
+      title: 'Get Job Placements',
+      description:
+        'During and after your mentorship program, We will work together with your mentor to source for suitable jobs for you and prepare you for interviews',
+    },
+  ];
   return (
     <Box>
       <Header />
       <Sponsors />
       <Mission />
+      <Process process={process} title={processTitle} />
     </Box>
   );
 };
@@ -102,6 +128,7 @@ const Mission = () => {
             display="grid"
             gridTemplateColumns="repeat(3, 1fr)"
             rowGap="36px"
+            columnGap="20px"
             mt="60px"
           >
             {stats.map((stat, index) => (
