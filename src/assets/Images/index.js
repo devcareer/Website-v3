@@ -21,7 +21,7 @@ export { default as mission } from './mission.png';
 export { default as profile } from './profile-add.png';
 export { default as teacher } from './teacher.png';
 export { default as jobPack } from './briefcase.png';
-export { default as processBg } from './processBg.png';
+export { default as processBg } from './processBg.svg';
 export { default as twitter } from './twitter.svg';
 export { default as dpd } from './dpd-pattern.png';
 export { default as timer } from './timer.svg';
