@@ -30,7 +30,7 @@ const BaseDpds = () => {
             variant="body1"
             color="initial"
             mt={2}
-            sx={{ fontSize: '20px', fontWeight: '700', color: '#C2C2C2' }}
+            sx={{ fontSize: '18px', fontWeight: '700', color: '#C2C2C2' }}
           >
             ABOUT THIS PROGRAM
           </Typography>
@@ -38,14 +38,14 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ fontSize: '24px', color: '#6D6D6D', mt: '15px',maxWidth:"1041px" }}
+            sx={{ fontSize: '20px', color: '#6D6D6D', mt: '15px',maxWidth:"1041px" }}
           >
             DevCareer, a non-profit organization, partners with{' '}
             <Typography
               variant="body1"
               component="span"
               color="initial"
-              sx={{ fontWeight: '700', fontSize: '24px', color: '#363636', }}
+              sx={{ fontWeight: '600', fontSize: '20px', color: '#363636', }}
             >
               UK-Nigeria Tech Hub{' '}
             </Typography>
@@ -54,7 +54,7 @@ const BaseDpds = () => {
               variant="body1"
               color="initial"
               component="span"
-              sx={{ fontWeight: '700', color: '#363636', fontSize: '24px' }}
+              sx={{ fontWeight: '600', color: '#363636', fontSize: '20px' }}
             >
               Design Product and Developers School
             </Typography>{' '}
@@ -66,14 +66,14 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ fontSize: '24px', color: '#6D6D6D', mt: '40px',maxWidth:"1041px" }}
+            sx={{ fontSize: '20px', color: '#6D6D6D', mt: '30px',maxWidth:"1041px" }}
           >
             The Design Product and Developers School is a{' '}
             <Typography
               variant="body1"
               color="initial"
               component="span"
-              sx={{ fontWeight: '700', color: '#363636', fontSize: '24px' }}
+              sx={{ fontWeight: '600', color: '#363636', fontSize: '20px' }}
             >
               6-month program
             </Typography>{' '}
@@ -83,7 +83,7 @@ const BaseDpds = () => {
               component="span"
               variant="body1"
               color="initial"
-              sx={{ fontWeight: '700', fontSize: '24px', color: '#363636' }}
+              sx={{ fontWeight: '600', fontSize: '20px', color: '#363636' }}
             >
               Software Development, Product Management, and Product Design
             </Typography>{' '}
@@ -94,7 +94,7 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ fontSize: '24px', color: '#6D6D6D', mt: '40px',maxWidth:"1041px" }}
+            sx={{ fontSize: '20px', color: '#6D6D6D', mt: '40px',maxWidth:"1041px" }}
           >
             This comprehensive program offers virtual live classes, peer
             learning sessions, training workshops, and visual learning content
@@ -103,7 +103,7 @@ const BaseDpds = () => {
               component="span"
               variant="body1"
               color="initial"
-              sx={{ fontWeight: '700', fontSize: '24px', color: '#363636' }}
+              sx={{ fontWeight: '600', fontSize: '20px', color: '#363636' }}
             >
               {' '}
               Learning Management System
@@ -115,7 +115,7 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ fontSize: '24px', color: '#6D6D6D', mt: '40px',maxWidth:"1041px" }}
+            sx={{ fontSize: '20px', color: '#6D6D6D', mt: '40px',maxWidth:"1041px" }}
           >
             The Design Product and Developers School welcomes young people from
             all communities in Nigeria, regardless of gender or educational
@@ -124,16 +124,16 @@ const BaseDpds = () => {
         </Container>
         <Box
           position="absolute"
-          sx={{ right: '0px', bottom: '-250px', zIndex: '-10' }}
+          sx={{ right: '0px', bottom: '-220px', zIndex: '-10' }}
         >
-          <img src={dpd} alt="pattern" />
+          <img src={dpd} alt="pattern" width={450} />
         </Box>
       </Box>
       <Container maxWidth='lg' sx={{ mt: '56px' }}>
         <Typography
           variant="body1"
           color="initial"
-          sx={{ color: '#C2C2C2', fontSize: '20px', fontWeight: '700',mb:"16px" }}
+          sx={{ color: '#C2C2C2', fontSize: '18px', fontWeight: '700',mb:"16px" }}
         >
           PROGRAM DURATION
         </Typography>
@@ -151,7 +151,7 @@ const BaseDpds = () => {
             color="initial"
             textAlign="center"
             mb={2}
-            sx={{ color: '#C2C2C2', fontSize: '20px', fontWeight: '700' }}
+            sx={{ color: '#C2C2C2', fontSize: '18px', fontWeight: '700' }}
           >
             AVAILABLE SKILLS
           </Typography>
@@ -166,7 +166,7 @@ const BaseDpds = () => {
                 textAlign="center"
                 sx={{
                   lineHeight: '40px',
-                  fontSize: '32px',
+                  fontSize: '30px',
                   fontWeight: '500',
                   maxWidth: '200px',
                   color: '#6D6D6D',
@@ -185,7 +185,7 @@ const BaseDpds = () => {
                 color="initial"
                 sx={{
                   lineHeight: '40px',
-                  fontSize: '32px',
+                  fontSize: '30px',
                   fontWeight: '500',
                   maxWidth: '200px',
                   color: '#6D6D6D',
@@ -204,7 +204,7 @@ const BaseDpds = () => {
                 color="initial"
                 sx={{
                   lineHeight: '40px',
-                  fontSize: '32px',
+                  fontSize: '30px',
                   fontWeight: '500',
                   maxWidth: '200px',
                   color: '#6D6D6D',
@@ -224,7 +224,7 @@ const BaseDpds = () => {
                 color: 'white',
                 width: '100%',
                 paddingBlock: '20px',
-                fontSize: '20px',
+                fontSize: '18px',
               }}
             >
               Enroll into Program
