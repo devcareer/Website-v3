@@ -1,15 +1,25 @@
-import { Container,  Stack, Typography } from '@mui/material';
+import { Stack, Typography, Box } from '@mui/material';
 import { dpdlogo } from '../../assets/Images';
-const TitleBanner = ({title,text=''}) => {
+const TitleBanner = ({ title, text = '' }) => {
   return (
-    <Stack justifyContent='flex-start'  sx={{ backgroundColor: '#E6F9F5',backgroundImage:`url(${dpdlogo})`,backgroundSize:"contain",backgroundPositionX:"right ", backgroundRepeat:"no-repeat",py:"4rem"}} >
-      <Container sx='lg'  >
+    <Stack
+      justifyContent="flex-start"
+      sx={{
+        backgroundColor: '#E6F9F5',
+        backgroundImage: `url(${dpdlogo})`,
+        backgroundSize: 'contain',
+        backgroundPositionX: 'right ',
+        backgroundRepeat: 'no-repeat',
+        py: '4rem',
+      }}
+    >
+      <Box width="85%" mx="auto">
         <Typography
           variant="body1"
           color="initial"
           sx={{ fontSize: '55px', fontWeight: '700', color: '#023E31' }}
         >
-         {title}
+          {title}
         </Typography>
         <Typography
           variant="body1"
@@ -22,9 +32,9 @@ const TitleBanner = ({title,text=''}) => {
             fontWeight: '500',
           }}
         >
-         {text}
+          {text}
         </Typography>
-      </Container>
+      </Box>
       {/* <Box  sx={{border:"1px solid red"}}>
         <img src={dpdlogo} alt="pattern"  />
       </Box> */}

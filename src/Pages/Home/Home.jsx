@@ -70,7 +70,12 @@ const Sponsors = () => {
         <Box component="img" src={isams} justifySelf="end"></Box>
         <Box component="img" src={kuda} alignSelf="end"></Box>
         <Box component="img" src={eden} justifySelf="center"></Box>
-        <Box component="img" src={peerigon} width="400px"></Box>
+        <Box
+          component="img"
+          src={peerigon}
+          width="400px"
+          alignSelf="center"
+        ></Box>
       </Box>
     </Box>
   );

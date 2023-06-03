@@ -41,4 +41,7 @@ export { default as arrowRight } from './forward-arrow.png';
 export { default as mashable } from './Mashable.png';
 export { default as techcabal } from './TechCabal.png';
 export { default as techcrunch } from './TechCrunch.png';
-export { default as techpoint } from './TechPoint.png';
+export { default as techpoint } from './Techpoint.png';
+export { default as frontend } from './frontend.png';
+export { default as backend } from './backend.png';
+export { default as cloud } from './cloud.png';
