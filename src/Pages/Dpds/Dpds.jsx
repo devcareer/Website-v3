@@ -1,11 +1,11 @@
-import React from 'react'
-import BaseDpds from '../../components/Dpds/BaseDpds'
+import React from 'react';
+import { BaseDpds } from '../../components';
 const Dpds = () => {
   return (
-    <div>
-        <BaseDpds/>
-    </div>
-  )
-}
+    <>
+      <BaseDpds />
+    </>
+  );
+};
 
-export default Dpds
+export default Dpds;

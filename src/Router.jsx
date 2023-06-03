@@ -1,7 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Home, LaptopForDevelopers, Root } from './Pages';
-import Dpds from './Pages/Dpds/Dpds';
-import Talents from './components/Talents/Talents';
+import {
+  Dpds,
+  Home,
+  LaptopForDevelopers,
+  Root,
+  Support,
+  Talents,
+} from './Pages';
 
 export const router = createBrowserRouter([
   {
@@ -33,6 +38,10 @@ export const router = createBrowserRouter([
             element: <Talents />,
           },
         ],
+      },
+      {
+        path: '/support',
+        element: <Support />,
       },
     ],
   },

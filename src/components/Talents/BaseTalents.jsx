@@ -9,7 +9,7 @@ import {
   InputBase,
 } from '@mui/material';
 import { talents } from '../../talents';
-import TalentCard from './TalentCard';
+import {TalentCard} from '../index'
 import { search } from '../../assets/Images';
 import { useState } from 'react';
 const Track = [
@@ -30,15 +30,16 @@ const Track = [
     title: 'Backend Eng.',
   },
   {
-    id: 5,
-    title: 'Fullstack Eng.',
-  },
-];
-const Talents = () => {
-  const [isBlue, setIsBlue] = useState(1);
-  const handleClick = (id) => {
-    setIsBlue(id);
-  };
+    id:5,
+    title:"Fullstack Eng."
+  }
+]
+const BaseTalents = () => {
+
+  const [isBlue,setIsBlue]=useState(1)
+  const handleClick=(id)=>{
+         setIsBlue(id)
+  }
   return (
     <Box
       pt={3}
@@ -150,4 +151,4 @@ const Talents = () => {
   );
 };
 
-export default Talents;
+export default BaseTalents;

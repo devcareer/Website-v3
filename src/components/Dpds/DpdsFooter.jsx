@@ -5,7 +5,7 @@ import {
   LinkedinIcon,
   SocialButton,
   TwitterIcon,
-} from './index';
+} from '../index';
 
 const DpdsFooter = () => {
   return (
