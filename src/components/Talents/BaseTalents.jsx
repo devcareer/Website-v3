@@ -25,7 +25,7 @@ const Track=[
     title:"Fullstack Eng."
   }
 ]
-const Talents = () => {
+const BaseTalents = () => {
 
   const [isBlue,setIsBlue]=useState(1)
   const handleClick=(id)=>{
@@ -84,4 +84,4 @@ const Talents = () => {
   );
 };
 
-export default Talents;
+export default BaseTalents;
