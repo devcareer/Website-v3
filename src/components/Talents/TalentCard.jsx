@@ -7,7 +7,7 @@ import {
   talentLinkedin,
   talentWeb,
 } from '../../assets/Images';
-import BriefCase from './BriefCase';
+import { BriefCase } from '../index';
 
 const TalentCard = ({data}) => {
   return (

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Header, Process } from '../../components';
+import { Header, Press, Process, Testimonials } from '../../components';
 import { Box, Stack, Typography } from '@mui/material';
 import {
   revivn,
@@ -43,6 +43,8 @@ const Home = () => {
       <Sponsors />
       <Mission />
       <Process process={process} title={processTitle} />
+      <Testimonials />
+      <Press />
     </Box>
   );
 };
@@ -62,13 +64,18 @@ const Sponsors = () => {
       >
         PROUDLY SPONSORED BY
       </Typography>
-      <Box display="grid" gridTemplateColumns="1fr 1fr 1fr" rowGap="50px">
+      <Box display="grid" gridTemplateColumns="1fr 1fr 1fr" rowGap="25px">
         <Box component="img" src={revivn}></Box>
         <Box component="img" src={gofundme}></Box>
         <Box component="img" src={isams} justifySelf="end"></Box>
-        <Box component="img" src={kuda}></Box>
+        <Box component="img" src={kuda} alignSelf="end"></Box>
         <Box component="img" src={eden} justifySelf="center"></Box>
-        <Box component="img" src={peerigon}></Box>
+        <Box
+          component="img"
+          src={peerigon}
+          width="400px"
+          alignSelf="center"
+        ></Box>
       </Box>
     </Box>
   );
@@ -111,7 +118,7 @@ const Mission = () => {
         <Stack direction="column">
           <Typography
             fontWeight="700"
-            fontSize="64px"
+            fontSize="50px"
             mb="32px"
             color="primary.main"
           >

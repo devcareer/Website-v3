@@ -1,3 +1,4 @@
+export { default as TitleBanner } from './Banner/TitleBanner';
 export { default as BaseDpds } from './Dpds/BaseDpds';
 export { default as InstagramIcon } from './Dpds/InstagramIcon';
 export { default as LinkedinIcon } from './Dpds/LinkedinIcon';
@@ -8,5 +9,9 @@ export { default as Header } from './Header/Header';
 export { default as CommunityCard } from './NavBar/CommunityCard';
 export { default as NavBar } from './NavBar/NavBar';
 export { default as ProgramCard } from './NavBar/ProgramCard';
+export { default as Press } from './Press/Press';
 export { default as Process } from './Process/Process';
 export { default as BaseTalent } from './Talents/BaseTalents';
+export { default as BriefCase } from './Talents/BriefCase';
+export { default as TalentCard } from './Talents/TalentCard';
+export { default as Testimonials } from './Testimonials/Testimonials';

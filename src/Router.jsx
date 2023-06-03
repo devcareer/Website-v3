@@ -1,5 +1,12 @@
 import { createBrowserRouter } from 'react-router-dom';
-import { Dpds, Home, Root, Support, Talents } from './Pages';
+import {
+  Dpds,
+  Home,
+  LaptopForDevelopers,
+  Root,
+  Support,
+  Talents,
+} from './Pages';
 
 export const router = createBrowserRouter([
   {
@@ -16,6 +23,10 @@ export const router = createBrowserRouter([
           {
             path: 'dpds',
             element: <Dpds />,
+          },
+          {
+            path: 'l4d',
+            element: <LaptopForDevelopers />,
           },
         ],
       },
