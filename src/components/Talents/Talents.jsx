@@ -32,12 +32,12 @@ const Talents = () => {
          setIsBlue(id)
   }
   return (
-    <Box pt={3} pb={10} sx={{maxWidth:"1200px",mx:"auto"}}>
+    <Box pt={3} pb={10} sx={{maxWidth:"1200px",mx:"auto",paddingInline:{xs:"24px",lg:"0"}}}>
       <Box sx={{ background: 'linear-gradient(to left top,  #00B964,#1E6091)',padding:"48px",borderRadius:"8px" }}>
-        <Typography variant="body1" color="initial" sx={{fontSize:"64px",fontWeight:"700",color:"#FEFEFE"}}>
+        <Typography variant="body1" color="initial" sx={{fontSize:{xs:"32px",lg:"64px"},fontWeight:"700",color:"#FEFEFE"}}>
           Discover Outstanding Talents
         </Typography>
-        <Typography variant="body1"  sx={{fontSize:"20px",color:"#FEFEFE"}}>
+        <Typography variant="body1"  sx={{fontSize:{xs:"15px",lg:"20px"},color:"#FEFEFE",maxWidth:"744px"}}>
           Browse through our curated collection of profiles and get inspired by
           the diverse range of skills and expertise showcased by our community
           members.
@@ -45,7 +45,7 @@ const Talents = () => {
       </Box>
       <Box sx={{paddingTop:"40px",paddingBottom:"15px"}}>
         <Paper elevation={0}  sx={{border:"1px solid #E0E0E0",borderRadius:"8px",maxWidth:"500px",padding:"16px"}}>
-        <IconButton type="button" sx={{ p: '10px',height:"24px", mt:"-4px" }} aria-label="search">
+        <IconButton type="button" sx={{ display:{xs:"none",sm:"inline-flex"}, p: '10px',height:"24px", mt:"-4px" }} aria-label="search">
         <img src={search} alt="" />
       </IconButton>
       <InputBase
@@ -56,7 +56,7 @@ const Talents = () => {
         </Paper>
       </Box>
        <Box>
-       <Stack direction='row' py={3} gap={2}>
+       <Stack direction='row' sx={{flexWrap:{xs:'wrap'}}} py={3} gap={2}>
              {Track.map(item=>{
               return(
                 <Button  onClick={()=>handleClick(item.id)}  variant='outlined' key={item.id}  sx={{backgroundColor:`${isBlue===item.id?"#1E6091":'#fff'}`, borderRadius:'80px',p:"1rem",color:`${isBlue===item.id?"#fff":"#1E6091"}`,border:"1px solid #1E6091",":hover":{
@@ -70,10 +70,11 @@ const Talents = () => {
              
            </Stack>
        </Box>
-      <Grid container  spacing={1.8}>
+     
+      <Grid container direction='row'      spacing={1.8}>
         {talents.map((item) => {
           return (
-            <Grid item sx={4} key={item.id}>
+            <Grid item    sx={4} xs={12} sm={6} lg={4} key={item.id}>
               <TalentCard data={item} />
             </Grid>
           );

@@ -13,24 +13,24 @@ const DpdsFooter = () => {
       <Typography
         variant="body1"
         color="initial"
-        sx={{ color: '#888888', fontSize: '40px', fontWeight: '600' }}
+        sx={{ color: '#888888', fontSize: '30px', fontWeight: '600' }}
       >
         About the UK-Nigeria Tech Hub
       </Typography>
-      <Box>
-        <img src={uk} alt="uk" />
+      <Box sx={{width:"10%",display:"block"}}>
+        <img src={uk} alt="uk" width={900}/>
       </Box>
       <Typography
         variant="body1"
         color="initial"
-        sx={{ color: '#6D6D6D', fontSize: '24px', maxWidth:"1041px" }}
+        sx={{ color: '#6D6D6D', fontSize: '20px', maxWidth:"1041px" }}
       >
         The UK-Nigeria Tech Hub is an initiative by the UK Government’s
         <Typography
           component="span"
           variant="body1"
           color="initial"
-          sx={{ color: '#363636', fontWeight: '500', fontSize: '24px' }}
+          sx={{ color: '#363636', fontWeight: '500', fontSize: '20px' }}
         >
           {' '}
           Department for Digital, Culture, Media, and Sports (DCMS){' '}
@@ -70,7 +70,7 @@ const DpdsFooter = () => {
           }}
         >
           <Box sx={{ width: '320px' }}>
-            <img src={ukhub} alt="uk hub" />
+            <img src={ukhub} alt="uk hub"  />
           </Box>
           <SocialButton text="@ukngtechhub" icon={<TwitterIcon />} />
           <SocialButton text="@ukngtechhub" icon={<InstagramIcon />} />
@@ -85,7 +85,7 @@ const DpdsFooter = () => {
           }}
         >
           <Box>
-            <img src={devcareerhub} alt="devcareer" />
+            <img src={devcareerhub} alt="devcareer"  />
           </Box>
           <SocialButton text="@dev_careers" icon={<TwitterIcon />} />
           <SocialButton text="DevCareer" icon={<LinkedinIcon />} />
