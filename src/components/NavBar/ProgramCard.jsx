@@ -17,7 +17,7 @@ const ProgramCard = () => {
         border: '1px solid #E8E8E8',
       }}
     >
-      <Link style={menuStyle}>
+      <Link style={menuStyle} to="/programs/l4d">
         <Box
           sx={{
             borderRadius: '8px',
