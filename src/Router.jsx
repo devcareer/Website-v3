@@ -1,7 +1,7 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { Home, Root } from './Pages';
-import Talents from './components/Talents/Talents';
 import Dpds from './Pages/Dpds/Dpds';
+import Talents from './components/Talents/Talents';
 
 export const router = createBrowserRouter([
   {
@@ -13,12 +13,22 @@ export const router = createBrowserRouter([
         element: <Home />,
       },
       {
-        path: '/talents',
-        element: <Talents />,
+        path: 'programs',
+        children: [
+          {
+            path: 'dpds',
+            element: <Dpds />,
+          },
+        ],
       },
       {
-        path: '/dpds',
-        element: <Dpds />,
+        path: 'community',
+        children: [
+          {
+            path: 'talents',
+            element: <Talents />,
+          },
+        ],
       },
     ],
   },
