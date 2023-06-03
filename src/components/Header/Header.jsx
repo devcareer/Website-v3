@@ -14,7 +14,12 @@ const Header = () => {
       mx="auto"
     >
       <Box pt="36px">
-        <Typography color="misc.100" fontSize="72px" fontWeight="700">
+        <Typography
+          color="misc.100"
+          fontSize="72px"
+          fontWeight="700"
+          lineHeight="86px"
+        >
           Fast-Track Your Tech Career
         </Typography>
         <Typography

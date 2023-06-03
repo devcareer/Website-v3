@@ -13,7 +13,9 @@ export const theme = createTheme({
     },
     text: {
       primary: '#000000',
-
+      black: {
+        100: '#181818',
+      },
       grey: {
         200: '#C2C2C2',
         300: '#212121',
@@ -22,6 +24,7 @@ export const theme = createTheme({
         700: '#6D6D6D',
         600: '#888888',
         500: '#A3A3A3',
+        900: '#7A7A7A',
         A600: '#626262',
       },
     },
