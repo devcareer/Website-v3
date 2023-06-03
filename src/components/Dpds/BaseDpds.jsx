@@ -1,31 +1,17 @@
-import { Box, Button, Stack, Typography, Container } from '@mui/material';
-import { bmagic, cpu, dpd, product, timer,dpdlogo } from '../../assets/Images';
+import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import { bmagic, cpu, dpd, product, timer } from '../../assets/Images';
+import TitleBanner from '../Banner/TitleBanner';
 import DpdsFooter from './DpdsFooter';
 const BaseDpds = () => {
   return (
     <Box>
-      <Box position="relative" sx={{ backgroundColor: '#E6F9F5', p: '4.2rem' }}>
-        <Container maxWidth="lg">
-        <Typography
-          variant="body1"
-          color="initial"
-          sx={{ fontSize: '55px', fontWeight: '700',color:"#023E31" }}
-        >
-          DPDs
-        </Typography>
-        <Typography
-          variant="body1"
-          color="initial"
-          mt={-2}
-          sx={{ maxWidth: '795px', fontSize: '42px',color:"#025C49",fontWeight:"500" }}
-        >
-          (In Partnership with AltSchool Africa)
-        </Typography>
-        </Container>
-        <Box position="absolute" top="0" right="0"><img src={dpdlogo} alt="pattern" /></Box>
-      </Box>
+      <TitleBanner
+        title=" DPDs"
+        text="
+(In Partnership with AltSchool Africa)"
+      />
       <Box position="relative">
-        <Container maxWidth='lg' >
+        <Container maxWidth="lg">
           <Typography
             variant="body1"
             color="initial"
@@ -38,14 +24,19 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ fontSize: '20px', color: '#6D6D6D', mt: '15px',maxWidth:"1041px" }}
+            sx={{
+              fontSize: '20px',
+              color: '#6D6D6D',
+              mt: '15px',
+              maxWidth: '1041px',
+            }}
           >
             DevCareer, a non-profit organization, partners with{' '}
             <Typography
               variant="body1"
               component="span"
               color="initial"
-              sx={{ fontWeight: '600', fontSize: '20px', color: '#363636', }}
+              sx={{ fontWeight: '600', fontSize: '20px', color: '#363636' }}
             >
               UK-Nigeria Tech Hub{' '}
             </Typography>
@@ -66,7 +57,12 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ fontSize: '20px', color: '#6D6D6D', mt: '30px',maxWidth:"1041px" }}
+            sx={{
+              fontSize: '20px',
+              color: '#6D6D6D',
+              mt: '30px',
+              maxWidth: '1041px',
+            }}
           >
             The Design Product and Developers School is a{' '}
             <Typography
@@ -94,7 +90,12 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ fontSize: '20px', color: '#6D6D6D', mt: '40px',maxWidth:"1041px" }}
+            sx={{
+              fontSize: '20px',
+              color: '#6D6D6D',
+              mt: '40px',
+              maxWidth: '1041px',
+            }}
           >
             This comprehensive program offers virtual live classes, peer
             learning sessions, training workshops, and visual learning content
@@ -115,7 +116,12 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ fontSize: '20px', color: '#6D6D6D', mt: '40px',maxWidth:"1041px" }}
+            sx={{
+              fontSize: '20px',
+              color: '#6D6D6D',
+              mt: '40px',
+              maxWidth: '1041px',
+            }}
           >
             The Design Product and Developers School welcomes young people from
             all communities in Nigeria, regardless of gender or educational
@@ -129,19 +135,28 @@ const BaseDpds = () => {
           <img src={dpd} alt="pattern" width={450} />
         </Box>
       </Box>
-      <Container maxWidth='lg' sx={{ mt: '56px' }}>
+      <Container maxWidth="lg" sx={{ mt: '56px' }}>
         <Typography
           variant="body1"
           color="initial"
-          sx={{ color: '#C2C2C2', fontSize: '18px', fontWeight: '700',mb:"16px" }}
+          sx={{
+            color: '#C2C2C2',
+            fontSize: '18px',
+            fontWeight: '700',
+            mb: '16px',
+          }}
         >
           PROGRAM DURATION
         </Typography>
-        <Stack direction="row" alignItems="center" gap={2} >
+        <Stack direction="row" alignItems="center" gap={2}>
           <Box mt={1}>
             <img src={timer} alt="time" />
           </Box>
-          <Typography variant="body1" color="initial" sx={{color:"#6D6D6D",fontSize:"24px"}}>
+          <Typography
+            variant="body1"
+            color="initial"
+            sx={{ color: '#6D6D6D', fontSize: '24px' }}
+          >
             6 Months
           </Typography>
         </Stack>
@@ -232,7 +247,7 @@ const BaseDpds = () => {
           </Stack>
         </Box>
       </Container>
-      <DpdsFooter/>
+      <DpdsFooter />
     </Box>
   );
 };
