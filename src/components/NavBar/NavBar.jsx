@@ -1,7 +1,7 @@
 import { Box, Button, Stack } from '@mui/material';
 import { NavLink,Link } from 'react-router-dom';
 import { Logo } from '../../assets/Images';
-import { ProgramCard,CommunityCard } from './index.js';
+import { ProgramCard,CommunityCard } from '../index';
 const navStyle = {
   color: '#888888',
   fontSize: '20px',
@@ -74,6 +74,7 @@ const NavBar = () => {
           <NavLink to='/contactus' style={({ isActive })=>isActive? activeStyle:navStyle}>Contact Us</NavLink>
         </Box>
       </Stack>
+      <Link to='/support'>
       <Button
       disableElevation
         variant="contained"
@@ -87,6 +88,7 @@ const NavBar = () => {
       >
         Support Us
       </Button>
+      </Link>
     </Box>
   );
 };
