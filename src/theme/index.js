@@ -11,9 +11,9 @@ export const theme = createTheme({
     secondary: {
       main: '#34A0A4',
     },
-     navColor:{
-      main:"#212121"
-     },
+    navColor: {
+      main: '#212121',
+    },
     text: {
       primary: '#000000',
       black: {
@@ -71,5 +71,14 @@ export const theme = createTheme({
   },
   typography: {
     fontFamily: "'Gilroy', 'Arial', 'sans-serif'",
+  },
+  breakpoints: {
+    values: {
+      xs: 0,
+      sm: 640,
+      md: 768,
+      lg: 1024,
+      xl: 1280,
+    },
   },
 });

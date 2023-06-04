@@ -52,7 +52,7 @@ const LaptopForDevelopers = () => {
 
 export default LaptopForDevelopers;
 
-const AboutProgram = () => {
+export const AboutProgram = () => {
   return (
     <Box component="section" pt="40px" mx="auto" width="85%">
       <Stack gap="16px">

@@ -53,7 +53,7 @@ export default Home;
 
 const Sponsors = () => {
   return (
-    <Box width="85%" mx="auto" pb="109px">
+    <Box width="85%" mx="auto" pb={{ xs: '80px', md: '109px' }}>
       <Typography
         textAlign="center"
         fontWeight="600"
@@ -64,18 +64,23 @@ const Sponsors = () => {
       >
         PROUDLY SPONSORED BY
       </Typography>
-      <Box display="grid" gridTemplateColumns="1fr 1fr 1fr" rowGap="25px">
-        <Box component="img" src={revivn}></Box>
+      <Box
+        display="grid"
+        gridTemplateColumns="1fr 1fr 1fr"
+        rowGap="25px"
+        columnGap={{ xs: '30px' }}
+      >
+        <Box component="img" src={kuda}></Box>
+        <Box component="img" src={peerigon} alignSelf="center"></Box>
         <Box component="img" src={gofundme}></Box>
-        <Box component="img" src={isams} justifySelf="end"></Box>
-        <Box component="img" src={kuda} alignSelf="end"></Box>
-        <Box component="img" src={eden} justifySelf="center"></Box>
+        <Box component="img" src={revivn}></Box>
         <Box
           component="img"
-          src={peerigon}
-          width="400px"
+          src={isams}
+          justifySelf="center"
           alignSelf="center"
         ></Box>
+        <Box component="img" src={eden} justifySelf="center"></Box>
       </Box>
     </Box>
   );
@@ -113,8 +118,20 @@ const Mission = () => {
   ];
   return (
     <Box bgcolor="#F6F6F6" py="130px" mb="30px">
-      <Stack width="85%" mx="auto" display="grid" gridTemplateColumns="1fr 1fr">
-        <Box component="img" src={mission}></Box>
+      <Stack
+        width="85%"
+        mx="auto"
+        display="grid"
+        gridTemplateColumns={{ xs: '1fr', lg: '1fr 1fr' }}
+        gap={{ xs: '32px' }}
+      >
+        <Box
+          component="img"
+          src={mission}
+          alt="mission"
+          width={{ xs: '350px', sm: '70%', lg: 'auto' }}
+        ></Box>
+
         <Stack direction="column">
           <Typography
             fontWeight="700"
@@ -126,7 +143,11 @@ const Mission = () => {
           </Typography>
           <Stack component="ul" color="text.grey.300" pl="20px" gap="5px">
             {missions.map((mission, index) => (
-              <Typography component="li" key={index} fontSize="24px">
+              <Typography
+                component="li"
+                key={index}
+                fontSize={{ xs: '16px', sm: '24px' }}
+              >
                 {mission}
               </Typography>
             ))}
@@ -134,20 +155,30 @@ const Mission = () => {
           <Box
             display="grid"
             gridTemplateColumns="repeat(3, 1fr)"
-            rowGap="36px"
+            rowGap={{ xs: '20px', md: '36px' }}
             columnGap="20px"
             mt="60px"
           >
             {stats.map((stat, index) => (
-              <Stack alignItems="center" direction="row" key={index} gap="8px">
-                <Typography component="h3" fontSize="48px" fontWeight="700">
+              <Stack
+                alignItems="center"
+                direction={{ xs: 'column', md: 'row' }}
+                key={index}
+                gap={{ xs: '0px', md: '8px' }}
+              >
+                <Typography
+                  component="h3"
+                  fontSize={{ xs: '32px', md: '48px' }}
+                  fontWeight="700"
+                >
                   {stat.figure}
                 </Typography>
                 <Typography
                   component="p"
                   color="text.grey.500"
-                  fontSize="20px"
+                  fontSize="16px"
                   fontWeight="400"
+                  textAlign={{ xs: 'center', md: 'start' }}
                 >
                   {stat.text}
                 </Typography>

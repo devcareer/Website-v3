@@ -7,3 +7,12 @@
   width: 85%;
   margin: 0 auto;
 }
+img {
+  max-width: 100%;
+  height: auto;
+  object-fit: contain;
+}
+body,
+html {
+  overflow-x: hidden;
+}
