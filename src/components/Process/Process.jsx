@@ -19,9 +19,9 @@ const Process = (props) => {
         <Typography
           component="h2"
           fontWeight="700"
-          fontSize="40px"
+          fontSize={{ xs: '24px', md: '40px' }}
           mb="94px"
-          width="50%"
+          width={{ xs: '100%', lg: '50%' }}
           textAlign="center"
           alignSelf="center"
         >
@@ -71,7 +71,7 @@ const Process = (props) => {
         </Box> */}
         <Box
           display="grid"
-          gridTemplateColumns="repeat(2, 1fr)"
+          gridTemplateColumns={{ xs: '1fr', lg: '1fr 1fr' }}
           columnGap="24px"
         >
           <Stack gap="16px">
@@ -93,7 +93,7 @@ const Process = (props) => {
                   <Typography
                     component="h2"
                     fontWeight="600"
-                    fontSize="30px"
+                    fontSize={{ xs: '24px', md: '30px' }}
                     color="#181818"
                     mt="30px"
                     mb="16px"
@@ -103,7 +103,7 @@ const Process = (props) => {
                   <Typography
                     component="p"
                     color="text.grey.600"
-                    fontSize="20px"
+                    fontSize={{ xs: '16px', md: '20px' }}
                     fontWeight="400"
                   >
                     {stage.description}
@@ -133,7 +133,7 @@ const Process = (props) => {
                   <Typography
                     component="h2"
                     fontWeight="600"
-                    fontSize="30px"
+                    fontSize={{ xs: '24px', md: '30px' }}
                     color="#181818"
                     mt="30px"
                     mb="16px"
@@ -143,7 +143,7 @@ const Process = (props) => {
                   <Typography
                     component="p"
                     color="text.grey.600"
-                    fontSize="20px"
+                    fontSize={{ xs: '16px', md: '20px' }}
                     fontWeight="400"
                   >
                     {stage.description}

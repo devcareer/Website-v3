@@ -141,7 +141,11 @@ const Skills = () => {
       >
         SKILLS
       </Typography>
-      <Box display="grid" gridTemplateColumns="repeat(4, 1fr)">
+      <Box
+        display="grid"
+        gridTemplateColumns={{ xs: '1fr 1fr', md: 'repeat(4, 1fr)' }}
+        gap={{ xs: '20px', md: '0px' }}
+      >
         {skills.map((skill, i) => (
           <Stack alignItems="center" key={i}>
             <img src={skill.logo} alt={skill.text}></img>
@@ -181,7 +185,12 @@ const AllInOneDiv = () => {
     },
   ];
   return (
-    <Stack display="grid" gridTemplateColumns="1fr 1fr" mt="140px">
+    <Stack
+      display="grid"
+      gridTemplateColumns={{ xs: '1fr', md: '1fr 1fr' }}
+      mt={{ xs: '70px', md: '140px' }}
+      rowGap={{ xs: '20px' }}
+    >
       <Box>
         <Typography color="text.black.100" fontWeight="700" fontSize="50px">
           All About Us in
