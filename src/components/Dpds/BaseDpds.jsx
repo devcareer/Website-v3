@@ -1,4 +1,4 @@
-import { Box, Button, Container, Stack, Typography } from '@mui/material';
+import { Box, Button, Stack, Typography } from '@mui/material';
 import { bmagic, cpu, dpd, product, timer } from '../../assets/Images';
 import TitleBanner from '../Banner/TitleBanner';
 import DpdsFooter from './DpdsFooter';
@@ -11,12 +11,16 @@ const BaseDpds = () => {
 (In Partnership with AltSchool Africa)"
       />
       <Box position="relative">
-        <Container maxWidth="lg">
+        <Box sx={{ width: { xs: '90%', lg: '85%' }, mx: 'auto' }}>
           <Typography
             variant="body1"
             color="initial"
             mt={2}
-            sx={{ fontSize: '18px', fontWeight: '700', color: '#C2C2C2' }}
+            sx={{
+              fontSize: { xs: '16px', lg: '18px' },
+              fontWeight: { xs: '500', lg: '700' },
+              color: '#C2C2C2',
+            }}
           >
             ABOUT THIS PROGRAM
           </Typography>
@@ -25,7 +29,7 @@ const BaseDpds = () => {
             variant="body1"
             color="initial"
             sx={{
-              fontSize: '20px',
+              fontSize: { xs: '16px', lg: '20px' },
               color: '#6D6D6D',
               mt: '15px',
               maxWidth: '1041px',
@@ -36,7 +40,11 @@ const BaseDpds = () => {
               variant="body1"
               component="span"
               color="initial"
-              sx={{ fontWeight: '600', fontSize: '20px', color: '#363636' }}
+              sx={{
+                fontWeight: '600',
+                fontSize: { xs: '16px', lg: '20px' },
+                color: '#363636',
+              }}
             >
               UK-Nigeria Tech Hub{' '}
             </Typography>
@@ -45,7 +53,11 @@ const BaseDpds = () => {
               variant="body1"
               color="initial"
               component="span"
-              sx={{ fontWeight: '600', color: '#363636', fontSize: '20px' }}
+              sx={{
+                fontWeight: '600',
+                color: '#363636',
+                fontSize: { xs: '16px', lg: '20px' },
+              }}
             >
               Design Product and Developers School
             </Typography>{' '}
@@ -58,7 +70,7 @@ const BaseDpds = () => {
             variant="body1"
             color="initial"
             sx={{
-              fontSize: '20px',
+              fontSize: { xs: '16px', lg: '20px' },
               color: '#6D6D6D',
               mt: '30px',
               maxWidth: '1041px',
@@ -69,7 +81,11 @@ const BaseDpds = () => {
               variant="body1"
               color="initial"
               component="span"
-              sx={{ fontWeight: '600', color: '#363636', fontSize: '20px' }}
+              sx={{
+                fontWeight: '600',
+                color: '#363636',
+                fontSize: { xs: '16px', lg: '20px' },
+              }}
             >
               6-month program
             </Typography>{' '}
@@ -79,7 +95,11 @@ const BaseDpds = () => {
               component="span"
               variant="body1"
               color="initial"
-              sx={{ fontWeight: '600', fontSize: '20px', color: '#363636' }}
+              sx={{
+                fontWeight: '600',
+                fontSize: { xs: '16px', lg: '20px' },
+                color: '#363636',
+              }}
             >
               Software Development, Product Management, and Product Design
             </Typography>{' '}
@@ -91,7 +111,7 @@ const BaseDpds = () => {
             variant="body1"
             color="initial"
             sx={{
-              fontSize: '20px',
+              fontSize: { xs: '16px', lg: '20px' },
               color: '#6D6D6D',
               mt: '40px',
               maxWidth: '1041px',
@@ -104,7 +124,11 @@ const BaseDpds = () => {
               component="span"
               variant="body1"
               color="initial"
-              sx={{ fontWeight: '600', fontSize: '20px', color: '#363636' }}
+              sx={{
+                fontWeight: '600',
+                fontSize: { xs: '16px', lg: '20px' },
+                color: '#363636',
+              }}
             >
               {' '}
               Learning Management System
@@ -117,7 +141,7 @@ const BaseDpds = () => {
             variant="body1"
             color="initial"
             sx={{
-              fontSize: '20px',
+              fontSize: { xs: '16px', lg: '20px' },
               color: '#6D6D6D',
               mt: '40px',
               maxWidth: '1041px',
@@ -127,7 +151,7 @@ const BaseDpds = () => {
             all communities in Nigeria, regardless of gender or educational
             background.
           </Typography>
-        </Container>
+        </Box>
         <Box
           position="absolute"
           sx={{ right: '0px', bottom: '-220px', zIndex: '-10' }}
@@ -135,13 +159,13 @@ const BaseDpds = () => {
           <img src={dpd} alt="pattern" width={450} />
         </Box>
       </Box>
-      <Container maxWidth="lg" sx={{ mt: '56px' }}>
+      <Box sx={{ width: { xs: '90%', lg: '85%' }, mx: 'auto', mt: '56px' }}>
         <Typography
           variant="body1"
           color="initial"
           sx={{
             color: '#C2C2C2',
-            fontSize: '18px',
+            fontSize: { xs: '16px', lg: '20px' },
             fontWeight: '700',
             mb: '16px',
           }}
@@ -155,7 +179,7 @@ const BaseDpds = () => {
           <Typography
             variant="body1"
             color="initial"
-            sx={{ color: '#6D6D6D', fontSize: '24px' }}
+            sx={{ color: '#6D6D6D', fontSize: { xs: '16px', lg: '20px' } }}
           >
             6 Months
           </Typography>
@@ -166,12 +190,23 @@ const BaseDpds = () => {
             color="initial"
             textAlign="center"
             mb={2}
-            sx={{ color: '#C2C2C2', fontSize: '18px', fontWeight: '700' }}
+            sx={{
+              color: '#C2C2C2',
+              fontSize: { xs: '16px', lg: '20px' },
+              fontWeight: '700',
+            }}
           >
             AVAILABLE SKILLS
           </Typography>
-          <Stack direction="row" justifyContent="center" sx={{ gap: '32px' }}>
-            <Stack alignItems="center" sx={{ flexBasis: '386px' }}>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent="center"
+            sx={{ gap: { xs: '20px', md: '12px', lg: '32px' } }}
+          >
+            <Stack
+              alignItems="center"
+              sx={{ flexBasis: { xs: '100%', lg: '386px' } }}
+            >
               <Box>
                 <img src={cpu} alt="cpu" />
               </Box>
@@ -181,7 +216,8 @@ const BaseDpds = () => {
                 textAlign="center"
                 sx={{
                   lineHeight: '40px',
-                  fontSize: '30px',
+
+                  fontSize: { xs: '17.5px', lg: '30px' },
                   fontWeight: '500',
                   maxWidth: '200px',
                   color: '#6D6D6D',
@@ -190,7 +226,10 @@ const BaseDpds = () => {
                 Software Development
               </Typography>
             </Stack>
-            <Stack alignItems="center" sx={{ flexBasis: '386px' }}>
+            <Stack
+              alignItems="center"
+              sx={{ flexBasis: { xs: '100%', lg: '386px' } }}
+            >
               <Box>
                 <img src={product} alt="cpu" />
               </Box>
@@ -200,7 +239,7 @@ const BaseDpds = () => {
                 color="initial"
                 sx={{
                   lineHeight: '40px',
-                  fontSize: '30px',
+                  fontSize: { xs: '17.5px', lg: '30px' },
                   fontWeight: '500',
                   maxWidth: '200px',
                   color: '#6D6D6D',
@@ -209,7 +248,10 @@ const BaseDpds = () => {
                 Product Management
               </Typography>
             </Stack>
-            <Stack alignItems="center" sx={{ flexBasis: '386px' }}>
+            <Stack
+              alignItems="center"
+              sx={{ flexBasis: { xs: '100%', lg: '386px' } }}
+            >
               <Box>
                 <img src={bmagic} alt="cpu" />
               </Box>
@@ -219,7 +261,7 @@ const BaseDpds = () => {
                 color="initial"
                 sx={{
                   lineHeight: '40px',
-                  fontSize: '30px',
+                  fontSize: { xs: '17.5px', lg: '30px' },
                   fontWeight: '500',
                   maxWidth: '200px',
                   color: '#6D6D6D',
@@ -238,15 +280,15 @@ const BaseDpds = () => {
                 maxWidth: '600px',
                 color: 'white',
                 width: '100%',
-                paddingBlock: '20px',
-                fontSize: '18px',
+                paddingBlock:{xs:"15px",lg:"20px"} ,
+                fontSize: { xs: '16px', lg: '18px' },
               }}
             >
               Enroll into Program
             </Button>
           </Stack>
         </Box>
-      </Container>
+      </Box>
       <DpdsFooter />
     </Box>
   );

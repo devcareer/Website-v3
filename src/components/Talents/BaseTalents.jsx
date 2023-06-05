@@ -45,15 +45,14 @@ const BaseTalents = () => {
       pt={3}
       pb={10}
       sx={{
-        maxWidth: '1200px',
+        width:{xs:"90%",lg:"85%"},
         mx: 'auto',
-        paddingInline: { xs: '24px', lg: '0' },
       }}
     >
       <Box
         sx={{
           background: 'linear-gradient(to left top,  #00B964,#1E6091)',
-          padding: '48px',
+          padding:{xs:"20px",lg:"48px"} ,
           borderRadius: '8px',
         }}
       >
@@ -64,6 +63,7 @@ const BaseTalents = () => {
             fontSize: { xs: '32px', lg: '64px' },
             fontWeight: '700',
             color: '#FEFEFE',
+            textAlign:{xs:"center",sm:"left",lg:"left"}
           }}
         >
           Discover Outstanding Talents
@@ -74,6 +74,7 @@ const BaseTalents = () => {
             fontSize: { xs: '15px', lg: '20px' },
             color: '#FEFEFE',
             maxWidth: '744px',
+            textAlign:{xs:"center",sm:"left",lg:"left"}
           }}
         >
           Browse through our curated collection of profiles and get inspired by
