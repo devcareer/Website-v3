@@ -5,7 +5,7 @@ import { favour, joshua, soji, tobi, doyin, chidi, learning, Wennovation, Swahil
 
 const AboutUs = () => {
     return (
-        <Container maxWidth="false">
+        <Container maxWidth="false" disableGutters>
             <Container>
             <Box display="flex" flexDirection="column" alignItems="center" mb="73px">
                 <Typography component="h1" variant="body1" mb={1} sx={{ color: (theme)=>theme.palette.text.grey[600]}}>
@@ -20,16 +20,18 @@ const AboutUs = () => {
                     </Typography>    
                 </Typography>
             </Box>
-            <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" columnGap="25px" rowGap="16px">
-                <Card image={ favour } name="FAVOUR CHIBUEZE" position="community"/>
-                <Card image={ joshua } name="FAVOUR CHIBUEZE" position="community"/>
-                <Card image={ soji } name="FAVOUR CHIBUEZE" position="community"/>
-                <Card image={ tobi } name="FAVOUR CHIBUEZE" position="community"/>
-                <Card image={ doyin } name="FAVOUR CHIBUEZE" position="community"/>
-                <Card image={ chidi } name="FAVOUR CHIBUEZE" position="community"/>
+            <Box display="grid" gridTemplateColumns="repeat(4, 1fr)" columnGap="25px" rowGap="16px" >
+                <Card image={ favour } name="Favour Ch" position="community"/>
+                <Card image={ joshua } name="Miebaka Joshua" position="Branding"/>
+                <Card image={ soji } name="Olakunle Soji-Oke" position="OPerations"/>
+                <Card image={ tobi } name="Olagoke Tobi" position="Operations"/>
+                <Card image={ doyin } name="Adedoyin" position="Grants"/>
+                <Card image={ chidi } name="Chidi Okoye" position="Programs"/>
+                <Card image={ tobi } name="Olagoke Tobi" position="Operations"/>
+                <Card image={ chidi } name="Chidi Okoye" position="Programs"/>
             </Box>
             </Container>
-            <Container maxWidth="false" sx={{mt:"56px"}}>
+            <Container maxWidth="false" sx={{mt:"56px"}} disableGutters>
                 <Container>
                     <Box>
                         <Typography component="h3" variant="h2" fontWeight={700} fontSize ="64px" color="#181818">
@@ -56,9 +58,9 @@ const AboutUs = () => {
                     </Box>  
                 </Box>
             </Container>
-            <Container sx={{backgroundImage: `url(${background})`, backgroundSize: "cover", backgroundRepeat: "no-repeat", pb: "73px", mt: "132px"}} maxWidth="false">
-                <Box pt="72px" display="flex" flexDirection="column" alignItems="center">
-                   <Typography fontWeight={700} fontSize="64px" color="#FEFEFE" maxWidth="70%" lineHeight={1.2} textAlign="center">
+            <Container sx={{ backgroundImage: `url(${background})`, backgroundSize: "cover", backgroundRepeat: "no-repeat", pb: "73px", mt: "132px" }} maxWidth="false">
+                <Container sx={{ pt: "72px", display: "flex", flexDirection: "column", alignItems: "center" }}>
+                   <Typography fontWeight={700} fontSize="64px" color="#FEFEFE" lineHeight={1.2} textAlign="center">
                         Join Hands with us as we make a change in the Tech World
                    </Typography>
                     <Button sx={{
@@ -76,7 +78,7 @@ const AboutUs = () => {
                             color: "#037B62",
                         }
                     }}>Become A Partner</Button> 
-                </Box>
+                </Container>
             </Container>
             
         </Container>
