@@ -13,4 +13,4 @@ export { default as Eden } from './Eden.png';
 export { default as Kuda } from './Kuda Bank.png';
 export { default as roundSquare } from './Round square.png';
 export { default as square } from './Square.png';
-export { default as greenbackground } from './Green Background.png';
+export { default as background } from './green-background.png';
