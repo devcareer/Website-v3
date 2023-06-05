@@ -60,3 +60,4 @@ export { default as techpoint } from './Techpoint.png';
 export { default as frontend } from './frontend.png';
 export { default as backend } from './backend.png';
 export { default as cloud } from './cloud.png';
+export { default as background } from './green-background.png';
