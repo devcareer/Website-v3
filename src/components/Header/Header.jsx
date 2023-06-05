@@ -6,19 +6,19 @@ const Header = () => {
   return (
     <Box
       display="grid"
-      gridTemplateColumns="1fr 1fr"
+      gridTemplateColumns={{ xs: '1fr', lg: '1fr 1fr' }}
       pt="24px"
       pb="128px"
       gap="40px"
       width="85%"
       mx="auto"
     >
-      <Box pt="36px">
+      <Box pt={{ xs: '0px', lg: '36px' }}>
         <Typography
           color="misc.100"
-          fontSize="72px"
+          fontSize={{ xs: '50px', sm: '72px' }}
           fontWeight="700"
-          lineHeight="86px"
+          lineHeight={{ xs: '70px', sm: '80px' }}
         >
           Fast-Track Your Tech Career
         </Typography>
@@ -33,12 +33,21 @@ const Header = () => {
           by helping them overcome the challenge of selecting a programming
           specialization and offering valuable learning tools.
         </Typography>
-        <Stack direction="row" gap="40px">
+        <Stack
+          direction={{ xs: 'column-reverse', sm: 'row' }}
+          gap={{ xs: '20px', md: '40px' }}
+        >
           <Button
             fontWeight="500"
             fontSize="20px"
             variant="outlined"
-            sx={{ py: '20px', flexBasis: '40%', borderRadius: '8px' }}
+            sx={{
+              py: '20px',
+              flexBasis: '40%',
+              borderRadius: '8px',
+              color: { xs: '#FEFEFE', sm: 'primary.main' },
+              bgcolor: { xs: 'primary.main', sm: 'inherit' },
+            }}
           >
             Create Mini-CV
           </Button>
@@ -58,7 +67,12 @@ const Header = () => {
           </Button>
         </Stack>
       </Box>
-      <img src={hero} alt="hero-section"></img>
+      <Box
+        component="img"
+        src={hero}
+        alt="hero-section"
+        display={{ xs: 'none', lg: 'block' }}
+      ></Box>
     </Box>
   );
 };

@@ -78,12 +78,7 @@ const NavBar = () => {
           </Box>
         </Box>
         <Box>
-          <NavLink
-            to="/aboutus"
-            style={({ isActive }) => (isActive ? activeStyle : navStyle)}
-          >
-            About Us
-          </NavLink>
+          <NavLink to='/about' style={({ isActive })=>isActive? activeStyle:navStyle}>About Us</NavLink>
         </Box>
         <Box
           position="relative"

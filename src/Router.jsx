@@ -2,6 +2,7 @@ import { createBrowserRouter } from 'react-router-dom';
 import {
   Dpds,
   Home,
+  AboutUs,
   LaptopForDevelopers,
   Root,
   Support,
@@ -43,6 +44,10 @@ export const router = createBrowserRouter([
         path: '/support',
         element: <Support />,
       },
+      {
+        path: 'about',
+        element: <AboutUs />
+      },
     ],
-  },
+  }
 ]);
