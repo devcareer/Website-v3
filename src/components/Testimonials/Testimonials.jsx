@@ -42,8 +42,17 @@ const Testimonials = () => {
         mx="auto"
         mb="50px"
       >
-        <img src={quotes} alt="quotes"></img>
-        <Typography component="h2" fontSize="24px" color="text.grey.500">
+        <Box
+          component="img"
+          src={quotes}
+          alt="quotes"
+          width={{ xs: '60px', md: 'auto' }}
+        ></Box>
+        <Typography
+          component="h2"
+          fontSize={{ xs: '20px', md: '24px' }}
+          color="text.grey.500"
+        >
           Hear From our Beneficiaries
         </Typography>
         <Box></Box>

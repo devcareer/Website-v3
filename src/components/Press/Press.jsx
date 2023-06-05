@@ -11,10 +11,19 @@ const Press = () => {
   return (
     <Box component="section" bgcolor="#F1FAD1" py="100px">
       <Stack gap="70px" width="85%" mx="auto">
-        <Typography fontWeight="700" fontSize="40px" textAlign="center">
+        <Typography
+          fontWeight="700"
+          fontSize={{ xs: '24px', md: '40px' }}
+          textAlign="center"
+        >
           Check us out in the press.
         </Typography>
-        <Stack direction="row" justifyContent="space-between">
+        <Stack
+          direction={{ xs: 'column', lg: 'row' }}
+          justifyContent="space-between"
+          gap={{ xs: '20px' }}
+          alignItems="center"
+        >
           <img src={techpoint} alt="techpoint" />
           <img src={mashable} alt="mashable" />
           <img src={techcrunch} alt="techcrunch" />
