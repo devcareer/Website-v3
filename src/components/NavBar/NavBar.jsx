@@ -66,6 +66,7 @@ const NavBar = () => {
           }}
         >
           <NavLink
+           onClick={(e)=>e.preventDefault()}
             to="/programs"
             style={({ isActive }) => (isActive ? activeStyle : navStyle)}
           >
@@ -91,6 +92,7 @@ const NavBar = () => {
           }}
         >
           <NavLink
+           onClick={(e)=>e.preventDefault()}
             to="/community"
             style={({ isActive }) => (isActive ? activeStyle : navStyle)}
           >
