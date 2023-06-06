@@ -8,7 +8,7 @@ const ContactForm = () => {
       sx={{
         maxWidth: '675px',
         width: '100%',
-        padding: '48px',
+        padding:{xs:"28px",lg:"48px"},
         backgroundColor:"#fff",
         borderRadius:"8px",
         zIndex:"100"

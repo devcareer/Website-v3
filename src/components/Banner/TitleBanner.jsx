@@ -13,7 +13,7 @@ const TitleBanner = ({ title, text = '' }) => {
         py:{xs:"1rem",lg:"2rem"} 
       }}
     >
-      <Box mx="auto" sx={{ width: { xs: '90%', lg: '85%', mx: 'auto' } }}>
+      <Box mx="auto" sx={{ width: { xs: '90%', lg: '85%', mx: 'auto' }, maxWidth:{xl:"1200px"} }}>
         <Typography
           variant="body1"
           color="initial"

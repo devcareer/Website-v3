@@ -11,10 +11,11 @@ const BaseDpds = () => {
 (In Partnership with AltSchool Africa)"
       />
       <Box position="relative">
-        <Box sx={{ width: { xs: '90%', lg: '85%' }, mx: 'auto' }}>
+        <Box sx={{ width: { xs: '90%', lg: '85%' }, maxWidth:{xl:"1200px"}, mx: 'auto' }}>
           <Typography
             variant="body1"
             color="initial"
+            textAlign={{xs:"center",lg:"left"}}
             mt={2}
             sx={{
               fontSize: { xs: '16px', lg: '18px' },
@@ -159,10 +160,11 @@ const BaseDpds = () => {
           <img src={dpd} alt="pattern" width={450} />
         </Box>
       </Box>
-      <Box sx={{ width: { xs: '90%', lg: '85%' }, mx: 'auto', mt: '56px' }}>
+      <Box sx={{ width: { xs: '90%', lg: '85%' },maxWidth:{xl:"1200px"}, mx: 'auto', mt: '56px' }}>
         <Typography
           variant="body1"
           color="initial"
+          textAlign={{xs:"center",lg:"left"}}
           sx={{
             color: '#C2C2C2',
             fontSize: { xs: '16px', lg: '20px' },
@@ -172,7 +174,7 @@ const BaseDpds = () => {
         >
           PROGRAM DURATION
         </Typography>
-        <Stack direction="row" alignItems="center" gap={2}>
+        <Stack direction="row" alignItems="center" justifyContent={{xs:"center",lg:"flex-start"}} gap={2}>
           <Box mt={1}>
             <img src={timer} alt="time" />
           </Box>

@@ -46,6 +46,7 @@ const BaseTalents = () => {
       pb={10}
       sx={{
         width:{xs:"90%",lg:"85%"},
+        maxWidth:{xl:"1200px"},
         mx: 'auto',
       }}
     >

@@ -1,4 +1,4 @@
-import { Box, Stack } from '@mui/material';
+import { Box, Button, Stack, Tooltip } from '@mui/material';
 import { Link } from 'react-router-dom';
 const CommunityCard = () => {
   const menuStyle = {
@@ -44,34 +44,18 @@ const CommunityCard = () => {
           Slack Channel
         </Box>
       </Link>
-      <Link style={menuStyle}>
-        <Box
-          sx={{
-            borderRadius: '8px',
-            p: '0.7rem',
-            ':hover': {
-              backgroundColor: '#E8E8E8',
-            },
-          }}
-        >
-          {' '}
-          Forums (Coming Soon)
-        </Box>
-      </Link>
-      <Link style={menuStyle}>
-        <Box
-          sx={{
-            borderRadius: '8px',
-            p: '0.7rem',
-            ':hover': {
-              backgroundColor: '#E8E8E8',
-            },
-          }}
-        >
-          {' '}
-          Meetups (Coming Soon)
-        </Box>
-      </Link>
+
+      <Tooltip title="Disabled">
+        <span>
+          <Button disabled sx={{textTransform:"capitalize",fontWeight:"400",fontSize:"16px"}}> Forums (Coming Soon)</Button>
+        </span>
+      </Tooltip>
+
+      <Tooltip title="Disabled">
+        <span>
+          <Button disabled sx={{textTransform:"capitalize",fontWeight:"400",fontSize:"16px"}}> Meetups (Coming Soon)</Button>
+        </span>
+      </Tooltip>
     </Stack>
   );
 };

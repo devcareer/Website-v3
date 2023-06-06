@@ -9,13 +9,14 @@ const ContactUs = () => {
       pb="15rem"
       sx={{
         width:{xs:"90%",lg:"85%"},
+        maxWidth:{xl:"1200px"},
         mx:"auto"
       }}
     >
-      <Typography variant="body1" color="initial" textAlign="center" sx={{fontSize:"56px",fontWeight:"700",color:"#181818"}}>
+      <Typography variant="body1" color="initial" textAlign="center" sx={{fontSize:{xs:"20px",md:"30px",lg:"56px"},fontWeight:"700",color:"#181818"}}>
         We'd love to hear from you!
       </Typography>
-      <Typography variant="body1" pb='72px' color="initial" textAlign="center" sx={{fontSize:"20px",color:"#6D6D6D"}}>
+      <Typography variant="body1" pb={{xs:"50px",lg:"72px"}} color="initial" textAlign="center" sx={{maxWidth:"908px", mx:"auto",fontSize:{xs:"16px",md:"18px",lg:"20px"},color:"#6D6D6D"}}>
         We value your feedback and inquiries. Please fill out the form below,
         and our team will get back to you as soon as possible.
       </Typography>

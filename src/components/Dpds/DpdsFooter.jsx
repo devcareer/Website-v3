@@ -9,10 +9,11 @@ import {
 
 const DpdsFooter = () => {
   return (
-    <Box sx={{ width: { xs: '90%', lg: '85%' }, mx: 'auto' }}>
+    <Box sx={{ width: { xs: '90%', lg: '85%' },maxWidth:{xl:"1200px"}, mx: 'auto' }}>
       <Typography
         variant="body1"
         color="initial"
+        textAlign={{xs:"center",lg:"left"}}
         sx={{
           color: '#888888',
           fontSize: { xs: '18px', md: '20px', lg: '30px' },
@@ -27,6 +28,7 @@ const DpdsFooter = () => {
       <Typography
         variant="body1"
         color="initial"
+        
         sx={{ color: '#6D6D6D', fontSize:{xs:"16px",lg:"20px"}, maxWidth: '1041px' }}
       >
         The UK-Nigeria Tech Hub is an initiative by the UK Government’s
@@ -49,22 +51,23 @@ const DpdsFooter = () => {
       <Typography
         variant="body1"
         color="initial"
+        textAlign={{xs:"center",lg:"left"}}
         sx={{
-          mt: '80px',
+          mt:{xs:"40px",lg:"80px"},
           color: '#888888',
           fontSize:{xs:"25px",lg:"40px"},
           fontWeight: '700',
-          mb: '48px',
+          mb: {xs:"24px",lg:"49px"} ,
         }}
       >
         Contact{' '}
       </Typography>
       <Stack
         direction={{xs:"column",md:"row"}}
-        justifyContent="space-between"
+        justifyContent={{md:"center",lg:"space-between"}}
         alignItems="center"
-        gap={8}
-        sx={{ maxWidth: '826px', mx: 'auto', mb: '142px' }}
+        gap={{xs:4,lg:8}}
+        sx={{ maxWidth: '826px', mx: 'auto', mb:{xs:"71px",lg:"142px"} }}
       >
         <Stack
           alignItems="center"
@@ -76,9 +79,8 @@ const DpdsFooter = () => {
             p: '16px',
           }}
         >
-          <Box sx={{ width: '320px' }}>
-            <img src={ukhub} alt="uk hub" />
-          </Box>
+       
+          <Box component='img' src={ukhub} sx={{width:{xs:"100px",lg:"290px"}}}></Box>
           <SocialButton text="@ukngtechhub" icon={<TwitterIcon />} />
           <SocialButton text="@ukngtechhub" icon={<InstagramIcon />} />
         </Stack>
@@ -91,9 +93,8 @@ const DpdsFooter = () => {
             p: '16px',
           }}
         >
-          <Box>
-            <img src={devcareerhub} alt="devcareer"  />
-          </Box>
+        
+           <Box component='img' src={devcareerhub} sx={{width:{xs:"100px",lg:"280px"}}}></Box>
           <SocialButton text="@dev_careers" icon={<TwitterIcon />} />
           <SocialButton text="DevCareer" icon={<LinkedinIcon />} />
         </Stack>

@@ -22,7 +22,7 @@ const Social = [twitter, linkedin, instagram, facebook, github];
 const Footer = () => {
   return (
     <Box py={1} sx={{ backgroundColor: '#F4F4F4' }}>
-      <Box sx={{width:{xs:"90%",lg:"85%"}, mx:"auto"}} >
+      <Box sx={{width:{xs:"90%",lg:"85%"}, maxWidth:{xl:"1200px"}, mx:"auto"}} >
         <Stack
           direction={{ lg: 'row' }}
           alignItems="center"
@@ -64,6 +64,8 @@ const Footer = () => {
               display: 'flex',
               justifyContent: 'space-around',
               border: '1px solid #C2C2C2',
+              width:"500px",
+              maxWidth:"100%"
             }}
           >
             <InputBase
