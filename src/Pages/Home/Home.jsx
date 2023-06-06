@@ -13,6 +13,7 @@ import {
   profile,
   jobPack,
 } from '../../assets/Images';
+import { useState } from 'react';
 
 const Home = () => {
   const processTitle =
