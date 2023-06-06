@@ -143,7 +143,7 @@ const Skills = () => {
       </Typography>
       <Box
         display="grid"
-        gridTemplateColumns={{ xs: '1fr 1fr', md: 'repeat(4, 1fr)' }}
+        gridTemplateColumns={{ xs: '1fr', md: 'repeat(4, 1fr)' }}
         gap={{ xs: '20px', md: '0px' }}
       >
         {skills.map((skill, i) => (
@@ -192,10 +192,20 @@ const AllInOneDiv = () => {
       rowGap={{ xs: '20px' }}
     >
       <Box>
-        <Typography color="text.black.100" fontWeight="700" fontSize="50px">
+        <Typography
+          color="text.black.100"
+          fontWeight="700"
+          fontSize={{ xs: '30px', md: '50px' }}
+          textAlign={{ xs: 'center', md: 'start' }}
+        >
           All About Us in
         </Typography>
-        <Typography color="primary.main" fontWeight="700" fontSize="50px">
+        <Typography
+          color="primary.main"
+          fontWeight="700"
+          fontSize={{ xs: '30px', md: '50px' }}
+          textAlign={{ xs: 'center', md: 'start' }}
+        >
           One Div
         </Typography>
       </Box>
@@ -209,7 +219,7 @@ const AllInOneDiv = () => {
           <Stack alignItems="center" direction="row" key={index} gap="8px">
             <Typography
               component="h3"
-              fontSize="48px"
+              fontSize={{ xs: '30px', md: '48px' }}
               fontWeight="700"
               color="primary.main"
             >

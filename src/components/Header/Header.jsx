@@ -12,6 +12,11 @@ const Header = () => {
       gap="40px"
       width="85%"
       mx="auto"
+      sx={{
+        animation: 'herosection 2s forwards',
+        // opacity: 0,
+        // transform: 'translateY(100%)',
+      }}
     >
       <Box pt={{ xs: '0px', lg: '36px' }}>
         <Typography
@@ -47,6 +52,9 @@ const Header = () => {
               borderRadius: '8px',
               color: { xs: '#FEFEFE', sm: 'primary.main' },
               bgcolor: { xs: 'primary.main', sm: 'inherit' },
+              animation: 'resume 3s forwards',
+              // opacity: 0,
+              // transform: 'translateX(100%)',
             }}
           >
             Create Mini-CV
@@ -61,6 +69,9 @@ const Header = () => {
               color: '#037B62',
               borderRadius: '8px',
               border: '1px solid #eee',
+              animation: 'community 2s forwards',
+              // opacity: 0,
+              // transform: 'translateX(-100%)',
             }}
           >
             Join The Community

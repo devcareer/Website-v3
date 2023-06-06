@@ -84,12 +84,13 @@ const Process = (props) => {
                   borderRadius="8px"
                   px="20px"
                 >
-                  <img
+                  <Box
+                    component="img"
                     src={stage.icon}
                     alt={stage.title}
                     height="96px"
-                    width="96px"
-                  ></img>
+                    width={{ xs: '70px', md: '96px' }}
+                  ></Box>
                   <Typography
                     component="h2"
                     fontWeight="600"
@@ -114,7 +115,7 @@ const Process = (props) => {
               )
             )}
           </Stack>
-          <Stack gap="16px" pt="80px">
+          <Stack gap="16px" pt={{ xs: '16px', lg: '80px' }}>
             {process.map((stage, index) =>
               index === 1 || index % 2 !== 0 ? (
                 <Stack
@@ -124,12 +125,13 @@ const Process = (props) => {
                   borderRadius="8px"
                   px="20px"
                 >
-                  <img
+                  <Box
+                    component="img"
                     src={stage.icon}
                     alt={stage.title}
                     height="96px"
-                    width="96px"
-                  ></img>
+                    width={{ xs: '70px', md: '96px' }}
+                  ></Box>
                   <Typography
                     component="h2"
                     fontWeight="600"
