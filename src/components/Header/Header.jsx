@@ -1,11 +1,8 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import React, { useState } from 'react';
+import React from 'react';
 import { hero } from '../../assets/Images';
 
 const Header = () => {
-  // const [show, setShow] = useState(false);
-
-  // setTimeout(() => setShow(true), 2000);
   return (
     <Box
       display="grid"
