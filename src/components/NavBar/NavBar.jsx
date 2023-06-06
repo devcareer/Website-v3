@@ -104,7 +104,7 @@ const NavBar = () => {
         </Box>
         <Box>
           <NavLink
-            to="/contactus"
+            to="/contact"
             style={({ isActive }) => (isActive ? activeStyle : navStyle)}
           >
             Contact Us
