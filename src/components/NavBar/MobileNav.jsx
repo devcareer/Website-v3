@@ -118,6 +118,7 @@ const MobileNav = ({ menu }) => {
       </Box>
       <Box borderBottom="1px solid #E8E8E8" pb="10px">
         <Link
+        to='/contact'
           style={navStyle}
           onClick={() => {
             menu(false);

@@ -7,6 +7,7 @@ import {
   Root,
   Support,
   Talents,
+  ContactUs
 } from './Pages';
 
 export const router = createBrowserRouter([
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
       {
         path: 'about',
         element: <AboutUs />
+      },
+      {
+        path: 'contact',
+        element: <ContactUs />
       },
     ],
   }

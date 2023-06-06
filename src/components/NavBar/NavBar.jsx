@@ -31,6 +31,7 @@ const NavBar = () => {
         alignItems: 'center',
         justifyContent: 'space-between',
         width:{xs:"90%",sm:"85%"},
+        maxWidth:{xl:"1200px"},
         mx: 'auto',
       }}
     >
@@ -46,7 +47,8 @@ const NavBar = () => {
         </Box>
        <Box >
        <Link to="/">
-          <img src={Logo} alt="logo"  />
+          {/* <img src={Logo} alt="logo"  /> */}
+          <Box component='img' src={Logo} width={{xs:"100px",lg:"183px"}}></Box>
         </Link>
        </Box>
       
@@ -104,7 +106,7 @@ const NavBar = () => {
         </Box>
         <Box>
           <NavLink
-            to="/contactus"
+            to="/contact"
             style={({ isActive }) => (isActive ? activeStyle : navStyle)}
           >
             Contact Us
