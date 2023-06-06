@@ -57,10 +57,10 @@ const Sponsors = () => {
       <Typography
         textAlign="center"
         fontWeight="600"
-        fontSize="20px"
+        fontSize={{ xs: '16px', md: '20px' }}
         mb="20px"
         color="text.grey.400"
-        letterSpacing="8px"
+        letterSpacing={{ xs: '4px', md: '8px' }}
       >
         PROUDLY SPONSORED BY
       </Typography>
@@ -135,7 +135,7 @@ const Mission = () => {
         <Stack direction="column">
           <Typography
             fontWeight="700"
-            fontSize="50px"
+            fontSize={{ xs: '40px', md: '50px' }}
             mb="32px"
             color="primary.main"
           >

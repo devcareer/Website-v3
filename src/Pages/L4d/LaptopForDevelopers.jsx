@@ -55,21 +55,21 @@ export default LaptopForDevelopers;
 export const AboutProgram = () => {
   return (
     <Box component="section" pt="40px" mx="auto" width="85%">
-      <Stack gap="16px">
+      <Stack gap="16px" lineHeight="1.5">
         <Typography
           component="h2"
           fontWeight="700"
-          fontSize="20px"
+          fontSize={{ xs: '16px', md: '20px' }}
           color="text.grey.200"
+          textAlign={{ xs: 'center', md: 'start' }}
         >
           ABOUT THIS PROGRAM
         </Typography>
         <Typography
           component="h2"
           fontWeight="400"
-          fontSize="20px"
+          fontSize={{ xs: '16px', md: '20px' }}
           color="text.grey.700"
-          lineHeight="43px"
         >
           The Laptop 4 Developers Program is a program by DevCareer that
           provides
@@ -77,7 +77,7 @@ export const AboutProgram = () => {
             component="span"
             color="text.grey.800"
             fontWeight="600"
-            fontSize="20px"
+            fontSize={{ xs: '16px', md: '20px' }}
             mx="4px"
           >
             Laptops, Learning resources & Mentorship
@@ -88,18 +88,27 @@ export const AboutProgram = () => {
           to kick off their careers.
         </Typography>
       </Stack>
-      <Stack gap="16px" mt="40px" mb="60px">
+      <Stack
+        gap="16px"
+        mt="40px"
+        mb="60px"
+        alignItems={{ xs: 'center', md: 'start' }}
+      >
         <Typography
           component="h2"
           fontWeight="700"
-          fontSize="20px"
+          fontSize={{ xs: '16px', md: '20px' }}
           color="text.grey.200"
         >
           PROGRAM DURATION
         </Typography>
         <Stack direction="row" alignItems="center" gap="16px">
           <img src={timer} alt="timer"></img>
-          <Typography component="h2" fontSize="24px" color="text.grey.700">
+          <Typography
+            component="h2"
+            fontSize={{ xs: '16px', md: '24px' }}
+            color="text.grey.700"
+          >
             3 Months
           </Typography>
         </Stack>
@@ -134,7 +143,7 @@ const Skills = () => {
       <Typography
         component="h2"
         fontWeight="700"
-        fontSize="20px"
+        fontSize={{ xs: '16px', md: '20px' }}
         color="text.grey.200"
         textAlign="center"
         mb="20px"
@@ -147,12 +156,12 @@ const Skills = () => {
         gap={{ xs: '20px', md: '0px' }}
       >
         {skills.map((skill, i) => (
-          <Stack alignItems="center" key={i}>
+          <Stack alignItems="center" key={i} gap="10px">
             <img src={skill.logo} alt={skill.text}></img>
             <Typography
               fontWeight="500"
               color="text.grey.700"
-              fontSize="24px"
+              fontSize={{ xs: '18px', md: '30px' }}
               width="50%"
               textAlign="center"
             >

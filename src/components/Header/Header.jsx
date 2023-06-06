@@ -14,8 +14,6 @@ const Header = () => {
       mx="auto"
       sx={{
         animation: 'herosection 2s forwards',
-        // opacity: 0,
-        // transform: 'translateY(100%)',
       }}
     >
       <Box pt={{ xs: '0px', lg: '36px' }}>
@@ -29,7 +27,7 @@ const Header = () => {
         </Typography>
         <Typography
           color="text.grey.500"
-          fontSize="20px"
+          fontSize={{ xs: '18px', md: '20px' }}
           fontWeight="400"
           mt="32px"
           mb="60px"
@@ -47,7 +45,7 @@ const Header = () => {
             fontSize="20px"
             variant="outlined"
             sx={{
-              py: '20px',
+              py: { xs: '15px', md: '20px' },
               flexBasis: '40%',
               borderRadius: '8px',
               color: { xs: '#FEFEFE', sm: 'primary.main' },
@@ -64,7 +62,7 @@ const Header = () => {
             fontSize="20px"
             // variant="outlined"
             sx={{
-              py: '20px',
+              py: { xs: '15px', md: '20px' },
               flexBasis: '40%',
               color: '#037B62',
               borderRadius: '8px',
