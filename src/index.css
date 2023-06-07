@@ -6,7 +6,14 @@
 .container {
   width: 85%;
   margin: 0 auto;
+  max-width: 1200px;
 }
+
+/* @media(min-width: 1300px) {
+  .container {
+    width: 1200px;
+  }
+} */
 img {
   max-width: 100%;
   height: auto;
