@@ -98,6 +98,7 @@ const Process = (props) => {
                     color="#181818"
                     mt="30px"
                     mb="16px"
+                    fontFamily="Euclid"
                   >
                     {stage.title}
                   </Typography>
