@@ -104,6 +104,7 @@ const DpdsForm = () => {
   const [region, setRegion] = useState('');
   const [lgas, setLgas] = useState([]);
   const [lgaValue, setLgaValue] = useState('');
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const formRef = useRef();
   const [, /* formData */ setFormData] = useState({
     'entry.855600301': '',
@@ -141,6 +142,7 @@ const DpdsForm = () => {
   const finalData = new FormData(formRef.current);
   const submitHandler = () => {
     console.log('Submission triggered');
+    setIsSubmitting(true);
     fetch(
       'https://docs.google.com/forms/u/0/d/e/1FAIpQLScwSwZ0Gu1Xkj115pjePML7ufrG5LnxgdYmBuWkAPnOGdP8BQ/formResponse',
       {
@@ -152,8 +154,9 @@ const DpdsForm = () => {
         body: finalData,
       }
     ).then((res) => {
-      if (res.ok) console.log('Data succesfully submitted');
-      else console.log('Data wasnt submitted');
+      if (!res.ok) {
+        setIsSubmitting(false);
+      }
     });
   };
   return (
@@ -313,6 +316,7 @@ const DpdsForm = () => {
         fontSize="20px"
         variant="outlined"
         sx={{
+          opacity: `${isSubmitting ? '0.3' : '1'}`,
           py: '20px',
           borderRadius: '8px',
           color: '#FEFEFE',
