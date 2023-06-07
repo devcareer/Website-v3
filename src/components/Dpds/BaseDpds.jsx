@@ -2,7 +2,10 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import { bmagic, cpu, dpd, product, timer } from '../../assets/Images';
 import TitleBanner from '../Banner/TitleBanner';
 import DpdsFooter from './DpdsFooter';
+import { useNavigate } from 'react-router-dom';
 const BaseDpds = () => {
+  const navigate = useNavigate();
+
   return (
     <Box>
       <TitleBanner
@@ -11,11 +14,17 @@ const BaseDpds = () => {
 (In Partnership with AltSchool Africa)"
       />
       <Box position="relative">
-        <Box sx={{ width: { xs: '90%', lg: '85%' }, maxWidth:{xl:"1200px"}, mx: 'auto' }}>
+        <Box
+          sx={{
+            width: { xs: '90%', lg: '85%' },
+            maxWidth: { xl: '1200px' },
+            mx: 'auto',
+          }}
+        >
           <Typography
             variant="body1"
             color="initial"
-            textAlign={{xs:"center",lg:"left"}}
+            textAlign={{ xs: 'center', lg: 'left' }}
             mt={2}
             sx={{
               fontSize: { xs: '16px', lg: '18px' },
@@ -160,11 +169,18 @@ const BaseDpds = () => {
           <img src={dpd} alt="pattern" width={450} />
         </Box>
       </Box>
-      <Box sx={{ width: { xs: '90%', lg: '85%' },maxWidth:{xl:"1200px"}, mx: 'auto', mt: '56px' }}>
+      <Box
+        sx={{
+          width: { xs: '90%', lg: '85%' },
+          maxWidth: { xl: '1200px' },
+          mx: 'auto',
+          mt: '56px',
+        }}
+      >
         <Typography
           variant="body1"
           color="initial"
-          textAlign={{xs:"center",lg:"left"}}
+          textAlign={{ xs: 'center', lg: 'left' }}
           sx={{
             color: '#C2C2C2',
             fontSize: { xs: '16px', lg: '20px' },
@@ -174,7 +190,12 @@ const BaseDpds = () => {
         >
           PROGRAM DURATION
         </Typography>
-        <Stack direction="row" alignItems="center" justifyContent={{xs:"center",lg:"flex-start"}} gap={2}>
+        <Stack
+          direction="row"
+          alignItems="center"
+          justifyContent={{ xs: 'center', lg: 'flex-start' }}
+          gap={2}
+        >
           <Box mt={1}>
             <img src={timer} alt="time" />
           </Box>
@@ -275,6 +296,7 @@ const BaseDpds = () => {
           </Stack>
           <Stack alignItems="center" marginY="4rem">
             <Button
+              onClick={() => navigate('/programs/dpds/registration')}
               variant="contained"
               disableElevation
               sx={{
@@ -282,7 +304,7 @@ const BaseDpds = () => {
                 maxWidth: '600px',
                 color: 'white',
                 width: '100%',
-                paddingBlock:{xs:"15px",lg:"20px"} ,
+                paddingBlock: { xs: '15px', lg: '20px' },
                 fontSize: { xs: '16px', lg: '18px' },
               }}
             >
