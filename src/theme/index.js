@@ -2,6 +2,9 @@ import { createTheme } from '@mui/material';
 import GilroyBold from '../fonts/Gilroy/Gilroy-Bold.ttf';
 import GilroyRegular from '../fonts/Gilroy/Gilroy-Regular.ttf';
 import GilroySemiBold from '../fonts/Gilroy/Gilroy-SemiBold.ttf';
+import EuclidBold from '../fonts/Euclid/Euclid-Circular-A-Bold.ttf';
+import EuclidRegular from '../fonts/Euclid/Euclid-Circular-A-Regular.ttf';
+import EuclidSemiBold from '../fonts/Euclid/Euclid-Circular-A-SemiBold.ttf';
 
 export const theme = createTheme({
   palette: {
@@ -62,6 +65,27 @@ export const theme = createTheme({
           font-display: auto;
           font-weight: 700;
           src: url(${GilroyBold}) format('truetype');
+         }
+         @font-face {
+          font-family: 'Euclid';
+          font-style: normal;
+          font-display: auto;
+          font-weight: 700;
+          src: url(${EuclidBold}) format('truetype');
+         }
+         @font-face {
+          font-family: 'Euclid';
+          font-style: normal;
+          font-display: auto;
+          font-weight: 400;
+          src: url(${EuclidRegular}) format('truetype');
+         }
+         @font-face {
+          font-family: 'Euclid';
+          font-style: normal;
+          font-display: auto;
+          font-weight: 600;
+          src: url(${EuclidSemiBold}) format('truetype');
          }
          body {
           font-family: 'Gilroy', Arial, sans-serif;

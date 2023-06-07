@@ -72,7 +72,6 @@ const AboutUs = () => {
                         mt: "83px",
                         borderRadius: "8px",
                         fontSize: "16px",
-
                         "&:hover": {
                             bgcolor: "#FEFEFE",      
                             color: "#037B62",
