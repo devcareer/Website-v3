@@ -12,10 +12,23 @@ import {
   Radio,
   Button,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { DpdInput, DpdRadio } from '../../components';
+import { STATES } from '../../talents';
+const GENDER_OPTIONS = ['Female', 'Male', 'Prefer not to say'];
+const SKILL_LEVEL = ['Beginner', 'Intermediate', 'Advanced'];
+const PROGRAM = [
+  'Software Development',
+  'Product Management',
+  'Product Design',
+];
 
 const DpdsRegistration = () => {
+  const pathname = useLocation();
+  useEffect(() => {
+    window.scrollTo({ top: 0 });
+  }, [pathname]);
   return (
     <Box component="section" className="container" py="32px">
       <Typography
@@ -88,32 +101,97 @@ const DpdsRegistration = () => {
 export default DpdsRegistration;
 
 const DpdsForm = () => {
-  const GENDER_OPTIONS = ['Female', 'Male', 'Prefer not to say'];
-  const SKILL_LEVEL = ['Beginner', 'Intermediate', 'Advanced'];
-  const PROGRAM = [
-    'Software Development',
-    'Product Management',
-    'Product Design',
-  ];
-  const [value, setValue] = useState('');
-  console.log(value);
+  const [region, setRegion] = useState('');
+  const [lgas, setLgas] = useState([]);
+  const [lgaValue, setLgaValue] = useState('');
+  const formRef = useRef();
+  const [, /* formData */ setFormData] = useState({
+    'entry.855600301': '',
+    'entry.302085708': '',
+    'entry.2026273917': '',
+    'entry.462203312': '',
+    'entry.131866439': '',
+    'entry.1385017411': '',
+    'entry.6471839': '',
+    'entry.1595139557': '',
+    'entry.693379647': '',
+    'entry.837946097': '',
+    'entry.2130690014': '',
+    'entry.1409330216': '',
+    'entry.1771650248': '',
+  });
+
+  const updateForm = (name, value) => {
+    setFormData((prev) => {
+      return { ...prev, [name]: value };
+    });
+  };
+
+  const handleRegionChange = (e) => {
+    setRegion(e.target.value);
+    const selectedState = STATES.find((state) => state.name === e.target.value);
+    setLgas(selectedState.lgas);
+    updateForm(e.target.name, e.target.value);
+  };
+
+  const lgaChangeHandler = (e) => {
+    setLgaValue(e.target.value);
+    updateForm(e.target.name, e.target.value);
+  };
+  const finalData = new FormData(formRef.current);
+  const submitHandler = () => {
+    console.log('Submission triggered');
+    fetch(
+      'https://docs.google.com/forms/u/0/d/e/1FAIpQLScwSwZ0Gu1Xkj115pjePML7ufrG5LnxgdYmBuWkAPnOGdP8BQ/formResponse',
+      {
+        method: 'POST',
+        mode: 'no-cors',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: finalData,
+      }
+    ).then((res) => {
+      if (res.ok) console.log('Data succesfully submitted');
+      else console.log('Data wasnt submitted');
+    });
+  };
   return (
-    <Box component="form" mt="20px">
+    <Box component="form" mt="20px" onSubmit={submitHandler} ref={formRef}>
       <Stack gap="20px">
-        <DpdInput label="Email Address" required="true" />
-        <DpdInput label="First Name" required="true" />
-        <DpdInput label="Surname" required="true" />
+        <DpdInput
+          label="Email Address"
+          required="true"
+          name="entry.855600301"
+          updateForm={updateForm}
+        />
+        <DpdInput
+          label="First Name"
+          required="true"
+          name="entry.2026273917"
+          updateForm={updateForm}
+        />
+        <DpdInput
+          label="Surname"
+          required="true"
+          name="entry.302085708"
+          updateForm={updateForm}
+        />
         <DpdRadio
           label="GENDER"
           options={GENDER_OPTIONS}
           required="true"
           titleColor="#888"
+          name="entry.462203312"
+          updateForm={updateForm}
         />
         <DpdRadio
           label="SKILL LEVEL"
           options={SKILL_LEVEL}
           required="true"
           titleColor="#888"
+          name="entry.131866439"
+          updateForm={updateForm}
         />
         <Stack>
           <Typography sx={{ fontWeight: '700', color: '#888' }} mb="8px">
@@ -130,31 +208,35 @@ const DpdsForm = () => {
                 State of Residence
               </InputLabel>
               <Select
-                onChange={(e) => setValue(e.target.value)}
-                value={value}
-                name="state"
+                onChange={handleRegionChange}
+                value={region}
+                name="entry.1385017411"
                 label="State of Residence"
               >
-                <MenuItem value="oyo">Oyo State</MenuItem>
-                <MenuItem value="osun">Osun State</MenuItem>
-                <MenuItem value="lagos">Lagos State</MenuItem>
+                {STATES.map((state, i) => (
+                  <MenuItem key={i} value={state.name}>
+                    {state.name}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
             <FormControl>
               <InputLabel
                 sx={{ fontWeight: '700', color: 'text.grey.800', mb: '8px' }}
               >
-                Local Government Area
+                Local Government Areas
               </InputLabel>
               <Select
-                onChange={(e) => setValue(e.target.value)}
-                value={value}
-                name="state"
-                label="State of Residence"
+                onChange={lgaChangeHandler}
+                value={lgaValue}
+                name="entry.6471839"
+                label="Local Government Areas"
               >
-                <MenuItem value="oyo">Oyo State</MenuItem>
-                <MenuItem value="osun">Osun State</MenuItem>
-                <MenuItem value="lagos">Lagos State</MenuItem>
+                {lgas.map((lga, i) => (
+                  <MenuItem value={lga} key={i}>
+                    {lga}
+                  </MenuItem>
+                ))}
               </Select>
             </FormControl>
           </Stack>
@@ -178,7 +260,10 @@ const DpdsForm = () => {
             </Typography>
             )
           </Typography>
-          <RadioGroup name="member">
+          <RadioGroup
+            name="entry.1595139557"
+            onChange={(e) => updateForm(e.target.name, e.target.value)}
+          >
             {['Yes', 'No'].map((opt) => (
               <FormControlLabel
                 sx={{ color: '#363636', fontWeight: 500 }}
@@ -195,20 +280,35 @@ const DpdsForm = () => {
           titleColor="#181818"
           required="true"
           options={PROGRAM}
+          name="entry.693379647"
+          updateForm={updateForm}
         />
         <DpdInput
           label="What makes you an ideal candidate for this program? "
           required="true"
           multiline="true"
+          name="entry.837946097"
+          updateForm={updateForm}
         />
-        <DpdInput label="Link to Github profile" />
-        <DpdInput label="Link to Personal Website or Portfolio" />
+        <DpdInput
+          label="Link to Github profile"
+          name="entry.2130690014"
+          updateForm={updateForm}
+        />
+        <DpdInput
+          label="Link to Personal Website or Portfolio"
+          name="entry.1409330216"
+          updateForm={updateForm}
+        />
         <DpdInput
           label="Do you have any final thoughts or feedback on this application you'd like to share?"
           multiline="true"
+          name="entry.1771650248"
+          updateForm={updateForm}
         />
       </Stack>
       <Button
+        onClick={submitHandler}
         fontWeight="500"
         fontSize="20px"
         variant="outlined"
@@ -219,6 +319,9 @@ const DpdsForm = () => {
           bgcolor: 'primary.main',
           mt: '72px',
           width: { xs: '100%', md: '50%' },
+          '&:hover': {
+            bgcolor: 'primary.main',
+          },
         }}
       >
         Enroll into Program
@@ -226,4 +329,3 @@ const DpdsForm = () => {
     </Box>
   );
 };
-// (if no, signup here bit.ly/devcareerafrica)"

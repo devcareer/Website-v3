@@ -7,7 +7,7 @@ const Header = () => {
     <Box
       display="grid"
       gridTemplateColumns={{ xs: '1fr', lg: '1fr 1fr' }}
-      pt="24px"
+      pt={{ xs: '0px', md: '24px' }}
       pb="128px"
       gap="40px"
       width="85%"
@@ -22,6 +22,7 @@ const Header = () => {
           fontSize={{ xs: '50px', sm: '72px' }}
           fontWeight="700"
           lineHeight={{ xs: '70px', sm: '80px' }}
+          fontFamily="Euclid"
         >
           Fast-Track Your Tech Career
         </Typography>
@@ -31,6 +32,7 @@ const Header = () => {
           fontWeight="400"
           mt="32px"
           mb="60px"
+          fontFamily="Euclid"
         >
           Our mission is to support individuals seeking to enter the tech field
           by helping them overcome the challenge of selecting a programming

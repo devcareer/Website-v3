@@ -138,6 +138,7 @@ const Mission = () => {
             fontSize={{ xs: '40px', md: '50px' }}
             mb="32px"
             color="primary.main"
+            fontFamily="Euclid"
           >
             Our Mission
           </Typography>
@@ -147,6 +148,7 @@ const Mission = () => {
                 component="li"
                 key={index}
                 fontSize={{ xs: '16px', sm: '24px' }}
+                fontFamily="Euclid"
               >
                 {mission}
               </Typography>

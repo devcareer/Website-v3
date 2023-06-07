@@ -2,7 +2,16 @@ import { FormLabel, Stack, TextField, Typography } from '@mui/material';
 import React from 'react';
 
 const DpdInput = (props) => {
-  const { label, multiline = false, required = false } = props;
+  const {
+    name,
+    label,
+    multiline = false,
+    required = false,
+    updateForm,
+  } = props;
+  const changeHandler = (e) => {
+    updateForm(e.target.name, e.target.value);
+  };
   return (
     <Stack gap="10px">
       <FormLabel sx={{ fontWeight: '700', color: 'text.grey.800' }}>
@@ -13,7 +22,13 @@ const DpdInput = (props) => {
           </Typography>
         )}
       </FormLabel>
-      <TextField multiline={multiline} rows={multiline ? 4 : 0} />
+      <TextField
+        required={true}
+        multiline={multiline ? true : false}
+        rows={multiline ? 4 : 0}
+        name={name}
+        onChange={changeHandler}
+      />
     </Stack>
   );
 };
