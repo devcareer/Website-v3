@@ -13,8 +13,8 @@ import {
   Button,
 } from '@mui/material';
 import React, { useState, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-import { DpdInput, DpdRadio } from '../../components';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { DpdInput, DpdRadio, SuccessModal } from '../../components';
 import { STATES } from '../../talents';
 const GENDER_OPTIONS = ['Female', 'Male', 'Prefer not to say'];
 const SKILL_LEVEL = ['Beginner', 'Intermediate', 'Advanced'];
@@ -101,11 +101,14 @@ const DpdsRegistration = () => {
 export default DpdsRegistration;
 
 const DpdsForm = () => {
+  const navigate = useNavigate();
   const [region, setRegion] = useState('');
   const [lgas, setLgas] = useState([]);
   const [lgaValue, setLgaValue] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
   const formRef = useRef();
+  const [error, setError] = useState('');
   const [, /* formData */ setFormData] = useState({
     'entry.855600301': '',
     'entry.302085708': '',
@@ -153,11 +156,22 @@ const DpdsForm = () => {
         },
         body: finalData,
       }
-    ).then((res) => {
-      if (!res.ok) {
+    )
+      .then((res) => {
+        if (res) {
+          console.log(res);
+          setIsSubmitting(false);
+          setSubmitted(true);
+          setError('');
+          setTimeout(() => {
+            navigate('/programs/dpds');
+          }, 3000);
+        }
+      })
+      .catch((err) => {
         setIsSubmitting(false);
-      }
-    });
+        setError('Network Error, please retry');
+      });
   };
   return (
     <Box component="form" mt="20px" onSubmit={submitHandler} ref={formRef}>
@@ -330,6 +344,24 @@ const DpdsForm = () => {
       >
         Enroll into Program
       </Button>
+      {error && (
+        <Typography
+          position="fixed"
+          bgcolor="#F99989"
+          bottom="20px"
+          right="10%"
+          fontWeight="700"
+          fontSize={{ xs: '14px', md: '18px' }}
+          borderRadius="5px"
+          py="15px"
+          px="15px"
+          color="#FFF"
+          sx={{ animation: 'error 1s forwards' }}
+        >
+          {error}
+        </Typography>
+      )}
+      {submitted && <SuccessModal />}
     </Box>
   );
 };
