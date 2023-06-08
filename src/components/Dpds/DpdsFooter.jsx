@@ -81,8 +81,8 @@ const DpdsFooter = () => {
         >
        
           <Box component='img' src={ukhub} sx={{width:{xs:"100px",lg:"290px"}}}></Box>
-          <SocialButton text="@ukngtechhub" icon={<TwitterIcon />} />
-          <SocialButton text="@ukngtechhub" icon={<InstagramIcon />} />
+          <SocialButton text="@ukngtechhub" icon={<TwitterIcon />} link='https://twitter.com/ukngtechhub'/>
+          <SocialButton text="@ukngtechhub" icon={<InstagramIcon />}link='https://www.instagram.com/ukngtechhub' />
         </Stack>
         <Stack
           alignItems="center"
@@ -95,8 +95,8 @@ const DpdsFooter = () => {
         >
         
            <Box component='img' src={devcareerhub} sx={{width:{xs:"100px",lg:"280px"}}}></Box>
-          <SocialButton text="@dev_careers" icon={<TwitterIcon />} />
-          <SocialButton text="DevCareer" icon={<LinkedinIcon />} />
+          <SocialButton text="@dev_careers" icon={<TwitterIcon />} link='https://twitter.com/dev_careers' />
+          <SocialButton text="DevCareer" icon={<LinkedinIcon />} link='https://www.linkedin.com/company/devcareers/' />
         </Stack>
       </Stack>
     </Box>

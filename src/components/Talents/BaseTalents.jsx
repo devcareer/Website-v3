@@ -35,10 +35,16 @@ const Track = [
   }
 ]
 const BaseTalents = () => {
-
+  const [talent,setTalent]=useState(talents)
   const [isBlue,setIsBlue]=useState(1)
-  const handleClick=(id)=>{
+  const handleClick=(id,title)=>{
          setIsBlue(id)
+         if(title==='All'){
+          setTalent(talents)
+         }else{
+          const latestTalent=talents.filter(item=>(item.title===title))
+          setTalent(latestTalent)
+         }
   }
   return (
     <Box
@@ -117,7 +123,7 @@ const BaseTalents = () => {
           {Track.map((item) => {
             return (
               <Button
-                onClick={() => handleClick(item.id)}
+                onClick={() => handleClick(item.id,item.title)}
                 variant="outlined"
                 key={item.id}
                 sx={{
@@ -141,7 +147,7 @@ const BaseTalents = () => {
       </Box>
 
       <Grid container direction="row" spacing={1.8}>
-        {talents.map((item) => {
+        {talent.map((item) => {
           return (
             <Grid item sx={4} xs={12} sm={6} lg={4} key={item.id}>
               <TalentCard data={item} />
