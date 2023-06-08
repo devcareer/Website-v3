@@ -5,7 +5,8 @@ export const talents=[
         company:"ourpass inc",
         experience:"3 years",
         availability:"full time",
-        skills:"Frontend Engineering"
+        skills:"Frontend Engineering",
+        title:"Frontend Eng."
     },
     {
         id:2,
@@ -13,7 +14,9 @@ export const talents=[
         company:"Brancodes Inc.",
         experience:"5 years",
         availability:"full time",
-        skills:"Backend Engineering"
+        skills:"Backend Engineering",
+        title:"Backend Eng."
+
     },
     {
         id:3,
@@ -21,7 +24,9 @@ export const talents=[
         company:"Flutterwave",
         experience:"2 years",
         availability:"Part time",
-        skills:"Frontend Engineering"
+        skills:"Frontend Engineering",
+        title:"Frontend Eng."
+
     },
     {
         id:4,
@@ -29,7 +34,9 @@ export const talents=[
         company:"Cowrywise",
         experience:"3 years",
         availability:"full time",
-        skills:"UI/UX"
+        skills:"UI/UX",
+        title:"Design"
+
     },
     {
         id:5,
@@ -37,7 +44,9 @@ export const talents=[
         company:"Marvel inc",
         experience:"10 years",
         availability:"intern",
-        skills:"Full Stack "
+        skills:"Full Stack ",
+        title:"Fullstack Eng."
+
     },
     {
         id:6,
@@ -45,7 +54,8 @@ export const talents=[
         company:"Paystack inc",
         experience:"3 years",
         availability:"intern",
-        skills:"Design"
+        skills:"Design",
+        Title:'Design'
     },
     {
         id:7,
@@ -53,7 +63,9 @@ export const talents=[
         company:"ourpass inc",
         experience:"3 years",
         availability:"full time",
-        skills:"Frontend Engineering"
+        skills:"Frontend Engineering",
+        title:"Frontend Eng."
+
     },
     {
         id:8,
@@ -61,7 +73,9 @@ export const talents=[
         company:"Brancodes Inc.",
         experience:"5 years",
         availability:"full time",
-        skills:"Backend Engineering"
+        skills:"Backend Engineering",
+        title:"Backend Eng."
+
     },
     {
         id:9,
@@ -69,6 +83,8 @@ export const talents=[
         company:"Flutterwave",
         experience:"2 years",
         availability:"Part time",
-        skills:"Frontend Engineering"
+        skills:"Frontend Engineering",
+        title:"Frontend Eng."
+
     },
 ]
