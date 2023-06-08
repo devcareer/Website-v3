@@ -1,17 +1,15 @@
 import React from 'react';
 import { Typography, Box, Button } from '@mui/material';
 
-const SupportCard = ({image, name, text, title, btntxt }) => {
+
+const SupportCard = ({image, name, text, btntxt }) => {
     return (
-        <Box>
-            <Box>
-                <img src={ image } alt={name} /> 
+        <Box sx={{px: "56px", py: "32px", border: "1px solid #C2C2C2", borderRadius: "8px"}} display="grid" gridTemplateRows="1fr 1fr" justifyItems="center" >
+            <Box component="img" src={ image } alt={name} alignSelf="center"  /> 
+            <Box display="flex" flexDirection="column" alignItems="center" alignSelf="end" mt="15px">
+                <Typography fontSize="20px"  sx={{ color: (theme)=>theme.palette.text.grey[700]}}>{text}</Typography>
+                <Button variant="outlined"  sx={{bgcolor: "#FEFEFE", color:(theme)=>theme.palette.text.grey[700], borderColor: "#C2C2C2", py: "24px", borderRadius: "8px", width: "100%", mt:"32px", textTransform: "capitalize"}}>{btntxt}</Button>
             </Box>
-            <Typography component="h1" variant="h4">
-                {title}
-            </Typography>
-            <Typography fontSize="20px" sx={{ color: (theme)=>theme.palette.text.grey[700]}}>{text}</Typography>
-            <Button sx={{bgcolor: "#FEFEFE", width: "100%", maxWidth: "440px" }}> {btntxt}</Button>
         </Box>
     )
 }
