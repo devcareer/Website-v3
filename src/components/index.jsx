@@ -17,6 +17,9 @@ export { default as BaseTalent } from './Talents/BaseTalents';
 export { default as BriefCase } from './Talents/BriefCase';
 export { default as TalentCard } from './Talents/TalentCard';
 export { default as Testimonials } from './Testimonials/Testimonials';
-export {default as Form} from './ContactUs/ContactForm'
-export {default as Input} from './Input/Input'
-export {default as TextArea} from './Input/TextArea'
+export { default as Form } from './ContactUs/ContactForm';
+export { default as Input } from './Input/Input';
+export { default as TextArea } from './Input/TextArea';
+export { default as DpdInput } from './Input/DpdInput';
+export { default as DpdRadio } from './Input/DpdRadio';
+export { default as SuccessModal } from './Modal/SuccessModal';

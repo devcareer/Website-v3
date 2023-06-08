@@ -7,15 +7,13 @@ const Header = () => {
     <Box
       display="grid"
       gridTemplateColumns={{ xs: '1fr', lg: '1fr 1fr' }}
-      pt="24px"
+      pt={{ xs: '0px', md: '24px' }}
       pb="128px"
       gap="40px"
       width="85%"
       mx="auto"
       sx={{
         animation: 'herosection 2s forwards',
-        // opacity: 0,
-        // transform: 'translateY(100%)',
       }}
     >
       <Box pt={{ xs: '0px', lg: '36px' }}>
@@ -24,15 +22,17 @@ const Header = () => {
           fontSize={{ xs: '50px', sm: '72px' }}
           fontWeight="700"
           lineHeight={{ xs: '70px', sm: '80px' }}
+          fontFamily="Euclid"
         >
           Fast-Track Your Tech Career
         </Typography>
         <Typography
           color="text.grey.500"
-          fontSize="20px"
+          fontSize={{ xs: '18px', md: '20px' }}
           fontWeight="400"
           mt="32px"
           mb="60px"
+          fontFamily="Euclid"
         >
           Our mission is to support individuals seeking to enter the tech field
           by helping them overcome the challenge of selecting a programming
@@ -47,7 +47,7 @@ const Header = () => {
             fontSize="20px"
             variant="outlined"
             sx={{
-              py: '20px',
+              py: { xs: '15px', md: '20px' },
               flexBasis: '40%',
               borderRadius: '8px',
               color: { xs: '#FEFEFE', sm: 'primary.main' },
@@ -64,7 +64,7 @@ const Header = () => {
             fontSize="20px"
             // variant="outlined"
             sx={{
-              py: '20px',
+              py: { xs: '15px', md: '20px' },
               flexBasis: '40%',
               color: '#037B62',
               borderRadius: '8px',

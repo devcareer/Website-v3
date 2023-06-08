@@ -7,7 +7,8 @@ import {
   Root,
   Support,
   Talents,
-  ContactUs
+  ContactUs,
+  DpdsRegistration,
 } from './Pages';
 
 export const router = createBrowserRouter([
@@ -47,12 +48,13 @@ export const router = createBrowserRouter([
       },
       {
         path: 'about',
-        element: <AboutUs />
+        element: <AboutUs />,
       },
       {
         path: 'contact',
-        element: <ContactUs />
+        element: <ContactUs />,
       },
     ],
-  }
+  },
+  { path: 'programs/dpds/registration', element: <DpdsRegistration /> },
 ]);
