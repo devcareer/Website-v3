@@ -9,20 +9,40 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Logo,
-  facebook,
-  github,
-  instagram,
-  linkedin,
-  twitter,
-} from '../../assets/Images';
+import { Logo, linkedin, twitter } from '../../assets/Images';
 import FooterLink from './FooterLink';
-const Social = [twitter, linkedin, instagram, facebook, github];
+const Social = [
+  {
+    name: twitter,
+    link: 'https://twitter.com/dev_careers',
+  },
+  {
+    name: linkedin,
+    link: 'https://www.linkedin.com/company/devcareers/',
+  },
+  // {
+  //   name:instagram,
+  //   link:''
+  // },
+  // {
+  //   name:facebook,
+  //   link:''
+  // },
+  // {
+  //   name:github,
+  //   link:''
+  // },
+];
 const Footer = () => {
   return (
     <Box py={1} sx={{ backgroundColor: '#F4F4F4' }}>
-      <Box sx={{width:{xs:"90%",lg:"85%"}, maxWidth:{xl:"1200px"}, mx:"auto"}} >
+      <Box
+        sx={{
+          width: { xs: '90%', lg: '85%' },
+          maxWidth: { xl: '1200px' },
+          mx: 'auto',
+        }}
+      >
         <Stack
           direction={{ lg: 'row' }}
           alignItems="center"
@@ -50,8 +70,8 @@ const Footer = () => {
                 textAlign: { xs: 'center', lg: 'left' },
               }}
             >
-              Subscribe to our newsletter to get first-hand information about
-              our programs
+              Join our vibrant Slack channel today and be part of an incredible
+              community of passionate learners
             </Typography>
           </Stack>
           <Paper
@@ -64,8 +84,8 @@ const Footer = () => {
               display: 'flex',
               justifyContent: 'space-around',
               border: '1px solid #C2C2C2',
-              width:"500px",
-              maxWidth:"100%"
+              width: '500px',
+              maxWidth: '100%',
             }}
           >
             <InputBase
@@ -84,7 +104,7 @@ const Footer = () => {
                 boxShadow: '0',
               }}
             >
-              Subscribe
+              Join Community
             </Button>
           </Paper>
         </Stack>
@@ -175,8 +195,13 @@ const Footer = () => {
           >
             {Social.map((item, index) => {
               return (
-                <Box key={index} sx={{ width: '24px', cursor: 'pointer' }}>
-                  <img src={item} alt="" />
+                <Box
+                  component="a"
+                  href={item.link}
+                  key={index}
+                  sx={{ width: '24px', cursor: 'pointer' }}
+                >
+                  <img src={item.name} alt={item} />
                 </Box>
               );
             })}
