@@ -31,6 +31,7 @@ const AboutUs = () => {
             component="h1"
             variant="body1"
             mb={1}
+            fontSize={{ xs: '20px', md: '18px' }}
             sx={{ color: (theme) => theme.palette.text.grey[600] }}
           >
             Meet The Team
@@ -40,11 +41,13 @@ const AboutUs = () => {
             display="flex"
             flexDirection="column"
             alignItems="center"
+            textAlign={{ xs: 'center', md: 'left' }}
           >
             <Typography
               component="span"
               variant="h3"
               sx={{ fontWeight: 700 }}
+              fontSize={{ xs: '36px', md: '48px' }}
               color="#181818"
             >
               Empowering African Tech Talents:
@@ -54,6 +57,7 @@ const AboutUs = () => {
               variant="h3"
               sx={{ fontWeight: 700 }}
               color="#181818"
+              fontSize={{ xs: '38px', md: '48px' }}
             >
               Our Passionate Professionals
             </Typography>
@@ -87,8 +91,9 @@ const AboutUs = () => {
               component="h3"
               variant="h2"
               fontWeight={700}
-              fontSize={{ xs: '56px', sm: '60px', lg: '64px' }}
+              fontSize={{ xs: '38px', md: '48px', lg: '56px' }}
               color="#181818"
+              textAlign={{ xs: 'center', md: 'left' }}
             >
               Our Approach
             </Typography>
