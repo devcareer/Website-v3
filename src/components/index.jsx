@@ -23,3 +23,4 @@ export { default as TextArea } from './Input/TextArea';
 export { default as DpdInput } from './Input/DpdInput';
 export { default as DpdRadio } from './Input/DpdRadio';
 export { default as SuccessModal } from './Modal/SuccessModal';
+export {default as GovernmentCard} from './NavBar/GovernmentCard'

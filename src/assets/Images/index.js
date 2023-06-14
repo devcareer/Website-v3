@@ -68,3 +68,4 @@ export { default as resources } from './resources.png';
 export { default as donate } from './donate.png';
 export { default as question } from './question.png';
 export { default as success } from './success.png';
+export {default as ukflag} from './ukflag.png'

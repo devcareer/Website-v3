@@ -11,7 +11,9 @@ const navStyle = {
 };
 const MobileNav = ({ menu }) => {
   const [program, setProgram] = useState(false);
+  const [government,setGovernment] =useState(false)
   const [community, setCommunity] = useState(false);
+
 
   return (
     <Stack
@@ -64,7 +66,36 @@ const MobileNav = ({ menu }) => {
             <Link style={navStyle} to="programs/l4d">
               Laptop4developers
             </Link>
-            <Link style={navStyle} to="/programs/dpds">
+          </Stack>
+        )}
+      </Box>
+      <Box borderBottom="1px solid #E8E8E8" pb="10px">
+        <Stack
+          onClick={() => setGovernment(!government)}
+          direction="row"
+          justifyContent="space-between"
+          sx={{ cursor: 'pointer' }}
+        >
+          <Typography variant="body1" color="initial" style={navStyle}>
+            {' '}
+            Government
+          </Typography>
+          {program ? (
+            <KeyboardArrowDownIcon fontSize="large" />
+          ) : (
+            <ArrowForwardIosIcon />
+          )}
+        </Stack>
+        {government && (
+          <Stack
+            ml={3}
+            gap={1}
+            onClick={() => {
+              menu(false);
+            }}
+          >
+          
+            <Link style={navStyle} to="/government/dpds">
               Dpds
             </Link>
           </Stack>
