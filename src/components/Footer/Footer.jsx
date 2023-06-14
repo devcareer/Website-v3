@@ -9,20 +9,40 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import {
-  Logo,
-  facebook,
-  github,
-  instagram,
-  linkedin,
-  twitter,
-} from '../../assets/Images';
+import { Logo, github, linkedin, twitter } from '../../assets/Images';
 import FooterLink from './FooterLink';
-const Social = [twitter, linkedin, instagram, facebook, github];
+const Social = [
+  {
+    name: twitter,
+    link: 'https://twitter.com/dev_careers',
+  },
+  {
+    name: linkedin,
+    link: 'https://www.linkedin.com/company/devcareers/',
+  },
+  // {
+  //   name:instagram,
+  //   link:''
+  // },
+  // {
+  //   name:facebook,
+  //   link:''
+  // },
+  {
+    name: github,
+    link: 'https://github.com/devcareer',
+  },
+];
 const Footer = () => {
   return (
     <Box py={1} sx={{ backgroundColor: '#F4F4F4' }}>
-      <Box sx={{width:{xs:"90%",lg:"85%"}, maxWidth:{xl:"1200px"}, mx:"auto"}} >
+      <Box
+        sx={{
+          width: { xs: '90%', lg: '85%' },
+          maxWidth: { xl: '1200px' },
+          mx: 'auto',
+        }}
+      >
         <Stack
           direction={{ lg: 'row' }}
           alignItems="center"
@@ -50,8 +70,8 @@ const Footer = () => {
                 textAlign: { xs: 'center', lg: 'left' },
               }}
             >
-              Subscribe to our newsletter to get first-hand information about
-              our programs
+              Join our vibrant Slack channel today and be part of an incredible
+              community of passionate learners
             </Typography>
           </Stack>
           <Paper
@@ -64,8 +84,8 @@ const Footer = () => {
               display: 'flex',
               justifyContent: 'space-around',
               border: '1px solid #C2C2C2',
-              width:"500px",
-              maxWidth:"100%"
+              width: '500px',
+              maxWidth: '100%',
             }}
           >
             <InputBase
@@ -73,7 +93,7 @@ const Footer = () => {
               placeholder="Email Address"
               inputProps={{ 'aria-label': 'search google maps' }}
             />
-            <Button
+            <a target='_blank' rel="noreferrer"  href="https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform"><Button
               variant="contained"
               sx={{
                 paddingInline: { xs: '16px', lg: '32px' },
@@ -84,8 +104,8 @@ const Footer = () => {
                 boxShadow: '0',
               }}
             >
-              Subscribe
-            </Button>
+              Join Community
+            </Button></a>
           </Paper>
         </Stack>
         <Stack
@@ -98,9 +118,13 @@ const Footer = () => {
               <FooterLink
                 title="PROGRAMS"
                 link={[
-                  { link: '', name: 'Laptops4Developers' },
-                  { link: 'programs/dpds', name: 'DPDS' },
-                  { name: 'Hackathons' },
+                  {
+                    link: '/programs/l4d',
+                    name: 'Laptops4Developers',
+                    active: true,
+                  },
+                  { link: 'programs/dpds', name: 'DPDS', active: true },
+                  { name: 'Hackathons(Coming soon)' },
                 ]}
               />
             </Grid>
@@ -108,9 +132,13 @@ const Footer = () => {
               <FooterLink
                 title="COMMUNITY"
                 link={[
-                  { link: 'community/talents', name: 'Talents' },
+                  { link: 'community/talents', name: 'Talents', active: true },
                   { link: '', name: 'Forums' },
-                  { link: '', name: 'Slack  Channel' },
+                  {
+                    link: 'https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform',
+                    name: 'Slack  Channel',
+                    active: true,
+                  },
                   { link: '', name: 'Meetups' },
                 ]}
               />
@@ -129,7 +157,11 @@ const Footer = () => {
               <FooterLink
                 title="RESOURCES"
                 link={[
-                  { link: '', name: 'Blog' },
+                  {
+                    link: 'https://medium.com/devcareers',
+                    name: 'Blog',
+                    active: true,
+                  },
                   { link: '', name: 'Podcast' },
                   { link: '', name: 'Webinars' },
                   { link: '', name: 'Events' },
@@ -175,8 +207,13 @@ const Footer = () => {
           >
             {Social.map((item, index) => {
               return (
-                <Box key={index} sx={{ width: '24px', cursor: 'pointer' }}>
-                  <img src={item} alt="" />
+                <Box
+                  component="a"
+                  href={item.link}
+                  key={index}
+                  sx={{ width: '24px', cursor: 'pointer' }}
+                >
+                  <img src={item.name} alt={item} />
                 </Box>
               );
             })}

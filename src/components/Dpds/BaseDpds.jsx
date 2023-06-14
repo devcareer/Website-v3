@@ -10,8 +10,7 @@ const BaseDpds = () => {
     <Box>
       <TitleBanner
         title=" DPDs"
-        text="
-(In Partnership with AltSchool Africa)"
+        flag={true}
       />
       <Box position="relative">
         <Box

@@ -1,6 +1,6 @@
 import { Box, Stack } from '@mui/material';
 import { Link } from 'react-router-dom';
-const ProgramCard = () => {
+const GovernmentCard = () => {
   const menuStyle = {
     color: '#888888',
     textDecoration: 'none',
@@ -17,7 +17,7 @@ const ProgramCard = () => {
         border: '1px solid #E8E8E8',
       }}
     >
-      <Link style={menuStyle} to="/programs/l4d">
+      <Link to="/government/dpds" style={menuStyle}>
         <Box
           sx={{
             borderRadius: '8px',
@@ -28,10 +28,10 @@ const ProgramCard = () => {
           }}
         >
           {' '}
-          Laptop4Developers{' '}
+          DPDs 
         </Box>
       </Link>
     </Stack>
   );
 };
-export default ProgramCard;
+export default GovernmentCard;

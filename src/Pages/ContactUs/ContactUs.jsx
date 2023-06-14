@@ -1,9 +1,12 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { question } from '../../assets/Images';
 import { Form } from '../../components';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 const ContactUs = () => {
   return (
     <Box position='relative' sx={{background: 'linear-gradient(170deg, #ACE8DB,#FFF)'}}>
+      <ToastContainer />
     <Box
       paddingY={5}
       pb="15rem"

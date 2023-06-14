@@ -24,12 +24,17 @@ export const router = createBrowserRouter([
         path: 'programs',
         children: [
           {
-            path: 'dpds',
-            element: <Dpds />,
-          },
-          {
             path: 'l4d',
             element: <LaptopForDevelopers />,
+          },
+        ],
+      },
+      {
+        path: 'Government',
+        children: [
+          {
+            path: 'dpds',
+            element: <Dpds />,
           },
         ],
       },

@@ -42,7 +42,7 @@ const LaptopForDevelopers = () => {
   ];
   return (
     <Box component="section">
-      <TitleBanner title="Laptop4Developers" />
+      <TitleBanner title="Laptop4Developers"  />
       <AboutProgram />
       <Process title={processTitle} process={process} />
       <Testimonials />
