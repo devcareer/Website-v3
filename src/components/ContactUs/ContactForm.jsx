@@ -88,10 +88,11 @@ const ContactForm = () => {
           value={form.purpose}
           onChange={handleChange}
         >
-          <MenuItem value="For Enquiry">For Enquiry</MenuItem>
-          <MenuItem value="For Complaints">For Complaints</MenuItem>
-          <MenuItem value="For Partnership">For Partnership</MenuItem>
-          <MenuItem value="To hire talent">To hire talent</MenuItem>
+          <MenuItem value="Hire Talents(s) for Project">Hire Talents(s) for Project</MenuItem>
+          <MenuItem value="Offer to Support">Offer to Support</MenuItem>
+          <MenuItem value="Report an Incident">Report an Incident</MenuItem>
+          <MenuItem value="Volunteer">Volunteer</MenuItem>
+          <MenuItem value="Inquiry">Inquiry</MenuItem>
         </Select>
       </Box>
       <Input
