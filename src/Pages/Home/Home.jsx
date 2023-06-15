@@ -42,7 +42,7 @@ const Home = () => {
       <Header />
       <Sponsors />
       <Mission />
-      <Process process={process} title={processTitle} />
+      <Process process={process} title={processTitle} threeColumn="true" />
       <Testimonials />
       <Press />
     </Box>
@@ -186,13 +186,6 @@ const Mission = () => {
                 </Typography>
               </Stack>
             ))}
-            <Typography
-              justifySelf="center"
-              alignSelf="center"
-              color="text.grey.500"
-            >
-              ...and counting!
-            </Typography>
           </Box>
         </Stack>
       </Stack>

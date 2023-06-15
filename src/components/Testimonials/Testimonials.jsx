@@ -50,7 +50,7 @@ const Testimonials = () => {
         ></Box>
         <Typography
           component="h2"
-          fontSize={{ xs: '20px', md: '24px' }}
+          fontSize={{ xs: '20px', md: '32px' }}
           color="text.grey.500"
         >
           Hear From our Beneficiaries

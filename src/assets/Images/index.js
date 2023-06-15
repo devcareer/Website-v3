@@ -26,7 +26,7 @@ export { default as isams } from './isams.png';
 export { default as peerigon } from './peerigon.png';
 export { default as revivn } from './revivn.png';
 export { default as eden } from './eden.png';
-export { default as gofundme } from './GoFundMe.png';
+export { default as gofundme } from './goFunding.png';
 export { default as kuda } from './Kuda.png';
 export { default as facebook } from './facebook.png';
 export { default as github } from './github.svg';
@@ -68,4 +68,4 @@ export { default as resources } from './resources.png';
 export { default as donate } from './donate.png';
 export { default as question } from './question.png';
 export { default as success } from './success.png';
-export {default as ukflag} from './ukflag.png'
+export { default as ukflag } from './ukflag.png';
