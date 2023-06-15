@@ -1,7 +1,7 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography,Button } from '@mui/material';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 const navStyle = {
@@ -159,6 +159,23 @@ const MobileNav = ({ menu }) => {
           Contact Us
         </Link>
       </Box>
+       <Link to="/support" style={{textDecoration:"none"}}  onClick={() => menu(false)}>
+       <Button
+          disableElevation
+          variant="contained"
+
+          
+          sx={{
+            color: '#FEFEFE',
+            paddingInline: '32px',
+            paddingBlock: '14px',
+            borderRadius: '8px',
+            fontWeight: '500',
+          }}
+        >
+          Support Us
+        </Button>
+        </Link>
     </Stack>
   );
 };
