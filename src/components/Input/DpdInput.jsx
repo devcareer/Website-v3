@@ -8,9 +8,15 @@ const DpdInput = (props) => {
     multiline = false,
     required = false,
     updateForm,
+    updateValidity,
+    error,
+    id,
   } = props;
   const changeHandler = (e) => {
     updateForm(e.target.name, e.target.value);
+  };
+  const blurHandler = (e) => {
+    updateValidity(e.target.id);
   };
   return (
     <Stack gap="10px">
@@ -21,13 +27,21 @@ const DpdInput = (props) => {
             *
           </Typography>
         )}
+        {!required && (
+          <Typography component="span" ml="5px">
+            (Optional)
+          </Typography>
+        )}
       </FormLabel>
       <TextField
+        error={error}
         required={true}
         multiline={multiline ? true : false}
         rows={multiline ? 4 : 0}
         name={name}
         onChange={changeHandler}
+        id={id}
+        onBlur={blurHandler}
       />
     </Stack>
   );
