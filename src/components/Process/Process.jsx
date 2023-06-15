@@ -30,7 +30,7 @@ const Process = (props) => {
         {threeColumn && (
           <Box
             display="grid"
-            gridTemplateColumns="repeat(3, 1fr)"
+            gridTemplateColumns={{ xs: '1fr', lg: 'repeat(3, 1fr)' }}
             gap="16px 24px"
           >
             {process.map((stage, index) => (
