@@ -93,6 +93,8 @@ const ContactForm = () => {
           <MenuItem value="Report an Incident">Report an Incident</MenuItem>
           <MenuItem value="Volunteer">Volunteer</MenuItem>
           <MenuItem value="Inquiry">Inquiry</MenuItem>
+          <MenuItem value="Inquiry">Become a Partner</MenuItem>
+
         </Select>
       </Box>
       <Input

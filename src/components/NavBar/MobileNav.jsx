@@ -95,8 +95,8 @@ const MobileNav = ({ menu }) => {
             }}
           >
           
-            <Link style={navStyle} to="/government/dpds">
-              Dpds
+            <Link style={navStyle} to="/government/dctp">
+              DCTP
             </Link>
           </Stack>
         )}

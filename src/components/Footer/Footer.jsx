@@ -102,6 +102,7 @@ const Footer = () => {
                 maxWidth: '200px',
                 color: 'white',
                 boxShadow: '0',
+                textDecoration:"none"
               }}
             >
               Join Community
@@ -123,7 +124,7 @@ const Footer = () => {
                     name: 'Laptops4Developers',
                     active: true,
                   },
-                  { link: 'programs/dpds', name: 'DPDS', active: true },
+                  { link: 'programs/dctp', name: 'DCTP', active: true },
                   { name: 'Hackathons(Coming soon)' },
                 ]}
               />

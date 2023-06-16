@@ -9,7 +9,7 @@ const BaseDpds = () => {
   return (
     <Box>
       <TitleBanner
-        title=" DPDs"
+        title=" DCTP"
         flag={true}
       />
       <Box position="relative">
@@ -68,7 +68,7 @@ const BaseDpds = () => {
                 fontSize: { xs: '16px', lg: '20px' },
               }}
             >
-              Design Product and Developers School
+              DevCareer tech program
             </Typography>{' '}
             . Our goal at DevCareer is to support underrepresented tech talents
             entering the industry by providing resources, scholarships in
@@ -85,7 +85,7 @@ const BaseDpds = () => {
               maxWidth: '1041px',
             }}
           >
-            The Design Product and Developers School is a{' '}
+            The DevCareer tech program is a{' '}
             <Typography
               variant="body1"
               color="initial"
@@ -156,7 +156,7 @@ const BaseDpds = () => {
               maxWidth: '1041px',
             }}
           >
-            The Design Product and Developers School welcomes young people from
+            The DevCareer tech program welcomes young people from
             all communities in Nigeria, regardless of gender or educational
             background.
           </Typography>

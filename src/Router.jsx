@@ -33,7 +33,7 @@ export const router = createBrowserRouter([
         path: 'Government',
         children: [
           {
-            path: 'dpds',
+            path: 'dctp',
             element: <Dpds />,
           },
         ],

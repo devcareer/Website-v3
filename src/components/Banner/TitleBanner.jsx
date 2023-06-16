@@ -1,5 +1,5 @@
 import { Box, Stack, Typography } from '@mui/material';
-import { dpdlogo,ukflag } from '../../assets/Images';
+import { dpdlogo,uk } from '../../assets/Images';
 const TitleBanner = ({ title, text = '' ,flag}) => {
  const bgStyle={
     backgroundColor: '#E6F9F5',
@@ -41,7 +41,7 @@ const TitleBanner = ({ title, text = '' ,flag}) => {
           {text}
         </Typography>
         </Box>
-      {flag && <Box component='img' src={ukflag} sx={{width:{xs:"100px",md:"200px",lg:"250px"}}}></Box>}
+      {flag && <Box component='img' src={uk} sx={{mixBlendMode:'darken',width:{xs:"100px",md:"200px",lg:"250px"}}}></Box>}
 
       </Box>
       {/* <Box  sx={{border:"1px solid red"}}>
