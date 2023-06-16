@@ -15,13 +15,13 @@ const Process = (props) => {
         backgroundPosition: 'right bottom',
       }}
     >
-      <Stack pt="88px" pb="200px" width="85%" mx="auto">
+      <Stack pt="88px" pb="200px" className="container">
         <Typography
           component="h2"
           fontWeight="700"
           fontSize={{ xs: '24px', md: '40px' }}
           mb="94px"
-          width={{ xs: '100%', lg: '50%' }}
+          width={{ xs: '100%', lg: '60%' }}
           textAlign="center"
           alignSelf="center"
         >

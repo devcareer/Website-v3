@@ -23,7 +23,7 @@ const DpdInput = (props) => {
       <FormLabel sx={{ fontWeight: '700', color: 'text.grey.800' }}>
         {label}
         {required && (
-          <Typography component="span" color="#CB2B11">
+          <Typography component="span" color="#CB2B11" fontSize="20px">
             *
           </Typography>
         )}

@@ -122,19 +122,19 @@ const DpdsForm = () => {
   const formRef = useRef();
   const [error, setError] = useState('');
   const [formData, setFormData] = useState({
-    'entry.855600301': '',
-    'entry.2026273917': '',
-    'entry.302085708': '',
-    'entry.462203312': '',
-    'entry.131866439': '',
-    'entry.1385017411': '',
-    'entry.6471839': '',
-    'entry.1595139557': '',
-    'entry.693379647': '',
-    'entry.837946097': '',
-    'entry.2130690014': '',
-    'entry.1409330216': '',
-    'entry.1771650248': '',
+    'entry.1914094770': '',
+    'entry.820092698': '',
+    'entry.485719841': '',
+    'entry.700177539': '',
+    'entry.1086331874': '',
+    'entry.570590781': '',
+    'entry.2071404193': '',
+    'entry.636017523': '',
+    'entry.1410941367': '',
+    'entry.1635228319': '',
+    'entry.1240878490': '',
+    'entry.325735402': '',
+    'entry.661523532': '',
   });
   const [fieldValidity, setFieldValidity] = useState({
     emailVisited: false,
@@ -192,16 +192,18 @@ const DpdsForm = () => {
     reasonVisited,
   } = fieldValidity;
 
-  const emailIsValid = formData['entry.855600301'].includes('@');
-  const firstNameIsValid = formData['entry.2026273917'] !== '';
-  const lastNameIsValid = formData['entry.302085708'] !== '';
-  const genderIsValid = formData['entry.462203312'] !== '';
-  const skillIsValid = formData['entry.131866439'] !== '';
-  const stateIsValid = formData['entry.1385017411'] !== '';
-  const lgaIsValid = formData['entry.6471839'] !== '';
-  const memberIsValid = formData['entry.1595139557'] !== '';
-  const programIsValid = formData['entry.693379647'] !== '';
-  const reasonIsValid = formData['entry.837946097'] !== '';
+  const emailIsValid =
+    formData['entry.1914094770'].includes('@') &&
+    formData['entry.1914094770'].includes('.');
+  const firstNameIsValid = formData['entry.820092698'] !== '';
+  const lastNameIsValid = formData['entry.485719841'] !== '';
+  const genderIsValid = formData['entry.700177539'] !== '';
+  const skillIsValid = formData['entry.1086331874'] !== '';
+  const stateIsValid = formData['entry.570590781'] !== '';
+  const lgaIsValid = formData['entry.2071404193'] !== '';
+  const memberIsValid = formData['entry.636017523'] !== '';
+  const programIsValid = formData['entry.1410941367'] !== '';
+  const reasonIsValid = formData['entry.1635228319'] !== '';
   const overallFormIsValid =
     emailIsValid &&
     firstNameIsValid &&
@@ -245,7 +247,7 @@ const DpdsForm = () => {
     if (overallFormIsValid) {
       setIsSubmitting(true);
       fetch(
-        'https://docs.google.com/forms/u/0/d/e/1FAIpQLScwSwZ0Gu1Xkj115pjePML7ufrG5LnxgdYmBuWkAPnOGdP8BQ/formResponse',
+        'https://docs.google.com/forms/u/0/d/e/1FAIpQLSdnAWEG75CMm878i9aZfSovudROP0-R6ghyHysb8KhKmCjcYw/formResponse',
         {
           method: 'POST',
           mode: 'no-cors',
@@ -284,7 +286,7 @@ const DpdsForm = () => {
         <DpdInput
           label="Email Address"
           required="true"
-          name="entry.855600301"
+          name="entry.1914094770"
           updateForm={updateForm}
           updateValidity={updateValidity}
           error={emailIsInvalid}
@@ -293,7 +295,7 @@ const DpdsForm = () => {
         <DpdInput
           label="First Name"
           required="true"
-          name="entry.2026273917"
+          name="entry.820092698"
           updateForm={updateForm}
           updateValidity={updateValidity}
           error={firstNameIsInvalid}
@@ -302,7 +304,7 @@ const DpdsForm = () => {
         <DpdInput
           label="Last Name"
           required="true"
-          name="entry.302085708"
+          name="entry.485719841"
           updateForm={updateForm}
           updateValidity={updateValidity}
           error={lastNameIsInvalid}
@@ -313,7 +315,7 @@ const DpdsForm = () => {
           options={GENDER_OPTIONS}
           required="true"
           titleColor="#888"
-          name="entry.462203312"
+          name="entry.700177539"
           updateForm={updateForm}
           error={genderIsInvalid}
         />
@@ -322,7 +324,7 @@ const DpdsForm = () => {
           options={SKILL_LEVEL}
           required="true"
           titleColor="#888"
-          name="entry.131866439"
+          name="entry.1086331874"
           updateForm={updateForm}
           error={skillIsInvalid}
         />
@@ -343,7 +345,7 @@ const DpdsForm = () => {
               <Select
                 onChange={handleRegionChange}
                 value={region}
-                name="entry.1385017411"
+                name="entry.570590781"
                 label="State of Residence"
                 error={stateIsInvalid}
               >
@@ -363,7 +365,7 @@ const DpdsForm = () => {
               <Select
                 onChange={lgaChangeHandler}
                 value={lgaValue}
-                name="entry.6471839"
+                name="entry.2071404193"
                 label="Local Government Areas"
                 error={lgaIsInvalid}
               >
@@ -397,7 +399,7 @@ const DpdsForm = () => {
             )
           </Typography>
           <RadioGroup
-            name="entry.1595139557"
+            name="entry.636017523"
             onChange={(e) => updateForm(e.target.name, e.target.value)}
           >
             {['Yes', 'No'].map((opt) => (
@@ -416,7 +418,7 @@ const DpdsForm = () => {
           titleColor="#181818"
           required="true"
           options={PROGRAM}
-          name="entry.693379647"
+          name="entry.1410941367"
           updateForm={updateForm}
           error={programIsInvalid}
         />
@@ -424,24 +426,24 @@ const DpdsForm = () => {
           label="What makes you an ideal candidate for this program? "
           required="true"
           multiline="true"
-          name="entry.837946097"
+          name="entry.1635228319"
           updateForm={updateForm}
           error={reasonIsInvalid}
         />
         <DpdInput
           label="Link to Github profile"
-          name="entry.2130690014"
+          name="entry.1240878490"
           updateForm={updateForm}
         />
         <DpdInput
           label="Link to Personal Website or Portfolio"
-          name="entry.1409330216"
+          name="entry.325735402"
           updateForm={updateForm}
         />
         <DpdInput
           label="Do you have any final thoughts or feedback on this application you'd like to share?"
           multiline="true"
-          name="entry.1771650248"
+          name="entry.661523532"
           updateForm={updateForm}
         />
       </Stack>
