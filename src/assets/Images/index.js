@@ -68,5 +68,5 @@ export { default as question } from './question.png';
 export { default as success } from './success.png';
 export { default as ukflag } from './ukflag.png';
 export { default as idris } from './Idris.jpg';
-export { default as john } from './john.jpg';
-export { default as ayomikun } from './ayomikun.jpg';
+export { default as john } from './John.jpg';
+export { default as ayomikun } from './Ayomikun.jpg';
