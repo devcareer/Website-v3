@@ -8,7 +8,7 @@ import {
   eden,
   isams,
   gofundme,
-  mission,
+  missionTwo,
   teacher,
   profile,
   jobPack,
@@ -42,7 +42,7 @@ const Home = () => {
       <Header />
       <Sponsors />
       <Mission />
-      <Process process={process} title={processTitle} />
+      <Process process={process} title={processTitle} threeColumn="true" />
       <Testimonials />
       <Press />
     </Box>
@@ -53,7 +53,7 @@ export default Home;
 
 const Sponsors = () => {
   return (
-    <Box width="85%" mx="auto" pb={{ xs: '80px', md: '109px' }}>
+    <Box className="container" pb={{ xs: '80px', md: '109px' }}>
       <Typography
         textAlign="center"
         fontWeight="600"
@@ -119,17 +119,19 @@ const Mission = () => {
   return (
     <Box bgcolor="#F6F6F6" py="130px" mb="30px">
       <Stack
-        width="85%"
-        mx="auto"
+        className="container"
         display="grid"
         gridTemplateColumns={{ xs: '1fr', lg: '1fr 1fr' }}
         gap={{ xs: '32px' }}
       >
         <Box
           component="img"
-          src={mission}
+          src={missionTwo}
           alt="mission"
-          width={{ xs: '350px', sm: '70%', lg: 'auto' }}
+          width={{ xs: '350px', sm: '70%', lg: '520px' }}
+          borderRadius="16px"
+          height={{ xs: '354px', lg: '527px' }}
+          sx={{ objectFit: 'cover' }}
         ></Box>
 
         <Stack direction="column">
@@ -186,13 +188,6 @@ const Mission = () => {
                 </Typography>
               </Stack>
             ))}
-            <Typography
-              justifySelf="center"
-              alignSelf="center"
-              color="text.grey.500"
-            >
-              ...and counting!
-            </Typography>
           </Box>
         </Stack>
       </Stack>

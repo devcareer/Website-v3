@@ -21,9 +21,9 @@ const FooterLink = ({ title, link }) => {
               variant="body1"
               color="initial"
               sx={{
-                color: '#888888',
+                color:`${item.active?"#888888":"#d3d3d3"}` ,
                 textDecoration: 'none',
-                cursor: 'pointer',
+                cursor:`${item.active?"pointer":"not-allowed"}`,
                 paddingTop: '8px',
               }}
             >

@@ -1,17 +1,16 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { bmagic, cpu, dpd, product, timer } from '../../assets/Images';
 import TitleBanner from '../Banner/TitleBanner';
-import DpdsFooter from './DpdsFooter';
-import { useNavigate } from 'react-router-dom';
-const BaseDpds = () => {
-  const navigate = useNavigate();
+import DpdsFooter from './DctpFooter';
+// import { useNavigate } from 'react-router-dom';
+const BaseDctp = () => {
+  // const navigate = useNavigate();
 
   return (
     <Box>
       <TitleBanner
-        title=" DPDs"
-        text="
-(In Partnership with AltSchool Africa)"
+        title=" DCTP"
+        flag={true}
       />
       <Box position="relative">
         <Box
@@ -69,7 +68,7 @@ const BaseDpds = () => {
                 fontSize: { xs: '16px', lg: '20px' },
               }}
             >
-              Design Product and Developers School
+              DevCareer tech program
             </Typography>{' '}
             . Our goal at DevCareer is to support underrepresented tech talents
             entering the industry by providing resources, scholarships in
@@ -86,7 +85,7 @@ const BaseDpds = () => {
               maxWidth: '1041px',
             }}
           >
-            The Design Product and Developers School is a{' '}
+            The DevCareer tech program is a{' '}
             <Typography
               variant="body1"
               color="initial"
@@ -157,7 +156,7 @@ const BaseDpds = () => {
               maxWidth: '1041px',
             }}
           >
-            The Design Product and Developers School welcomes young people from
+            The DevCareer tech program welcomes young people from
             all communities in Nigeria, regardless of gender or educational
             background.
           </Typography>
@@ -296,7 +295,7 @@ const BaseDpds = () => {
           </Stack>
           <Stack alignItems="center" marginY="4rem">
             <Button
-              onClick={() => navigate('/programs/dpds/registration')}
+            disabled
               variant="contained"
               disableElevation
               sx={{
@@ -318,4 +317,4 @@ const BaseDpds = () => {
   );
 };
 
-export default BaseDpds;
+export default BaseDctp;

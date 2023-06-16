@@ -3,7 +3,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Button,  Stack } from '@mui/material';
 import { Link, NavLink } from 'react-router-dom';
 import { Logo } from '../../assets/Images';
-import { CommunityCard, MobileNav, ProgramCard } from '../index';
+import {  MobileNav, ProgramCard,GovernmentCard } from '../index';
 const navStyle = {
   color: '#888888',
   fontSize: '20px',
@@ -80,6 +80,29 @@ const NavBar = () => {
             <ProgramCard />
           </Box>
         </Box>
+        <Box
+          position="relative"
+          sx={{
+            ':hover .dropdown': {
+              display: 'block',
+            },
+          }}
+        >
+          <NavLink
+           onClick={(e)=>e.preventDefault()}
+            to="/government"
+            style={({ isActive }) => (isActive ? activeStyle : navStyle)}
+          >
+            Government
+          </NavLink>
+          <Box
+            position="absolute"
+            sx={{ width: '288px', display: 'none', zIndex: '900' }}
+            className="dropdown"
+          >
+            <GovernmentCard />
+          </Box>
+        </Box>
         <Box>
           <NavLink to='/about' style={({ isActive })=>isActive? activeStyle:navStyle}>About Us</NavLink>
         </Box>
@@ -103,7 +126,7 @@ const NavBar = () => {
             sx={{ width: '288px', display: 'none', zIndex: '900' }}
             className="dropdown"
           >
-            <CommunityCard />
+            {/* <CommunityCard /> */}
           </Box>
         </Box>
         <Box>

@@ -16,12 +16,13 @@ const DpdRadio = (props) => {
     titleColor,
     updateForm,
     name,
+    error,
   } = props;
   const radioChangeHandler = (e) => {
     updateForm(e.target.name, e.target.value);
   };
   return (
-    <FormControl>
+    <FormControl error={error}>
       <FormLabel sx={{ color: titleColor, fontWeight: 700 }}>
         {label}
 

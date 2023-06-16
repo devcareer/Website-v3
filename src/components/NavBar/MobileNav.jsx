@@ -1,7 +1,7 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Typography,Button } from '@mui/material';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 const navStyle = {
@@ -11,7 +11,9 @@ const navStyle = {
 };
 const MobileNav = ({ menu }) => {
   const [program, setProgram] = useState(false);
+  const [government,setGovernment] =useState(false)
   const [community, setCommunity] = useState(false);
+
 
   return (
     <Stack
@@ -64,8 +66,37 @@ const MobileNav = ({ menu }) => {
             <Link style={navStyle} to="programs/l4d">
               Laptop4developers
             </Link>
-            <Link style={navStyle} to="/programs/dpds">
-              Dpds
+          </Stack>
+        )}
+      </Box>
+      <Box borderBottom="1px solid #E8E8E8" pb="10px">
+        <Stack
+          onClick={() => setGovernment(!government)}
+          direction="row"
+          justifyContent="space-between"
+          sx={{ cursor: 'pointer' }}
+        >
+          <Typography variant="body1" color="initial" style={navStyle}>
+            {' '}
+            Government
+          </Typography>
+          {government ? (
+            <KeyboardArrowDownIcon fontSize="large" />
+          ) : (
+            <ArrowForwardIosIcon />
+          )}
+        </Stack>
+        {government && (
+          <Stack
+            ml={3}
+            gap={1}
+            onClick={() => {
+              menu(false);
+            }}
+          >
+          
+            <Link style={navStyle} to="/government/dctp">
+              DCTP
             </Link>
           </Stack>
         )}
@@ -94,13 +125,13 @@ const MobileNav = ({ menu }) => {
             {' '}
             Community
           </Typography>
-          {community ? (
+          {/* {community ? (
             <KeyboardArrowDownIcon fontSize="large" />
           ) : (
             <ArrowForwardIosIcon />
-          )}
+          )} */}
         </Stack>
-        {community && (
+        {/* {community && (
           <Stack
             ml={3}
             gap={1}
@@ -115,7 +146,7 @@ const MobileNav = ({ menu }) => {
             <Link style={navStyle}>Forums(Coming Soon)</Link>
             <Link style={navStyle}>Meet Ups(Coming Soon)</Link>
           </Stack>
-        )}
+        )} */}
       </Box>
       <Box borderBottom="1px solid #E8E8E8" pb="10px">
         <Link
@@ -128,6 +159,23 @@ const MobileNav = ({ menu }) => {
           Contact Us
         </Link>
       </Box>
+       <Link to="/support" style={{textDecoration:"none"}}  onClick={() => menu(false)}>
+       <Button
+          disableElevation
+          variant="contained"
+
+          
+          sx={{
+            color: '#FEFEFE',
+            paddingInline: '32px',
+            paddingBlock: '14px',
+            borderRadius: '8px',
+            fontWeight: '500',
+          }}
+        >
+          Support Us
+        </Button>
+        </Link>
     </Stack>
   );
 };

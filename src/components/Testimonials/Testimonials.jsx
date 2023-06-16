@@ -2,33 +2,31 @@ import React from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import {
   quotes,
-  avatar1,
-  avatar2,
-  avatar3,
+  idris,
+  john,
+  ayomikun,
   arrowLeft,
   arrowRight,
 } from '../../assets/Images';
 
 const testimonials = [
   {
-    description: `It’s been a great jouerny leanrning with DevCareer and it’s really great. It’s been a great jouerny leanrning with DevCareer and it’s really great
-    It’s been a great jouerny leanrning with DevCareer and it’s really great. It’s been a great jouerny leanrning with DevCareer and it’s really great`,
-    photo: avatar1,
-    name: 'Tolu David',
+    description:
+      'Having the opportunity to participate in the first cohort of Devcareer program was one of the best thing that happened to me in year 2019, I knew about the program the time I was planning to transition fully into tech. The program gave me a good foundation and I never regretted leaving a research graduate assistant job for it.',
+    photo: ayomikun,
+    name: 'Ayomikun Emmanuel',
     profession: 'Backend Engineer',
   },
   {
-    description: `It’s been a great jouerny leanrning with DevCareer and it’s really great. It’s been a great jouerny leanrning with DevCareer and it’s really great
-    It’s been a great jouerny leanrning with DevCareer and it’s really great. It’s been a great jouerny leanrning with DevCareer and it’s really great`,
-    photo: avatar2,
-    name: 'Olaniran Ridwan',
+    description: `DevCareers was the turning point of my Tech career, there won't be my success story in the tech industry without DevCareers. The mentorship I got from the #laptop4developers program was, in fact, a huge push to my technical and collaborative skills and right now I can easily pick up any technology and create magic with it whether individually or in a team. A big thank you to the guys at Devcareers`,
+    photo: idris,
+    name: 'Idris Olaoye',
     profession: 'Frontend Engineer',
   },
   {
-    description: `It’s been a great jouerny leanrning with DevCareer and it’s really great. It’s been a great jouerny leanrning with DevCareer and it’s really great
-    It’s been a great jouerny leanrning with DevCareer and it’s really great. It’s been a great jouerny leanrning with DevCareer and it’s really great`,
-    photo: avatar3,
-    name: 'Ogunmola Emmanuel',
+    description: `I got into DevCareer with no direction in the tech field, DevCareer gave me all the supports and fast-tracked my tech journey. Within the three months of Training, collaboration on Projects, mentorship, learning and support, I was transformed into a Software Engineer. Right now, I work with a Fintech company with a lot of experience in the bag.`,
+    photo: john,
+    name: 'John Ajeigbe',
     profession: 'Frontend Engineer',
   },
 ];
@@ -38,8 +36,7 @@ const Testimonials = () => {
       <Stack
         direction="row"
         justifyContent="space-between"
-        width="85%"
-        mx="auto"
+        className="container"
         mb="50px"
       >
         <Box
@@ -50,7 +47,7 @@ const Testimonials = () => {
         ></Box>
         <Typography
           component="h2"
-          fontSize={{ xs: '20px', md: '24px' }}
+          fontSize={{ xs: '20px', md: '32px' }}
           color="text.grey.500"
         >
           Hear From our Beneficiaries
@@ -66,8 +63,7 @@ const Testimonials = () => {
         <Box
           display="grid"
           gridTemplateColumns={{ sm: '1fr', md: 'repeat(3, 1fr)' }}
-          width="85%"
-          mx="auto"
+          className="container"
           gap="25px"
         >
           {testimonials.map((info, i) => (
@@ -75,14 +71,14 @@ const Testimonials = () => {
           ))}
         </Box>
       </Stack>
-      <Stack gap="10px" direction="row" mt="50px" width="85%" mx="auto">
+      {/* <Stack gap="10px" direction="row" mt="50px" className="container">
         <Button>
           <img src={arrowLeft} alt="arrow-left"></img>
         </Button>
         <Button>
           <img src={arrowRight} alt="arrow-right"></img>
         </Button>
-      </Stack>
+      </Stack> */}
     </Box>
   );
 };
@@ -98,12 +94,20 @@ const TestimonialCard = (props) => {
       border="1px solid #c2c2c2"
       borderRadius=".5rem"
       bgcolor="#FEFEFE"
+      justifyContent="space-between"
     >
       <Typography fontSize="16px" color="text.grey.600">
         {description}
       </Typography>
       <Stack direction="row" gap="1rem">
-        <img src={photo} alt={name} height="56px" width="56px"></img>
+        <Box
+          component="img"
+          src={photo}
+          alt={name}
+          height="56px"
+          width="56px"
+          borderRadius="50%"
+        ></Box>
         <Stack gap="4px">
           <Typography fontWeight="500" fontSize="20px" color="text.black.100">
             {name}

@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { Logo, linkedin, twitter } from '../../assets/Images';
+import { Logo, github, linkedin, twitter } from '../../assets/Images';
 import FooterLink from './FooterLink';
 const Social = [
   {
@@ -28,10 +28,10 @@ const Social = [
   //   name:facebook,
   //   link:''
   // },
-  // {
-  //   name:github,
-  //   link:''
-  // },
+  {
+    name: github,
+    link: 'https://github.com/devcareer',
+  },
 ];
 const Footer = () => {
   return (
@@ -93,7 +93,7 @@ const Footer = () => {
               placeholder="Email Address"
               inputProps={{ 'aria-label': 'search google maps' }}
             />
-            <Button
+            <a target='_blank' rel="noreferrer"  href="https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform"><Button
               variant="contained"
               sx={{
                 paddingInline: { xs: '16px', lg: '32px' },
@@ -102,10 +102,11 @@ const Footer = () => {
                 maxWidth: '200px',
                 color: 'white',
                 boxShadow: '0',
+                textDecoration:"none"
               }}
             >
               Join Community
-            </Button>
+            </Button></a>
           </Paper>
         </Stack>
         <Stack
@@ -118,9 +119,13 @@ const Footer = () => {
               <FooterLink
                 title="PROGRAMS"
                 link={[
-                  { link: '', name: 'Laptops4Developers' },
-                  { link: 'programs/dpds', name: 'DPDS' },
-                  { name: 'Hackathons' },
+                  {
+                    link: '/programs/l4d',
+                    name: 'Laptops4Developers',
+                    active: true,
+                  },
+                  { link: '/government/dctp', name: 'DCTP', active: true },
+                  { name: 'Hackathons(Coming soon)' },
                 ]}
               />
             </Grid>
@@ -128,9 +133,13 @@ const Footer = () => {
               <FooterLink
                 title="COMMUNITY"
                 link={[
-                  { link: 'community/talents', name: 'Talents' },
+                  { link: '', name: 'Talents', active: true },
                   { link: '', name: 'Forums' },
-                  { link: '', name: 'Slack  Channel' },
+                  {
+                    link: 'https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform',
+                    name: 'Slack  Channel',
+                    active: true,
+                  },
                   { link: '', name: 'Meetups' },
                 ]}
               />
@@ -149,7 +158,11 @@ const Footer = () => {
               <FooterLink
                 title="RESOURCES"
                 link={[
-                  { link: '', name: 'Blog' },
+                  {
+                    link: 'https://medium.com/devcareers',
+                    name: 'Blog',
+                    active: true,
+                  },
                   { link: '', name: 'Podcast' },
                   { link: '', name: 'Webinars' },
                   { link: '', name: 'Events' },

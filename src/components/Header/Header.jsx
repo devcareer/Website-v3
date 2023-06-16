@@ -10,8 +10,7 @@ const Header = () => {
       pt={{ xs: '0px', md: '24px' }}
       pb="128px"
       gap="40px"
-      width="85%"
-      mx="auto"
+      className="container"
       sx={{
         animation: 'herosection 2s forwards',
       }}
@@ -60,6 +59,9 @@ const Header = () => {
             Create Mini-CV
           </Button>
           <Button
+          component='a'
+          target='_blank'
+          href='https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform'
             fontWeight="500"
             fontSize="20px"
             // variant="outlined"
@@ -76,6 +78,7 @@ const Header = () => {
           >
             Join The Community
           </Button>
+         
         </Stack>
       </Box>
       <Box
