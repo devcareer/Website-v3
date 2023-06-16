@@ -108,7 +108,7 @@ const AboutUs = () => {
               mt="24px"
               sx={{ color: (theme) => theme.palette.text.grey[700] }}
             >
-              DevCareer.io takes a practical, hands-on approach to software
+              DevCareer takes a practical, hands-on approach to software
               development education. Our programs offer real-world projects and
               challenges, teaching in-demand programming languages, frameworks,
               and tools. We provide mentors who guide and support students
@@ -176,15 +176,16 @@ const AboutUs = () => {
         >
           <Typography
             fontWeight={700}
-            fontSize={{ xs: '52px', lg: '64px' }}
+            fontSize={{ xs: '32px', lg: '64px' }}
             color="#FEFEFE"
             lineHeight={1.2}
             textAlign="center"
           >
             Join Hands with us as we make a change in the Tech World
           </Typography>
-          <Link to='/contact' style={{textDecoration:"none"}}>
           <Button
+           component={Link}
+           to='/contact'
           variant='contained'
             sx={{
               bgcolor: '#FEFEFE',
@@ -203,7 +204,6 @@ const AboutUs = () => {
           >
             Become A Partner
           </Button>
-          </Link>
         </Container>
       </Container>
     </Container>

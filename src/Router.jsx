@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import {
-  Dpds,
+  Dctp,
   Home,
   AboutUs,
   LaptopForDevelopers,
@@ -30,11 +30,11 @@ export const router = createBrowserRouter([
         ],
       },
       {
-        path: 'Government',
+        path: 'government',
         children: [
           {
             path: 'dctp',
-            element: <Dpds />,
+            element: <Dctp />,
           },
         ],
       },

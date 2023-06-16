@@ -71,14 +71,14 @@ const Testimonials = () => {
           ))}
         </Box>
       </Stack>
-      <Stack gap="10px" direction="row" mt="50px" className="container">
+      {/* <Stack gap="10px" direction="row" mt="50px" className="container">
         <Button>
           <img src={arrowLeft} alt="arrow-left"></img>
         </Button>
         <Button>
           <img src={arrowRight} alt="arrow-right"></img>
         </Button>
-      </Stack>
+      </Stack> */}
     </Box>
   );
 };

@@ -1,10 +1,10 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { bmagic, cpu, dpd, product, timer } from '../../assets/Images';
 import TitleBanner from '../Banner/TitleBanner';
-import DpdsFooter from './DpdsFooter';
-import { useNavigate } from 'react-router-dom';
-const BaseDpds = () => {
-  const navigate = useNavigate();
+import DpdsFooter from './DctpFooter';
+// import { useNavigate } from 'react-router-dom';
+const BaseDctp = () => {
+  // const navigate = useNavigate();
 
   return (
     <Box>
@@ -295,7 +295,7 @@ const BaseDpds = () => {
           </Stack>
           <Stack alignItems="center" marginY="4rem">
             <Button
-              onClick={() => navigate('/programs/dpds/registration')}
+            disabled
               variant="contained"
               disableElevation
               sx={{
@@ -317,4 +317,4 @@ const BaseDpds = () => {
   );
 };
 
-export default BaseDpds;
+export default BaseDctp;

@@ -14,7 +14,7 @@ const TitleBanner = ({ title, text = '' ,flag}) => {
       justifyContent="flex-start"
       sx={flag?{backgroundColor: '#E6F9F5'}:bgStyle}
     >
-      <Box mx="auto"  sx={{ width: { xs: '90%', lg: '85%', mx: 'auto' }, maxWidth:{xl:"1200px"}, display:"Flex",justifyContent:"space-between",alignItems:"center" }}>
+      <Box mx="auto"  sx={{ width: { xs: '90%', lg: '85%', mx: 'auto' }, maxWidth:{xl:"1200px"}, display:"Flex",justifyContent:"space-between" }}>
         <Box>
         <Typography
           variant="body1"
@@ -41,7 +41,7 @@ const TitleBanner = ({ title, text = '' ,flag}) => {
           {text}
         </Typography>
         </Box>
-      {flag && <Box component='img' src={uk} sx={{mixBlendMode:'darken',width:{xs:"100px",md:"200px",lg:"250px"}}}></Box>}
+      {flag && <Box component='img' src={uk} sx={{mixBlendMode:'darken',width:{xs:"150px",md:"200px",lg:"250px"}}}></Box>}
 
       </Box>
       {/* <Box  sx={{border:"1px solid red"}}>

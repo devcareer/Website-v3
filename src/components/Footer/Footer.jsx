@@ -124,7 +124,7 @@ const Footer = () => {
                     name: 'Laptops4Developers',
                     active: true,
                   },
-                  { link: 'programs/dctp', name: 'DCTP', active: true },
+                  { link: '/government/dctp', name: 'DCTP', active: true },
                   { name: 'Hackathons(Coming soon)' },
                 ]}
               />
@@ -133,7 +133,7 @@ const Footer = () => {
               <FooterLink
                 title="COMMUNITY"
                 link={[
-                  { link: 'community/talents', name: 'Talents', active: true },
+                  { link: '', name: 'Talents', active: true },
                   { link: '', name: 'Forums' },
                   {
                     link: 'https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform',
