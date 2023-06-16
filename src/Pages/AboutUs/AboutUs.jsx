@@ -1,5 +1,6 @@
 import React from 'react';
 import { Container, Typography, Box, Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 import Card from './Card';
 import {
   favour,
@@ -8,6 +9,8 @@ import {
   tobi,
   doyin,
   chidi,
+  Ibukun,
+  joyce,
   learning,
   Wennovation,
   Swahilipot,
@@ -74,14 +77,15 @@ const AboutUs = () => {
           rowGap="16px"
           justifyItems="center"
         >
-          <Card image={favour} name="Favour Ch" position="community" />
+          <Card image={joyce} name="Joyce Nwanochi" position="Programs" />
+          <Card image={Ibukun} name="Ibukunoluwa Samuel" position="Operations" />
+          <Card image={favour} name="Favour Chibueze" position="Community" />
           <Card image={joshua} name="Miebaka Joshua" position="Branding" />
           <Card image={soji} name="Olakunle Soji-Oke" position="Operations" />
           <Card image={tobi} name="Olagoke Tobi" position="Operations" />
           <Card image={doyin} name="Adedoyin" position="Grants" />
           <Card image={chidi} name="Chidi Okoye" position="Programs" />
-          <Card image={tobi} name="Olagoke Tobi" position="Operations" />
-          <Card image={chidi} name="Chidi Okoye" position="Programs" />
+          
         </Box>
       </Container>
       <Container maxWidth="false" sx={{ mt: '56px' }} disableGutters>
@@ -104,7 +108,7 @@ const AboutUs = () => {
               mt="24px"
               sx={{ color: (theme) => theme.palette.text.grey[700] }}
             >
-              DevCareer.io takes a practical, hands-on approach to software
+              DevCareer takes a practical, hands-on approach to software
               development education. Our programs offer real-world projects and
               challenges, teaching in-demand programming languages, frameworks,
               and tools. We provide mentors who guide and support students
@@ -172,7 +176,7 @@ const AboutUs = () => {
         >
           <Typography
             fontWeight={700}
-            fontSize={{ xs: '52px', lg: '64px' }}
+            fontSize={{ xs: '32px', lg: '64px' }}
             color="#FEFEFE"
             lineHeight={1.2}
             textAlign="center"
@@ -180,6 +184,9 @@ const AboutUs = () => {
             Join Hands with us as we make a change in the Tech World
           </Typography>
           <Button
+           component={Link}
+           to='/contact'
+          variant='contained'
             sx={{
               bgcolor: '#FEFEFE',
               width: '100%',

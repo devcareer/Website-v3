@@ -1,9 +1,9 @@
 export { default as TitleBanner } from './Banner/TitleBanner';
-export { default as BaseDpds } from './Dpds/BaseDpds';
-export { default as InstagramIcon } from './Dpds/InstagramIcon';
-export { default as LinkedinIcon } from './Dpds/LinkedinIcon';
-export { default as SocialButton } from './Dpds/SocialButton';
-export { default as TwitterIcon } from './Dpds/TwitterIcon';
+export { default as BaseDctp } from './Dctp/BaseDctp';
+export { default as InstagramIcon } from './Dctp/InstagramIcon';
+export { default as LinkedinIcon } from './Dctp/LinkedinIcon';
+export { default as SocialButton } from './Dctp/SocialButton';
+export { default as TwitterIcon } from './Dctp/TwitterIcon';
 export { default as Footer } from './Footer/Footer';
 export { default as Header } from './Header/Header';
 export { default as CommunityCard } from './NavBar/CommunityCard';

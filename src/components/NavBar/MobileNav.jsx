@@ -80,7 +80,7 @@ const MobileNav = ({ menu }) => {
             {' '}
             Government
           </Typography>
-          {program ? (
+          {government ? (
             <KeyboardArrowDownIcon fontSize="large" />
           ) : (
             <ArrowForwardIosIcon />
@@ -95,8 +95,8 @@ const MobileNav = ({ menu }) => {
             }}
           >
           
-            <Link style={navStyle} to="/government/dpds">
-              Dpds
+            <Link style={navStyle} to="/government/dctp">
+              DCTP
             </Link>
           </Stack>
         )}
@@ -125,13 +125,13 @@ const MobileNav = ({ menu }) => {
             {' '}
             Community
           </Typography>
-          {community ? (
+          {/* {community ? (
             <KeyboardArrowDownIcon fontSize="large" />
           ) : (
             <ArrowForwardIosIcon />
-          )}
+          )} */}
         </Stack>
-        {community && (
+        {/* {community && (
           <Stack
             ml={3}
             gap={1}
@@ -146,7 +146,7 @@ const MobileNav = ({ menu }) => {
             <Link style={navStyle}>Forums(Coming Soon)</Link>
             <Link style={navStyle}>Meet Ups(Coming Soon)</Link>
           </Stack>
-        )}
+        )} */}
       </Box>
       <Box borderBottom="1px solid #E8E8E8" pb="10px">
         <Link

@@ -31,10 +31,10 @@ const Support = () => {
             display="flex"
             flexDirection="column"
           >
-            <Typography component="span" sx={{ font: 'inherit' }}>
+            <Typography component="span" sx={{fontSize:{xs:"40px",lg:"56px"} ,font: 'inherit' }}>
               Support our Mission of
             </Typography>
-            <Typography component="span" sx={{ font: 'inherit' }}>
+            <Typography component="span" sx={{fontSize:{xs:"40px",lg:"56px"}, font: 'inherit' }}>
               Accessibility and Opportunity
             </Typography>
           </Typography>

@@ -17,7 +17,7 @@ const GovernmentCard = () => {
         border: '1px solid #E8E8E8',
       }}
     >
-      <Link to="/government/dpds" style={menuStyle}>
+      <Link to="/government/dctp" style={menuStyle}>
         <Box
           sx={{
             borderRadius: '8px',
@@ -28,7 +28,7 @@ const GovernmentCard = () => {
           }}
         >
           {' '}
-          DPDs 
+          DCTP
         </Box>
       </Link>
     </Stack>

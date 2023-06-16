@@ -7,7 +7,7 @@ import {
   TwitterIcon,
 } from '../index';
 
-const DpdsFooter = () => {
+const DctpFooter = () => {
   return (
     <Box sx={{ width: { xs: '90%', lg: '85%' },maxWidth:{xl:"1200px"}, mx: 'auto' }}>
       <Typography
@@ -103,4 +103,4 @@ const DpdsFooter = () => {
   );
 };
 
-export default DpdsFooter;
+export default DctpFooter;

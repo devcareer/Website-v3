@@ -59,6 +59,9 @@ const Header = () => {
             Create Mini-CV
           </Button>
           <Button
+          component='a'
+          target='_blank'
+          href='https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform'
             fontWeight="500"
             fontSize="20px"
             // variant="outlined"
@@ -75,6 +78,7 @@ const Header = () => {
           >
             Join The Community
           </Button>
+         
         </Stack>
       </Box>
       <Box
