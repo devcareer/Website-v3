@@ -10,7 +10,7 @@ import {
 const Press = () => {
   return (
     <Box component="section" bgcolor="#F1FAD1" py="100px">
-      <Stack gap="70px" width="85%" mx="auto">
+      <Stack gap="70px" className="container">
         <Typography
           fontWeight="700"
           fontSize={{ xs: '24px', md: '40px' }}

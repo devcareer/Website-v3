@@ -42,7 +42,7 @@ const LaptopForDevelopers = () => {
   ];
   return (
     <Box component="section">
-      <TitleBanner title="Laptop4Developers"  />
+      <TitleBanner title="Laptop4Developers" />
       <AboutProgram />
       <Process title={processTitle} process={process} />
       <Testimonials />
@@ -54,7 +54,7 @@ export default LaptopForDevelopers;
 
 export const AboutProgram = () => {
   return (
-    <Box component="section" pt="40px" mx="auto" width="85%">
+    <Box component="section" pt="40px" className="container">
       <Stack gap="16px" lineHeight="1.5">
         <Typography
           component="h2"

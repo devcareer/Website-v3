@@ -10,8 +10,7 @@ const Header = () => {
       pt={{ xs: '0px', md: '24px' }}
       pb="128px"
       gap="40px"
-      width="85%"
-      mx="auto"
+      className="container"
       sx={{
         animation: 'herosection 2s forwards',
       }}
