@@ -38,7 +38,7 @@ const DpdsRegistration = () => {
           boxShadow: '0px 3px 8px 0 rgba(0, 0, 0, .24)',
           textTransform: 'capitalize',
         }}
-        onClick={() => navigate('/Government/dpds')}
+        onClick={() => navigate('/government/dctp')}
       >
         Go back
       </Button>
@@ -49,7 +49,7 @@ const DpdsRegistration = () => {
         color="text.black.100"
         mt="20px"
       >
-        Design Product Developers School
+        DevCareer Tech Program
       </Typography>
       <Stack color="text.grey.800" lineHeight="24px">
         <Typography
@@ -58,10 +58,10 @@ const DpdsRegistration = () => {
           mt="20px"
           fontSize={{ xs: '16px', md: '18px' }}
         >
-          Design Product and Developers School is a DevCareer initiative in
-          partnership with UK-Nigeria Tech Hub. The program is geared towards
-          newbie and intermediate-level techies who wish to take a big leap in
-          their budding careers in the dynamic world of technology, at no cost.
+          DevCareer Tech Program is a DevCareer initiative in partnership with
+          UK-Nigeria Tech Hub. The program is geared towards newbie and
+          intermediate-level techies who wish to take a big leap in their
+          budding careers in the dynamic world of technology, at no cost.
         </Typography>
         <Stack
           component="ul"
