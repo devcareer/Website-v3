@@ -21,7 +21,7 @@ const SupportDonateCard = ({ image, name, text, title, btntxt }) => {
           component="h3"
           fontSize={{ xs: '26px', lg: '32px' }}
           fontWeight={700}
-          color="#05B993"
+          color="primary.main"
         >
           {title}
         </Typography>
