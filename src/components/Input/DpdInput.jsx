@@ -11,6 +11,7 @@ const DpdInput = (props) => {
     updateValidity,
     error,
     id,
+    errorMessage = '',
   } = props;
   const changeHandler = (e) => {
     updateForm(e.target.name, e.target.value);
@@ -43,6 +44,7 @@ const DpdInput = (props) => {
         id={id}
         onBlur={blurHandler}
       />
+      {errorMessage && <Typography color="#f00">{errorMessage}</Typography>}
     </Stack>
   );
 };
