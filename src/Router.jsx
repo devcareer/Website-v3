@@ -9,6 +9,8 @@ import {
   Talents,
   ContactUs,
   DpdsRegistration,
+  AccountSettings,
+  EditProfile
 } from './Pages';
 import { ForgetPassword } from './Auth';
 
@@ -54,6 +56,14 @@ export const router = createBrowserRouter([
           {
             path:'forgetpassword',
             element:<ForgetPassword />
+          },
+          {
+            path:'settings',
+            element:<AccountSettings />
+          },
+          {
+            path:'edit',
+            element:<EditProfile />
           }
         ]
       },
