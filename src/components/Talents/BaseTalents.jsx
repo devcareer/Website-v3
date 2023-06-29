@@ -38,7 +38,7 @@ const Track = [
   {
     id: 5,
     title: 'Fullstack Eng.',
-    subtitle: 'Frontend Engineering',
+    subtitle: 'Full Stack Engineering',
   },
 ];
 const BaseTalents = () => {
