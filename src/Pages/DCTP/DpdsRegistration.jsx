@@ -38,7 +38,7 @@ const DpdsRegistration = () => {
           boxShadow: '0px 3px 8px 0 rgba(0, 0, 0, .24)',
           textTransform: 'capitalize',
         }}
-        onClick={() => navigate('/Government/dpds')}
+        onClick={() => navigate('/government/dctp')}
       >
         Go back
       </Button>
@@ -49,7 +49,7 @@ const DpdsRegistration = () => {
         color="text.black.100"
         mt="20px"
       >
-        Design Product Developers School
+        DevCareer Tech Program
       </Typography>
       <Stack color="text.grey.800" lineHeight="24px">
         <Typography
@@ -58,10 +58,10 @@ const DpdsRegistration = () => {
           mt="20px"
           fontSize={{ xs: '16px', md: '18px' }}
         >
-          Design Product and Developers School is a DevCareer initiative in
-          partnership with UK-Nigeria Tech Hub. The program is geared towards
-          newbie and intermediate-level techies who wish to take a big leap in
-          their budding careers in the dynamic world of technology, at no cost.
+          DevCareer Tech Program is a DevCareer initiative in partnership with
+          UK-Nigeria Tech Hub. The program is geared towards newbie and
+          intermediate-level techies who wish to take a big leap in their
+          budding careers in the dynamic world of technology, at no cost.
         </Typography>
         <Stack
           component="ul"
@@ -132,7 +132,8 @@ const DpdsForm = () => {
     'entry.636017523': '',
     'entry.1410941367': '',
     'entry.1635228319': '',
-    'entry.1240878490': '',
+    'entry.1155039305': '',
+    'entry.1070926144': '',
     'entry.325735402': '',
     'entry.661523532': '',
   });
@@ -147,6 +148,8 @@ const DpdsForm = () => {
     memberVisited: false,
     programVisited: false,
     reasonVisited: false,
+    laptopVisited: false,
+    commitmentVisited: false,
   });
 
   const triggerAllInputsOnSubmission = () => {
@@ -162,6 +165,8 @@ const DpdsForm = () => {
         memberVisited: true,
         programVisited: true,
         reasonVisited: true,
+        laptopVisited: true,
+        commitmentVisited: true,
       };
     });
   };
@@ -178,7 +183,7 @@ const DpdsForm = () => {
       return { ...prev, [name]: value };
     });
   };
-
+  console.log(fieldValidity);
   const {
     emailVisited,
     firstNameVisited,
@@ -190,6 +195,8 @@ const DpdsForm = () => {
     memberVisited,
     programVisited,
     reasonVisited,
+    laptopVisited,
+    commitmentVisited,
   } = fieldValidity;
 
   const emailIsValid =
@@ -203,7 +210,11 @@ const DpdsForm = () => {
   const lgaIsValid = formData['entry.2071404193'] !== '';
   const memberIsValid = formData['entry.636017523'] !== '';
   const programIsValid = formData['entry.1410941367'] !== '';
-  const reasonIsValid = formData['entry.1635228319'] !== '';
+  const reasonIsValid =
+    formData['entry.1635228319'] !== '' &&
+    formData['entry.1635228319'].length < 100;
+  const laptopIsValid = formData['entry.1155039305'] !== '';
+  const commitmentIsValid = formData['entry.1070926144'] !== '';
   const overallFormIsValid =
     emailIsValid &&
     firstNameIsValid &&
@@ -214,7 +225,9 @@ const DpdsForm = () => {
     lgaIsValid &&
     memberIsValid &&
     programIsValid &&
-    reasonIsValid;
+    reasonIsValid &&
+    laptopIsValid &&
+    commitmentIsValid;
   // Invalidity is a combination of a field being invalid and being touched, a field doesn't throw up any error even though it is invalid till it is touched.
   const emailIsInvalid = !emailIsValid && emailVisited;
   const firstNameIsInvalid = !firstNameIsValid && firstNameVisited;
@@ -226,6 +239,8 @@ const DpdsForm = () => {
   const memberIsInvalid = !memberIsValid && memberVisited;
   const programIsInvalid = !programIsValid && programVisited;
   const reasonIsInvalid = !reasonIsValid && reasonVisited;
+  const laptopIsInvalid = !laptopIsValid && laptopVisited;
+  const commitmentIsInvalid = !commitmentIsValid && commitmentVisited;
 
   const handleRegionChange = (e) => {
     setRegion(e.target.value);
@@ -262,7 +277,7 @@ const DpdsForm = () => {
           setSubmitted(true);
           setError('');
           setTimeout(() => {
-            navigate('/Government/dpds');
+            navigate('/government/dctp');
           }, 3000);
         })
         .catch((err) => {
@@ -423,20 +438,37 @@ const DpdsForm = () => {
           error={programIsInvalid}
         />
         <DpdInput
-          label="What makes you an ideal candidate for this program? "
+          label="What makes you an ideal candidate for this program? - 100 words "
+          id="reason"
           required="true"
           multiline="true"
           name="entry.1635228319"
           updateForm={updateForm}
           error={reasonIsInvalid}
+          updateValidity={updateValidity}
+          // errorMessage={reasonIsInvalid ? 'Must be less than 100 words' : ''}
         />
-        <DpdInput
-          label="Link to Github profile"
-          name="entry.1240878490"
+        <DpdRadio
+          label="Do you have a laptop?"
+          titleColor="#181818"
+          required="true"
+          options={['Yes', 'No']}
+          name="entry.1155039305"
           updateForm={updateForm}
+          error={laptopIsInvalid}
         />
+        <DpdRadio
+          label="Are you willing to commit 6 hours per week to the program?"
+          titleColor="#181818"
+          required="true"
+          options={['Yes', 'No']}
+          name="entry.1070926144"
+          updateForm={updateForm}
+          error={commitmentIsInvalid}
+        />
+
         <DpdInput
-          label="Link to Personal Website or Portfolio"
+          label="Link to Github profile or Personal portfolio"
           name="entry.325735402"
           updateForm={updateForm}
         />
