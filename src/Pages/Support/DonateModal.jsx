@@ -12,6 +12,12 @@ import {
   OutlinedInput as MuiOutlinedInput,
   FormControl,
   InputAdornment,
+  FormControlLabel,
+  RadioGroup,
+  Radio,
+  FormLabel,
+  InputLabel,
+  InputBase,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactComponent as Dollar } from '../../assets/Images/dollar-circle.svg';
@@ -57,6 +63,7 @@ const DonateModal = () => {
             fontWeight={700}
             color="text.grey.400"
             fontFamily="'DM Sans', sans-serif"
+            textTransform="uppercase"
           >
             Select Amount
           </Typography>
@@ -136,10 +143,89 @@ const DonateModal = () => {
           />
         </FormControl>
         <Box>
-          <Typography>Payment Method</Typography>
+          <FormControl>
+            <FormLabel id="demo-radio-buttons-group-label">
+              <Typography
+                component="h2"
+                variant="body1"
+                fontWeight={700}
+                color="text.grey.400"
+                fontFamily="'DM Sans', sans-serif"
+                textTransform="uppercase"
+              >
+                Payment Method
+              </Typography>
+            </FormLabel>
+            <RadioGroup
+              aria-labelledby="demo-radio-buttons-group-label"
+              defaultValue="Bank/Wire Transfer"
+              name="radio-buttons-group"
+              row
+            >
+              <FormControlLabel
+                value="Bank/Wire Transfer"
+                control={
+                  <Radio
+                    sx={{
+                      color: (theme) => theme.palette.text.grey[200],
+                      '&.Mui-checked': {
+                        color: 'primary.main',
+                      },
+                    }}
+                  />
+                }
+                label="Bank/Wire Transfer"
+              />
+
+              <FormControlLabel
+                value="Debit Card"
+                control={
+                  <Radio
+                    sx={{
+                      color: (theme) => theme.palette.text.grey[200],
+                      '&.Mui-checked': {
+                        color: 'primary.main',
+                      },
+                    }}
+                  />
+                }
+                label="Debit Card"
+              />
+            </RadioGroup>
+          </FormControl>
         </Box>
         <Box>
-          <Typography>Personal Information</Typography>
+          <Typography
+            component="h2"
+            variant="body1"
+            fontWeight={700}
+            color="text.grey.400"
+            fontFamily="'DM Sans', sans-serif"
+            textTransform="uppercase"
+          >
+            Personal Information
+          </Typography>
+          <FormControl variant="standard">
+            <InputLabel
+              required
+              shrink
+              htmlFor="bootstrap-input"
+              sx={{
+                color: '#363636',
+                fontSize: '16px',
+                fontWeight: 700,
+                '& .MuiFormLabel-asterisk': {
+                  color: '#CB2B11',
+                },
+              }}
+            >
+              First Name
+            </InputLabel>
+            <InputBase
+              id="bootstrap-input"
+              sx={{ border: '1px solid #C2C2C2' }}
+            />
+          </FormControl>
         </Box>
       </DialogContent>
       <DialogActions sx={{ justifyContent: 'flex-start' }}>
