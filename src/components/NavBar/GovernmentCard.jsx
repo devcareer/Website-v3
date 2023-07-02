@@ -1,4 +1,5 @@
-import { Box, Stack } from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
+import { ukflag } from '../../assets/Images';
 import { Link } from 'react-router-dom';
 const GovernmentCard = () => {
   const menuStyle = {
@@ -19,7 +20,10 @@ const GovernmentCard = () => {
     >
       <Link to="/government/dctp" style={menuStyle}>
         <Box
+          
           sx={{
+            display:'flex',
+            gap:'1.5rem',
             borderRadius: '8px',
             p: '0.7rem',
             ':hover': {
@@ -28,7 +32,7 @@ const GovernmentCard = () => {
           }}
         >
           {' '}
-          DCTP
+           <Typography variant="body1" color="initial">UK-Nigeria Tech Hub</Typography>  <Box component='img' src={ukflag} width={30}></Box>
         </Box>
       </Link>
     </Stack>

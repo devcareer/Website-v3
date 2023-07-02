@@ -11,6 +11,7 @@ import {
   RadioGroup,
   Radio,
   Button,
+  Checkbox
 } from '@mui/material';
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -30,6 +31,7 @@ const DpdsRegistration = () => {
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [pathname]);
+
   return (
     <Box component="section" className="container" py="32px">
       <Button
@@ -114,6 +116,7 @@ export default DpdsRegistration;
 
 const DpdsForm = () => {
   const navigate = useNavigate();
+  const [disclaimer,setDisclaimer]=useState(false)
   const [region, setRegion] = useState('');
   const [lgas, setLgas] = useState([]);
   const [lgaValue, setLgaValue] = useState('');
@@ -295,6 +298,9 @@ const DpdsForm = () => {
       }, 3000);
     }
   };
+   const handleDisclaimer=()=>{
+      setDisclaimer(!disclaimer)
+   }
   return (
     <Box component="form" mt="20px" onSubmit={submitHandler} ref={formRef}>
       <Stack gap="20px">
@@ -479,7 +485,13 @@ const DpdsForm = () => {
           updateForm={updateForm}
         />
       </Stack>
+      <Stack direction='row' mt='50px'>
+      <FormControlLabel onClick={handleDisclaimer} required control={<Checkbox />} label=" We take your privacy seriously. By submitting this form, you acknowledge and agree that your data may be shared with our trusted partners and third-party service providers." />
+      
+      </Stack>
       <Button
+      disabled={!disclaimer}
+      
         onClick={submitHandler}
         fontWeight="500"
         fontSize="20px"
@@ -495,6 +507,9 @@ const DpdsForm = () => {
           '&:hover': {
             bgcolor: 'primary.main',
           },
+          "&:disabled": {
+            backgroundColor: '#e0e0e0'
+          }
         }}
       >
         Enroll into Program
