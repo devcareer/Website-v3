@@ -17,7 +17,7 @@ export const talents=[
     "experience": "2 Years",
     "availability": "Full Time",
     "skill": "Frontend Engineering",
-    "linkedIn": "",
+    "linkedIn": "https://www.linkedin.com/in/ridwan-olaniran/",
     "portfolioUrl": "",
     "emailAddress": "olaniranolatubosun@gmail.com"
   },
@@ -28,7 +28,7 @@ export const talents=[
     "experience": "2 Years",
     "availability": "Full Time",
     "skill": "Frontend Engineering",
-    "linkedIn": "",
+    "linkedIn": "https://www.linkedin.com/in/precious-chilaka/",
     "portfolioUrl": "",
     "emailAddress": "preshchilaka06@gmail.com"
   },

@@ -8,7 +8,7 @@ const BaseDctp = () => {
 
   return (
     <Box>
-      <TitleBanner title=" DCTP" flag={true} />
+      <TitleBanner title=" DevCareer Tech Program" flag={true} />
       <Box position="relative">
         <Box
           sx={{
