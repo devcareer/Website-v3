@@ -190,7 +190,6 @@ const DpdsForm = () => {
       return { ...prev, [name]: value };
     });
   };
-  console.log(fieldValidity);
   const {
     emailVisited,
     firstNameVisited,
@@ -221,7 +220,7 @@ const DpdsForm = () => {
   const programIsValid = formData['entry.1410941367'] !== '';
   const reasonIsValid =
     formData['entry.1635228319'] !== '' &&
-    formData['entry.1635228319'].length < 100;
+    formData['entry.1635228319'].split(' ').length < 100;
   const laptopIsValid = formData['entry.1155039305'] !== '';
   const commitmentIsValid = formData['entry.1070926144'] !== '';
   const overallFormIsValid =
@@ -271,6 +270,7 @@ const DpdsForm = () => {
   const finalData = new FormData(formRef.current);
 
   const submitHandler = (e) => {
+    console.log(formData['entry.1635228319'].split(' ').length);
     e.preventDefault();
     triggerAllInputsOnSubmission();
     if (overallFormIsValid) {
@@ -292,7 +292,7 @@ const DpdsForm = () => {
           setError('');
           setTimeout(() => {
             navigate('/government/dctp');
-          }, 3000);
+          }, 5000);
         })
         .catch((err) => {
           setIsSubmitting(false);
@@ -511,9 +511,8 @@ const DpdsForm = () => {
       </Stack>
       <Stack direction="row" mt="50px">
         <FormControlLabel
-          onClick={handleDisclaimer}
           required
-          control={<Checkbox />}
+          control={<Checkbox onClick={handleDisclaimer} />}
           label=" We take your privacy seriously. By submitting this form, you acknowledge and agree that your data may be shared with our trusted partners and third-party service providers."
         />
       </Stack>
