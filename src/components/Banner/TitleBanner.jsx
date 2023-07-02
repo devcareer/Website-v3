@@ -14,15 +14,16 @@ const TitleBanner = ({ title, text = '' ,flag}) => {
       justifyContent="flex-start"
       sx={flag?{backgroundColor: '#E6F9F5'}:bgStyle}
     >
-      <Box mx="auto"  sx={{ width: { xs: '90%', lg: '85%', mx: 'auto' }, maxWidth:{xl:"1200px"}, display:"Flex",justifyContent:"space-between" }}>
+      <Box mx="auto"  sx={{ width: { xs: '90%', lg: '85%', mx: 'auto' }, maxWidth:{xl:"1200px"}, display:"Flex",justifyContent:"space-between",alignItems:"center" }}>
         <Box>
         <Typography
           variant="body1"
           color="initial"
           sx={{
-            fontSize: { xs: '28px', md: '35px', lg: '55px' },
+            fontSize: { xs: '16px', md: '35px', lg: '40px',xl:'55px' },
             fontWeight: '700',
             color: '#023E31',
+            mb:"8px"
           }}
         >
           {title}

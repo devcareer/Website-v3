@@ -42,7 +42,7 @@ const NavBar = () => {
             
 
       }}>
-        <Box onClick={showMenu} display={{ xs: 'block', lg: 'none' }} sx={{cursor:'pointer'}}>
+        <Box onClick={showMenu} display={{ xs: 'block', xl: 'none' }} sx={{cursor:'pointer'}}>
           <MenuIcon sx={{ fontSize: '40px' }} />
         </Box>
        <Box >
@@ -56,7 +56,7 @@ const NavBar = () => {
       <Box display={menu?'block':"none"} >
         <MobileNav menu={setMenu} />
       </Box>
-      <Stack direction="row" gap="34px" display={{ xs: 'none', lg: 'flex' }}>
+      <Stack direction="row" gap="34px" display={{ xs: 'none', xl: 'flex' }}>
         <Box
           position="relative"
           sx={{
