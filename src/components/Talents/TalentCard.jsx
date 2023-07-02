@@ -13,8 +13,8 @@ const TalentCard = ({data}) => {
   return (
     <Box sx={{ border: '1px solid #E0E0E0', borderRadius: '8px',maxWidth:"392px",padding:"24px" }}>
       <Box >
-        <Typography variant="body1" color="initial" sx={{fontWeight:"700",fontSize:"24px"}}>
-          {data.name}
+        <Typography variant="body1" color="initial" sx={{fontWeight:"700",fontSize:'22px'}}>
+          {data.fullName}
         </Typography>
         <Typography variant="body1" color="initial" sx={{color:"#888888"}}>
           {data.company}
@@ -54,18 +54,18 @@ const TalentCard = ({data}) => {
             Skills
           </Typography>
         </Stack>
-        <Chip label={data.skills} sx={{backgroundColor:"#E6F9F5",color:"#184E77",fontWeight:"600"}} />
+        <Chip label={data.skill} sx={{backgroundColor:"#E6F9F5",color:"#184E77",fontWeight:"600"}} />
       </Stack>
       <Stack direction='row'  justifyContent='space-between' mt={3} gap={4}>
         <Stack direction='row' alignItems='center' gap={0.8}>
-          <Box>
+          <Box component='a' href={data.linkedIn}>
             <img src={talentLinkedin} alt="linkedin" />
           </Box>
           <Box>
             <img src={talentWeb} alt="web" />
           </Box>
         </Stack>
-        <Button variant='contained' disableElevation  sx={{width:"190px",color:"white",borderRadius:"8px"}} >Hire Now</Button>
+        <Button component='a' href={`mailto:${data.emailAddress}`} variant='contained' disableElevation  sx={{width:"190px",color:"white",borderRadius:"8px"}} >Hire Now</Button>
       </Stack>
     </Box>
   );

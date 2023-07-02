@@ -9,7 +9,10 @@ import {
   Talents,
   ContactUs,
   DpdsRegistration,
+  AccountSettings,
+  EditProfile
 } from './Pages';
+import { ForgetPassword } from './Auth';
 
 export const router = createBrowserRouter([
   {
@@ -46,6 +49,23 @@ export const router = createBrowserRouter([
             element: <Talents />,
           },
         ],
+      },
+      {
+        path:"profile",
+        children:[
+          {
+            path:'forgetpassword',
+            element:<ForgetPassword />
+          },
+          {
+            path:'settings',
+            element:<AccountSettings />
+          },
+          {
+            path:'edit',
+            element:<EditProfile />
+          }
+        ]
       },
       {
         path: '/support',

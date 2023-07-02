@@ -2,16 +2,13 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import { bmagic, cpu, dpd, product, timer } from '../../assets/Images';
 import TitleBanner from '../Banner/TitleBanner';
 import DpdsFooter from './DctpFooter';
-// import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 const BaseDctp = () => {
-  // const navigate = useNavigate();
+  const navigate = useNavigate();
 
   return (
     <Box>
-      <TitleBanner
-        title=" DCTP"
-        flag={true}
-      />
+      <TitleBanner title=" DevCareer Tech Program" flag={true} />
       <Box position="relative">
         <Box
           sx={{
@@ -156,8 +153,8 @@ const BaseDctp = () => {
               maxWidth: '1041px',
             }}
           >
-            The DevCareer tech program welcomes young people from
-            all communities in Nigeria, regardless of gender or educational
+            The DevCareer tech program welcomes young people from all
+            communities in Nigeria, regardless of gender or educational
             background.
           </Typography>
         </Box>
@@ -295,7 +292,7 @@ const BaseDctp = () => {
           </Stack>
           <Stack alignItems="center" marginY="4rem">
             <Button
-            disabled
+              onClick={() => navigate('/programs/dpds/registration')}
               variant="contained"
               disableElevation
               sx={{

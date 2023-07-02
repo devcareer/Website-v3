@@ -11,6 +11,7 @@ import {
   RadioGroup,
   Radio,
   Button,
+  Checkbox,
 } from '@mui/material';
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -30,6 +31,7 @@ const DpdsRegistration = () => {
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [pathname]);
+
   return (
     <Box component="section" className="container" py="32px">
       <Button
@@ -38,7 +40,7 @@ const DpdsRegistration = () => {
           boxShadow: '0px 3px 8px 0 rgba(0, 0, 0, .24)',
           textTransform: 'capitalize',
         }}
-        onClick={() => navigate('/Government/dpds')}
+        onClick={() => navigate('/government/dctp')}
       >
         Go back
       </Button>
@@ -49,7 +51,7 @@ const DpdsRegistration = () => {
         color="text.black.100"
         mt="20px"
       >
-        Design Product Developers School
+        DevCareer Tech Program
       </Typography>
       <Stack color="text.grey.800" lineHeight="24px">
         <Typography
@@ -58,10 +60,10 @@ const DpdsRegistration = () => {
           mt="20px"
           fontSize={{ xs: '16px', md: '18px' }}
         >
-          Design Product and Developers School is a DevCareer initiative in
-          partnership with UK-Nigeria Tech Hub. The program is geared towards
-          newbie and intermediate-level techies who wish to take a big leap in
-          their budding careers in the dynamic world of technology, at no cost.
+          DevCareer Tech Program is a DevCareer initiative in partnership with
+          UK-Nigeria Tech Hub. The program is geared towards newbie and
+          intermediate-level techies who wish to take a big leap in their
+          budding careers in the dynamic world of technology, at no cost.
         </Typography>
         <Stack
           component="ul"
@@ -114,6 +116,7 @@ export default DpdsRegistration;
 
 const DpdsForm = () => {
   const navigate = useNavigate();
+  const [disclaimer, setDisclaimer] = useState(false);
   const [region, setRegion] = useState('');
   const [lgas, setLgas] = useState([]);
   const [lgaValue, setLgaValue] = useState('');
@@ -125,6 +128,7 @@ const DpdsForm = () => {
     'entry.1914094770': '',
     'entry.820092698': '',
     'entry.485719841': '',
+    'entry.1803754267': '',
     'entry.700177539': '',
     'entry.1086331874': '',
     'entry.570590781': '',
@@ -132,14 +136,17 @@ const DpdsForm = () => {
     'entry.636017523': '',
     'entry.1410941367': '',
     'entry.1635228319': '',
-    'entry.1240878490': '',
+    'entry.1155039305': '',
+    'entry.1070926144': '',
     'entry.325735402': '',
+    'entry.2117309239': '',
     'entry.661523532': '',
   });
   const [fieldValidity, setFieldValidity] = useState({
     emailVisited: false,
     firstNameVisited: false,
     lastNameVisited: false,
+    phoneNumberVisited: false,
     genderVisited: false,
     skillVisited: false,
     stateVisited: false,
@@ -147,6 +154,8 @@ const DpdsForm = () => {
     memberVisited: false,
     programVisited: false,
     reasonVisited: false,
+    laptopVisited: false,
+    commitmentVisited: false,
   });
 
   const triggerAllInputsOnSubmission = () => {
@@ -155,6 +164,7 @@ const DpdsForm = () => {
         emailVisited: true,
         firstNameVisited: true,
         lastNameVisited: true,
+        phoneNumberVisited: true,
         genderVisited: true,
         skillVisited: true,
         stateVisited: true,
@@ -162,6 +172,8 @@ const DpdsForm = () => {
         memberVisited: true,
         programVisited: true,
         reasonVisited: true,
+        laptopVisited: true,
+        commitmentVisited: true,
       };
     });
   };
@@ -178,11 +190,11 @@ const DpdsForm = () => {
       return { ...prev, [name]: value };
     });
   };
-
   const {
     emailVisited,
     firstNameVisited,
     lastNameVisited,
+    phoneNumberVisited,
     genderVisited,
     skillVisited,
     stateVisited,
@@ -190,6 +202,8 @@ const DpdsForm = () => {
     memberVisited,
     programVisited,
     reasonVisited,
+    laptopVisited,
+    commitmentVisited,
   } = fieldValidity;
 
   const emailIsValid =
@@ -197,28 +211,37 @@ const DpdsForm = () => {
     formData['entry.1914094770'].includes('.');
   const firstNameIsValid = formData['entry.820092698'] !== '';
   const lastNameIsValid = formData['entry.485719841'] !== '';
+  const phoneNumberIsValid = formData['entry.1803754267'].length === 11;
   const genderIsValid = formData['entry.700177539'] !== '';
   const skillIsValid = formData['entry.1086331874'] !== '';
   const stateIsValid = formData['entry.570590781'] !== '';
   const lgaIsValid = formData['entry.2071404193'] !== '';
   const memberIsValid = formData['entry.636017523'] !== '';
   const programIsValid = formData['entry.1410941367'] !== '';
-  const reasonIsValid = formData['entry.1635228319'] !== '';
+  const reasonIsValid =
+    formData['entry.1635228319'] !== '' &&
+    formData['entry.1635228319'].split(' ').length < 100;
+  const laptopIsValid = formData['entry.1155039305'] !== '';
+  const commitmentIsValid = formData['entry.1070926144'] !== '';
   const overallFormIsValid =
     emailIsValid &&
     firstNameIsValid &&
     lastNameIsValid &&
+    phoneNumberIsValid &&
     genderIsValid &&
     skillIsValid &&
     stateIsValid &&
     lgaIsValid &&
     memberIsValid &&
     programIsValid &&
-    reasonIsValid;
+    reasonIsValid &&
+    laptopIsValid &&
+    commitmentIsValid;
   // Invalidity is a combination of a field being invalid and being touched, a field doesn't throw up any error even though it is invalid till it is touched.
   const emailIsInvalid = !emailIsValid && emailVisited;
   const firstNameIsInvalid = !firstNameIsValid && firstNameVisited;
   const lastNameIsInvalid = !lastNameIsValid && lastNameVisited;
+  const phoneNumberIsInvalid = !phoneNumberIsValid && phoneNumberVisited;
   const genderIsInvalid = !genderIsValid && genderVisited;
   const skillIsInvalid = !skillIsValid && skillVisited;
   const stateIsInvalid = !stateIsValid && stateVisited;
@@ -226,7 +249,12 @@ const DpdsForm = () => {
   const memberIsInvalid = !memberIsValid && memberVisited;
   const programIsInvalid = !programIsValid && programVisited;
   const reasonIsInvalid = !reasonIsValid && reasonVisited;
+  const laptopIsInvalid = !laptopIsValid && laptopVisited;
+  const commitmentIsInvalid = !commitmentIsValid && commitmentVisited;
 
+  const handleDisclaimer = () => {
+    setDisclaimer(!disclaimer);
+  };
   const handleRegionChange = (e) => {
     setRegion(e.target.value);
     const selectedState = STATES.find((state) => state.name === e.target.value);
@@ -242,6 +270,7 @@ const DpdsForm = () => {
   const finalData = new FormData(formRef.current);
 
   const submitHandler = (e) => {
+    console.log(formData['entry.1635228319'].split(' ').length);
     e.preventDefault();
     triggerAllInputsOnSubmission();
     if (overallFormIsValid) {
@@ -262,8 +291,8 @@ const DpdsForm = () => {
           setSubmitted(true);
           setError('');
           setTimeout(() => {
-            navigate('/Government/dpds');
-          }, 3000);
+            navigate('/government/dctp');
+          }, 5000);
         })
         .catch((err) => {
           setIsSubmitting(false);
@@ -280,6 +309,7 @@ const DpdsForm = () => {
       }, 3000);
     }
   };
+
   return (
     <Box component="form" mt="20px" onSubmit={submitHandler} ref={formRef}>
       <Stack gap="20px">
@@ -309,6 +339,16 @@ const DpdsForm = () => {
           updateValidity={updateValidity}
           error={lastNameIsInvalid}
           id="lastName"
+        />
+        <DpdInput
+          label="Phone Number"
+          required="true"
+          type="number"
+          name="entry.1803754267"
+          updateForm={updateForm}
+          updateValidity={updateValidity}
+          error={phoneNumberIsInvalid}
+          id="phoneNumber"
         />
         <DpdRadio
           label="GENDER"
@@ -423,21 +463,43 @@ const DpdsForm = () => {
           error={programIsInvalid}
         />
         <DpdInput
-          label="What makes you an ideal candidate for this program? "
+          label="What makes you an ideal candidate for this program? - 100 words "
+          id="reason"
           required="true"
           multiline="true"
           name="entry.1635228319"
           updateForm={updateForm}
           error={reasonIsInvalid}
+          updateValidity={updateValidity}
+          // errorMessage={reasonIsInvalid ? 'Must be less than 100 words' : ''}
         />
+        <DpdRadio
+          label="Do you have a laptop?"
+          titleColor="#181818"
+          required="true"
+          options={['Yes', 'No']}
+          name="entry.1155039305"
+          updateForm={updateForm}
+          error={laptopIsInvalid}
+        />
+        <DpdRadio
+          label="Are you willing to commit 6 hours per week to the program?"
+          titleColor="#181818"
+          required="true"
+          options={['Yes', 'No']}
+          name="entry.1070926144"
+          updateForm={updateForm}
+          error={commitmentIsInvalid}
+        />
+
         <DpdInput
-          label="Link to Github profile"
-          name="entry.1240878490"
+          label="Link to Github profile or Personal portfolio"
+          name="entry.325735402"
           updateForm={updateForm}
         />
         <DpdInput
-          label="Link to Personal Website or Portfolio"
-          name="entry.325735402"
+          label="Link to your LinkedIn Profile"
+          name="entry.2117309239"
           updateForm={updateForm}
         />
         <DpdInput
@@ -447,7 +509,15 @@ const DpdsForm = () => {
           updateForm={updateForm}
         />
       </Stack>
+      <Stack direction="row" mt="50px">
+        <FormControlLabel
+          required
+          control={<Checkbox onClick={handleDisclaimer} />}
+          label=" We take your privacy seriously. By submitting this form, you acknowledge and agree that your data may be shared with our trusted partners and third-party service providers."
+        />
+      </Stack>
       <Button
+        disabled={!disclaimer}
         onClick={submitHandler}
         fontWeight="500"
         fontSize="20px"
@@ -462,6 +532,9 @@ const DpdsForm = () => {
           width: { xs: '100%', md: '50%' },
           '&:hover': {
             bgcolor: 'primary.main',
+          },
+          '&:disabled': {
+            backgroundColor: '#e0e0e0',
           },
         }}
       >

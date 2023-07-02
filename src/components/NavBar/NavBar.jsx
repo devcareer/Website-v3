@@ -3,7 +3,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Box, Button,  Stack } from '@mui/material';
 import { Link, NavLink } from 'react-router-dom';
 import { Logo } from '../../assets/Images';
-import {  MobileNav, ProgramCard,GovernmentCard } from '../index';
+import {  MobileNav, ProgramCard,GovernmentCard ,CommunityCard} from '../index';
 const navStyle = {
   color: '#888888',
   fontSize: '20px',
@@ -42,7 +42,7 @@ const NavBar = () => {
             
 
       }}>
-        <Box onClick={showMenu} display={{ xs: 'block', lg: 'none' }} sx={{cursor:'pointer'}}>
+        <Box onClick={showMenu} display={{ xs: 'block', xl: 'none' }} sx={{cursor:'pointer'}}>
           <MenuIcon sx={{ fontSize: '40px' }} />
         </Box>
        <Box >
@@ -56,7 +56,7 @@ const NavBar = () => {
       <Box display={menu?'block':"none"} >
         <MobileNav menu={setMenu} />
       </Box>
-      <Stack direction="row" gap="34px" display={{ xs: 'none', lg: 'flex' }}>
+      <Stack direction="row" gap="34px" display={{ xs: 'none', xl: 'flex' }}>
         <Box
           position="relative"
           sx={{
@@ -126,7 +126,7 @@ const NavBar = () => {
             sx={{ width: '288px', display: 'none', zIndex: '900' }}
             className="dropdown"
           >
-            {/* <CommunityCard /> */}
+            <CommunityCard />
           </Box>
         </Box>
         <Box>

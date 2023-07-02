@@ -5,12 +5,14 @@ const DpdInput = (props) => {
   const {
     name,
     label,
+    type,
     multiline = false,
     required = false,
     updateForm,
     updateValidity,
     error,
     id,
+    errorMessage = '',
   } = props;
   const changeHandler = (e) => {
     updateForm(e.target.name, e.target.value);
@@ -34,6 +36,7 @@ const DpdInput = (props) => {
         )}
       </FormLabel>
       <TextField
+        type={type ?? 'text'}
         error={error}
         required={true}
         multiline={multiline ? true : false}
@@ -43,6 +46,7 @@ const DpdInput = (props) => {
         id={id}
         onBlur={blurHandler}
       />
+      {errorMessage && <Typography color="#f00">{errorMessage}</Typography>}
     </Stack>
   );
 };
