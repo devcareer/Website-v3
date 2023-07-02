@@ -5,6 +5,7 @@ const DpdInput = (props) => {
   const {
     name,
     label,
+    type,
     multiline = false,
     required = false,
     updateForm,
@@ -35,6 +36,7 @@ const DpdInput = (props) => {
         )}
       </FormLabel>
       <TextField
+        type={type ?? 'text'}
         error={error}
         required={true}
         multiline={multiline ? true : false}

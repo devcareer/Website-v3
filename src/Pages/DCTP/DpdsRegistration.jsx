@@ -11,7 +11,7 @@ import {
   RadioGroup,
   Radio,
   Button,
-  Checkbox
+  Checkbox,
 } from '@mui/material';
 import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
@@ -116,7 +116,7 @@ export default DpdsRegistration;
 
 const DpdsForm = () => {
   const navigate = useNavigate();
-  const [disclaimer,setDisclaimer]=useState(false)
+  const [disclaimer, setDisclaimer] = useState(false);
   const [region, setRegion] = useState('');
   const [lgas, setLgas] = useState([]);
   const [lgaValue, setLgaValue] = useState('');
@@ -128,6 +128,7 @@ const DpdsForm = () => {
     'entry.1914094770': '',
     'entry.820092698': '',
     'entry.485719841': '',
+    'entry.1803754267': '',
     'entry.700177539': '',
     'entry.1086331874': '',
     'entry.570590781': '',
@@ -138,12 +139,14 @@ const DpdsForm = () => {
     'entry.1155039305': '',
     'entry.1070926144': '',
     'entry.325735402': '',
+    'entry.2117309239': '',
     'entry.661523532': '',
   });
   const [fieldValidity, setFieldValidity] = useState({
     emailVisited: false,
     firstNameVisited: false,
     lastNameVisited: false,
+    phoneNumberVisited: false,
     genderVisited: false,
     skillVisited: false,
     stateVisited: false,
@@ -161,6 +164,7 @@ const DpdsForm = () => {
         emailVisited: true,
         firstNameVisited: true,
         lastNameVisited: true,
+        phoneNumberVisited: true,
         genderVisited: true,
         skillVisited: true,
         stateVisited: true,
@@ -191,6 +195,7 @@ const DpdsForm = () => {
     emailVisited,
     firstNameVisited,
     lastNameVisited,
+    phoneNumberVisited,
     genderVisited,
     skillVisited,
     stateVisited,
@@ -207,6 +212,7 @@ const DpdsForm = () => {
     formData['entry.1914094770'].includes('.');
   const firstNameIsValid = formData['entry.820092698'] !== '';
   const lastNameIsValid = formData['entry.485719841'] !== '';
+  const phoneNumberIsValid = formData['entry.1803754267'].length === 11;
   const genderIsValid = formData['entry.700177539'] !== '';
   const skillIsValid = formData['entry.1086331874'] !== '';
   const stateIsValid = formData['entry.570590781'] !== '';
@@ -222,6 +228,7 @@ const DpdsForm = () => {
     emailIsValid &&
     firstNameIsValid &&
     lastNameIsValid &&
+    phoneNumberIsValid &&
     genderIsValid &&
     skillIsValid &&
     stateIsValid &&
@@ -235,6 +242,7 @@ const DpdsForm = () => {
   const emailIsInvalid = !emailIsValid && emailVisited;
   const firstNameIsInvalid = !firstNameIsValid && firstNameVisited;
   const lastNameIsInvalid = !lastNameIsValid && lastNameVisited;
+  const phoneNumberIsInvalid = !phoneNumberIsValid && phoneNumberVisited;
   const genderIsInvalid = !genderIsValid && genderVisited;
   const skillIsInvalid = !skillIsValid && skillVisited;
   const stateIsInvalid = !stateIsValid && stateVisited;
@@ -245,6 +253,9 @@ const DpdsForm = () => {
   const laptopIsInvalid = !laptopIsValid && laptopVisited;
   const commitmentIsInvalid = !commitmentIsValid && commitmentVisited;
 
+  const handleDisclaimer = () => {
+    setDisclaimer(!disclaimer);
+  };
   const handleRegionChange = (e) => {
     setRegion(e.target.value);
     const selectedState = STATES.find((state) => state.name === e.target.value);
@@ -298,9 +309,7 @@ const DpdsForm = () => {
       }, 3000);
     }
   };
-   const handleDisclaimer=()=>{
-      setDisclaimer(!disclaimer)
-   }
+
   return (
     <Box component="form" mt="20px" onSubmit={submitHandler} ref={formRef}>
       <Stack gap="20px">
@@ -330,6 +339,16 @@ const DpdsForm = () => {
           updateValidity={updateValidity}
           error={lastNameIsInvalid}
           id="lastName"
+        />
+        <DpdInput
+          label="Phone Number"
+          required="true"
+          type="number"
+          name="entry.1803754267"
+          updateForm={updateForm}
+          updateValidity={updateValidity}
+          error={phoneNumberIsInvalid}
+          id="phoneNumber"
         />
         <DpdRadio
           label="GENDER"
@@ -479,19 +498,27 @@ const DpdsForm = () => {
           updateForm={updateForm}
         />
         <DpdInput
+          label="Link to your LinkedIn Profile"
+          name="entry.2117309239"
+          updateForm={updateForm}
+        />
+        <DpdInput
           label="Do you have any final thoughts or feedback on this application you'd like to share?"
           multiline="true"
           name="entry.661523532"
           updateForm={updateForm}
         />
       </Stack>
-      <Stack direction='row' mt='50px'>
-      <FormControlLabel onClick={handleDisclaimer} required control={<Checkbox />} label=" We take your privacy seriously. By submitting this form, you acknowledge and agree that your data may be shared with our trusted partners and third-party service providers." />
-      
+      <Stack direction="row" mt="50px">
+        <FormControlLabel
+          onClick={handleDisclaimer}
+          required
+          control={<Checkbox />}
+          label=" We take your privacy seriously. By submitting this form, you acknowledge and agree that your data may be shared with our trusted partners and third-party service providers."
+        />
       </Stack>
       <Button
-      disabled={!disclaimer}
-      
+        disabled={!disclaimer}
         onClick={submitHandler}
         fontWeight="500"
         fontSize="20px"
@@ -507,9 +534,9 @@ const DpdsForm = () => {
           '&:hover': {
             bgcolor: 'primary.main',
           },
-          "&:disabled": {
-            backgroundColor: '#e0e0e0'
-          }
+          '&:disabled': {
+            backgroundColor: '#e0e0e0',
+          },
         }}
       >
         Enroll into Program
