@@ -13,7 +13,7 @@ const TalentCard = ({data}) => {
   return (
     <Box sx={{ border: '1px solid #E0E0E0', borderRadius: '8px',maxWidth:"392px",padding:"24px" }}>
       <Box >
-        <Typography variant="body1" color="initial" sx={{fontWeight:"700",fontSize:"24px"}}>
+        <Typography variant="body1" color="initial" sx={{fontWeight:"700",fontSize:'22px'}}>
           {data.fullName}
         </Typography>
         <Typography variant="body1" color="initial" sx={{color:"#888888"}}>

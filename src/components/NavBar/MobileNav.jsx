@@ -4,6 +4,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import { Box, Stack, Typography,Button } from '@mui/material';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { ukflag } from '../../assets/Images';
 const navStyle = {
   color: '#888888',
   fontSize: '20px',
@@ -96,7 +97,11 @@ const MobileNav = ({ menu }) => {
           >
           
             <Link style={navStyle} to="/government/dctp">
-              DCTP
+              <Box display='flex' gap='8px'>
+              <Typography variant="body1" color="initial">UK-Nigeria Tech Hub</Typography>  <Box component='img' src={ukflag} width={30}></Box>
+
+              </Box>
+             
             </Link>
           </Stack>
         )}

@@ -2,17 +2,13 @@ import {
   Box,
   Button,
   Grid,
-  IconButton,
-  InputBase,
   Pagination,
-  Paper,
   Stack,
   Typography,
 } from '@mui/material';
 // import { talents } from '../../talents';
 import { useState } from 'react';
 import { talents } from '../../L4dtalent';
-import { search } from '../../assets/Images';
 import { TalentCard } from '../index';
 const Track = [
   {
@@ -108,35 +104,7 @@ const BaseTalents = () => {
           members.
         </Typography>
       </Box>
-      <Box sx={{ paddingTop: '40px', paddingBottom: '15px' }}>
-        <Paper
-          elevation={0}
-          sx={{
-            border: '1px solid #E0E0E0',
-            borderRadius: '8px',
-            maxWidth: '500px',
-            padding: '16px',
-          }}
-        >
-          <IconButton
-            type="button"
-            sx={{
-              display: { xs: 'none', sm: 'inline-flex' },
-              p: '10px',
-              height: '24px',
-              mt: '-4px',
-            }}
-            aria-label="search"
-          >
-            <img src={search} alt="" />
-          </IconButton>
-          <InputBase
-            sx={{ ml: 0.3, flex: 1, fontSize: '20px' }}
-            placeholder="Search"
-            inputProps={{ 'aria-label': 'search google maps' }}
-          />
-        </Paper>
-      </Box>
+    
       <Box>
         <Stack direction="row" sx={{ flexWrap: { xs: 'wrap' } }} py={3} gap={2}>
           {Track.map((item) => {

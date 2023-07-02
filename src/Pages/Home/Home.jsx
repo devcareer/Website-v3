@@ -1,6 +1,7 @@
 import React from 'react';
 import { Header, Press, Process, Testimonials } from '../../components';
 import { Box, Stack, Typography } from '@mui/material';
+import {partners} from '../../sponsors'
 import {
   revivn,
   peerigon,
@@ -66,21 +67,22 @@ const Sponsors = () => {
       </Typography>
       <Box
         display="grid"
-        gridTemplateColumns="1fr 1fr 1fr"
-        rowGap="25px"
-        columnGap={{ xs: '30px' }}
+        gridTemplateColumns={{ xs: 'repeat(2, 1fr)', sm: 'repeat(3, 1fr)' }}
+        alignItems="center"
+        justifyItems="center"
+        columnGap={{ xs: '42px', lg: '108px' }}
+        rowGap="35px"
       >
-        <Box component="img" src={kuda}></Box>
-        <Box component="img" src={peerigon} alignSelf="center"></Box>
-        <Box component="img" src={gofundme}></Box>
-        <Box component="img" src={revivn}></Box>
-        <Box
-          component="img"
-          src={isams}
-          justifySelf="center"
-          alignSelf="center"
-        ></Box>
-        <Box component="img" src={eden} justifySelf="center"></Box>
+        
+        {
+          partners.map(item=>{
+            return(
+              <Box component="img" src={item.src} alt={item.alt} sx={{
+                maxWidth: item.maxWidth ? item.maxWidth : '100%'
+              }}></Box>
+            )
+          })
+        }
       </Box>
     </Box>
   );
