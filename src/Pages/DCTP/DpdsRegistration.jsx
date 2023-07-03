@@ -509,12 +509,12 @@ const DpdsForm = () => {
           updateForm={updateForm}
         />
       </Stack>
-      <Stack direction="row" mt="50px">
+      <Stack direction="row" mt="50px" >
         <FormControlLabel
-          onClick={handleDisclaimer}
           required
-          control={<Checkbox />}
-          label=" We take your privacy seriously. By submitting this form, you acknowledge and agree that your data may be shared with our trusted partners and third-party service providers."
+          control={<Checkbox onChange={handleDisclaimer}/>}
+          label={
+          <p> We take your privacy seriously. By submitting this form, you acknowledge and agree that your data may be shared with our trusted partners and third-party service providers.</p>}
         />
       </Stack>
       <Button
