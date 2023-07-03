@@ -41,8 +41,9 @@ const SuccessModal = () => {
           color="#FFF"
           fontSize={{ xs: '16px', md: '20px' }}
           fontWeight="500"
+          textAlign="center"
         >
-          Your registration was successful
+          We Have Recieved Your Application, We Will Get Back To You Soon.
         </Typography>
       </Stack>
     </Stack>
