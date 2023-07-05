@@ -1,19 +1,8 @@
 import React from 'react';
 import { Header, Press, Process, Testimonials } from '../../components';
 import { Box, Stack, Typography } from '@mui/material';
-import {partners} from '../../sponsors'
-import {
-  revivn,
-  peerigon,
-  kuda,
-  eden,
-  isams,
-  gofundme,
-  missionTwo,
-  teacher,
-  profile,
-  jobPack,
-} from '../../assets/Images';
+import { partners } from '../../sponsors';
+import { missionTwo, teacher, profile, jobPack } from '../../assets/Images';
 
 const Home = () => {
   const processTitle =
@@ -73,16 +62,18 @@ const Sponsors = () => {
         columnGap={{ xs: '42px', lg: '108px' }}
         rowGap="35px"
       >
-        
-        {
-          partners.map(item=>{
-            return(
-              <Box component="img" src={item.src} alt={item.alt} sx={{
-                maxWidth: item.maxWidth ? item.maxWidth : '100%'
-              }}></Box>
-            )
-          })
-        }
+        {partners.map((item) => {
+          return (
+            <Box
+              component="img"
+              src={item.src}
+              alt={item.alt}
+              sx={{
+                maxWidth: item.maxWidth ? item.maxWidth : '100%',
+              }}
+            ></Box>
+          );
+        })}
       </Box>
     </Box>
   );
