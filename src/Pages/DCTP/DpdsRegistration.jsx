@@ -512,7 +512,7 @@ const DpdsForm = () => {
           updateForm={updateForm}
         />
       </Stack>
-      <Stack direction="row" mt="50px">
+      <Stack direction="row" mt="50px" >
         <FormControlLabel
           required
           control={<Checkbox onClick={handleDisclaimer} />}

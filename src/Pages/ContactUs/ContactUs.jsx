@@ -5,7 +5,7 @@ import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 const ContactUs = () => {
   return (
-    <Box position='relative' sx={{background: 'linear-gradient(170deg, #ACE8DB,#FFF)'}}>
+    <Box position='relative' sx={{background: 'linear-gradient(120deg, rgba(255,255,255,1) 10%, rgba(172,232,219,1) 37%, rgba(212,243,236,1) 47%, rgba(255,255,255,1) 62%);'}}>
       <ToastContainer />
     <Box
       paddingY={5}
