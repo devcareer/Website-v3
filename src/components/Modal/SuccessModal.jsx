@@ -45,6 +45,18 @@ const SuccessModal = () => {
         >
           We Have Recieved Your Application, We Will Get Back To You Soon.
         </Typography>
+        <Typography color="#FFF">
+          Kindly Join the Community Here
+          <Typography
+            color="#00F"
+            component="a"
+            href="https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform"
+            target="_blank"
+            ml="5px"
+          >
+            bit.ly/devcareerafrica
+          </Typography>
+        </Typography>
       </Stack>
     </Stack>
   );

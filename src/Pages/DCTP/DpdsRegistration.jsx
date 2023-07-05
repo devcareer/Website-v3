@@ -24,7 +24,7 @@ const PROGRAM = [
   'Product Management',
   'Product Design',
 ];
-
+const OUTLET = ['Twitter', 'Newspaper', 'Slack', 'Email', 'Google', 'Others'];
 const DpdsRegistration = () => {
   const pathname = useLocation();
   const navigate = useNavigate();
@@ -140,6 +140,7 @@ const DpdsForm = () => {
     'entry.1070926144': '',
     'entry.325735402': '',
     'entry.2117309239': '',
+    'entry.1432576111': '',
     'entry.661523532': '',
   });
   const [fieldValidity, setFieldValidity] = useState({
@@ -156,6 +157,7 @@ const DpdsForm = () => {
     reasonVisited: false,
     laptopVisited: false,
     commitmentVisited: false,
+    outletVisited: false,
   });
 
   const triggerAllInputsOnSubmission = () => {
@@ -174,6 +176,7 @@ const DpdsForm = () => {
         reasonVisited: true,
         laptopVisited: true,
         commitmentVisited: true,
+        outletVisited: true,
       };
     });
   };
@@ -204,6 +207,7 @@ const DpdsForm = () => {
     reasonVisited,
     laptopVisited,
     commitmentVisited,
+    outletVisited,
   } = fieldValidity;
 
   const emailIsValid =
@@ -223,6 +227,7 @@ const DpdsForm = () => {
     formData['entry.1635228319'].split(' ').length < 100;
   const laptopIsValid = formData['entry.1155039305'] !== '';
   const commitmentIsValid = formData['entry.1070926144'] !== '';
+  const outletIsValid = formData['entry.1432576111'] !== '';
   const overallFormIsValid =
     emailIsValid &&
     firstNameIsValid &&
@@ -236,7 +241,8 @@ const DpdsForm = () => {
     programIsValid &&
     reasonIsValid &&
     laptopIsValid &&
-    commitmentIsValid;
+    commitmentIsValid &&
+    outletIsValid;
   // Invalidity is a combination of a field being invalid and being touched, a field doesn't throw up any error even though it is invalid till it is touched.
   const emailIsInvalid = !emailIsValid && emailVisited;
   const firstNameIsInvalid = !firstNameIsValid && firstNameVisited;
@@ -251,7 +257,7 @@ const DpdsForm = () => {
   const reasonIsInvalid = !reasonIsValid && reasonVisited;
   const laptopIsInvalid = !laptopIsValid && laptopVisited;
   const commitmentIsInvalid = !commitmentIsValid && commitmentVisited;
-
+  const outletIsInvalid = !outletIsValid && outletVisited;
   const handleDisclaimer = () => {
     setDisclaimer(!disclaimer);
   };
@@ -292,7 +298,7 @@ const DpdsForm = () => {
           setError('');
           setTimeout(() => {
             navigate('/government/dctp');
-          }, 5000);
+          }, 7000);
         })
         .catch((err) => {
           setIsSubmitting(false);
@@ -425,19 +431,7 @@ const DpdsForm = () => {
               *
             </Typography>
           </FormLabel>
-          <Typography>
-            (if no, signup here
-            <Typography
-              color="#1E6091"
-              component="a"
-              href="https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform"
-              target="_blank"
-              ml="5px"
-            >
-              bit.ly/devcareerafrica
-            </Typography>
-            )
-          </Typography>
+
           <RadioGroup
             name="entry.636017523"
             onChange={(e) => updateForm(e.target.name, e.target.value)}
@@ -501,6 +495,15 @@ const DpdsForm = () => {
           label="Link to your LinkedIn Profile"
           name="entry.2117309239"
           updateForm={updateForm}
+        />
+        <DpdRadio
+          label="How did you hear of this program?"
+          titleColor="#181818"
+          required="true"
+          options={OUTLET}
+          name="entry.1432576111"
+          updateForm={updateForm}
+          error={outletIsInvalid}
         />
         <DpdInput
           label="Do you have any final thoughts or feedback on this application you'd like to share?"
