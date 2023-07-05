@@ -10,7 +10,7 @@ import {
   ContactUs,
   DpdsRegistration,
   AccountSettings,
-  EditProfile
+  EditProfile,
 } from './Pages';
 import { ForgetPassword } from './Auth';
 
@@ -50,23 +50,7 @@ export const router = createBrowserRouter([
           },
         ],
       },
-      {
-        path:"profile",
-        children:[
-          {
-            path:'forgetpassword',
-            element:<ForgetPassword />
-          },
-          {
-            path:'settings',
-            element:<AccountSettings />
-          },
-          {
-            path:'edit',
-            element:<EditProfile />
-          }
-        ]
-      },
+
       {
         path: '/support',
         element: <Support />,
@@ -78,6 +62,23 @@ export const router = createBrowserRouter([
       {
         path: 'contact',
         element: <ContactUs />,
+      },
+    ],
+  },
+  {
+    path: '/profile',
+    children: [
+      {
+        path: 'forgetpassword',
+        element: <ForgetPassword />,
+      },
+      {
+        path: 'settings',
+        element: <AccountSettings />,
+      },
+      {
+        path: 'edit',
+        element: <EditProfile />,
       },
     ],
   },
