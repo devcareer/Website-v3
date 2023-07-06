@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Container, Typography, Button, Box } from '@mui/material';
 import { donation } from '../../assets/Images';
 import SupportCard from './SupportCard';
@@ -7,6 +7,14 @@ import DonateModal from './DonateModal';
 import { patreon, Gofundme, resources, donate } from '../../assets/Images';
 
 const Support = () => {
+  const [showModal, setShowModal] = useState(false);
+
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
+  const handleCloseModal = () => {
+    setShowModal(false);
+  };
   return (
     <>
       <Container maxWidth="false" disableGutters sx={{ pb: '61px' }}>
@@ -43,6 +51,7 @@ const Support = () => {
 
             <Button
               variant="contained"
+              onClick={() => handleShowModal()}
               sx={{
                 width: '100%',
                 maxWidth: '440px',
@@ -115,6 +124,7 @@ const Support = () => {
               text="Your contribution fuels dreams and transforms lives. Donate now and make a lasting impact.
                                              "
               btntxt="Donate now"
+              onShowModal={handleShowModal}
             />
             <SupportCard
               image={patreon}
@@ -140,7 +150,7 @@ const Support = () => {
           </Box>
         </Container>
       </Container>
-      <DonateModal />
+      <DonateModal showModal={showModal} onClose={handleCloseModal} />
     </>
   );
 };

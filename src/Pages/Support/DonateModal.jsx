@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import {
   Dialog,
-  DialogActions,
   Button as MuiButton,
   IconButton,
   Typography,
@@ -12,20 +11,15 @@ import {
   OutlinedInput as MuiOutlinedInput,
   FormControl,
   InputAdornment,
-  FormControlLabel,
-  RadioGroup,
-  Radio,
-  FormLabel,
-  InputLabel,
-  InputBase,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactComponent as Dollar } from '../../assets/Images/dollar-circle.svg';
 import { ReactComponent as Edit } from '../../assets/images/edit-input.svg';
 
-const DonateModal = () => {
+const DonateModal = ({ showModal, onClose }) => {
   const [amount, setAmount] = useState(500);
   const [inputAmount, setInputAmount] = useState('');
+  const [showBankDetails, setShowBankDetails] = useState(false);
 
   const handleChangeAmount = (event) => {
     // setAmount(event.target.value);
@@ -38,24 +32,46 @@ const DonateModal = () => {
     setInputAmount(event.target.value);
     setAmount(null);
   };
-
+  const handleCloseModal = () => {
+    onClose();
+  };
   return (
-    <Dialog open={true}>
-      <Box sx={{ display: 'flex', columnGap: '30px', alignItems: 'center' }}>
+    <Dialog
+      open={showModal}
+      onClose={() => handleCloseModal()}
+      sx={{
+        '& .MuiPaper-root': {
+          py: '16px',
+          px: '40px',
+        },
+      }}
+    >
+      <Box
+        sx={{
+          display: 'flex',
+          columnGap: '30px',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+        }}
+      >
         <Typography
           component="h1"
           variant="h3"
           color="primary.main"
           fontWeight={700}
-          fontSize="32px"
+          fontSize="28px"
         >
           Make A Donation Today
         </Typography>
-        <IconButton sx={{ color: 'primary.main' }}>
-          <CloseIcon sx={{ fontSize: '32px' }} />
+        <IconButton
+          sx={{ color: 'text.grey.700' }}
+          edge="end"
+          onClick={() => handleCloseModal()}
+        >
+          <CloseIcon sx={{ fontSize: '28px' }} />
         </IconButton>
       </Box>
-      <DialogContent>
+      <DialogContent sx={{ px: '0' }}>
         <Box>
           <Typography
             component="h2"
@@ -77,6 +93,7 @@ const DonateModal = () => {
               px: '16px',
               columnGap: '8px',
               maxWidth: 'fit-content',
+              marginTop: '12px',
             }}
           >
             <SvgIcon
@@ -93,7 +110,12 @@ const DonateModal = () => {
               {amount || inputAmount}
             </Typography>
           </Box>
-          <Box display="flex" columnGap="20px" alignItems="center">
+          <Box
+            display="flex"
+            columnGap="20px"
+            alignItems="center"
+            marginTop="20px"
+          >
             <Button
               value={100}
               onClick={(event) => handleChangeAmount(event)}
@@ -131,6 +153,13 @@ const DonateModal = () => {
             value={inputAmount}
             onChange={(event) => handleChangeInputAmount(event)}
             inputProps={{ min: 1 }}
+            sx={{
+              borderRadius: '8px',
+
+              '& .MuiOutlinedInput-input': {
+                py: '12px',
+              },
+            }}
             startAdornment={
               <InputAdornment position="start">
                 <SvgIcon
@@ -142,59 +171,7 @@ const DonateModal = () => {
             }
           />
         </FormControl>
-        <Box>
-          <FormControl>
-            <FormLabel id="demo-radio-buttons-group-label">
-              <Typography
-                component="h2"
-                variant="body1"
-                fontWeight={700}
-                color="text.grey.400"
-                fontFamily="'DM Sans', sans-serif"
-                textTransform="uppercase"
-              >
-                Payment Method
-              </Typography>
-            </FormLabel>
-            <RadioGroup
-              aria-labelledby="demo-radio-buttons-group-label"
-              defaultValue="Bank/Wire Transfer"
-              name="radio-buttons-group"
-              row
-            >
-              <FormControlLabel
-                value="Bank/Wire Transfer"
-                control={
-                  <Radio
-                    sx={{
-                      color: (theme) => theme.palette.text.grey[200],
-                      '&.Mui-checked': {
-                        color: 'primary.main',
-                      },
-                    }}
-                  />
-                }
-                label="Bank/Wire Transfer"
-              />
-
-              <FormControlLabel
-                value="Debit Card"
-                control={
-                  <Radio
-                    sx={{
-                      color: (theme) => theme.palette.text.grey[200],
-                      '&.Mui-checked': {
-                        color: 'primary.main',
-                      },
-                    }}
-                  />
-                }
-                label="Debit Card"
-              />
-            </RadioGroup>
-          </FormControl>
-        </Box>
-        <Box>
+        <Box marginTop="24px">
           <Typography
             component="h2"
             variant="body1"
@@ -203,46 +180,118 @@ const DonateModal = () => {
             fontFamily="'DM Sans', sans-serif"
             textTransform="uppercase"
           >
-            Personal Information
+            Payment Method
           </Typography>
-          <FormControl variant="standard">
-            <InputLabel
-              required
-              shrink
-              htmlFor="bootstrap-input"
-              sx={{
-                color: '#363636',
-                fontSize: '16px',
-                fontWeight: 700,
-                '& .MuiFormLabel-asterisk': {
-                  color: '#CB2B11',
-                },
-              }}
-            >
-              First Name
-            </InputLabel>
-            <InputBase
-              id="bootstrap-input"
-              sx={{ border: '1px solid #C2C2C2' }}
-            />
-          </FormControl>
+          <Box display="flex" columnGap="20px" marginTop="12px">
+            <Button onClick={() => setShowBankDetails(true)}>
+              Bank Transfer
+            </Button>
+            <Button>Debit Card</Button>
+          </Box>
+        </Box>
+        {showBankDetails && (
+          <Box my="20px" mx="auto">
+            <Box>
+              <Typography
+                component="h2"
+                variant="subtitle2"
+                fontWeight={700}
+                color="text.grey.400"
+                fontFamily="'DM Sans', sans-serif"
+                textTransform="uppercase"
+              >
+                DOM ACCOUNT WIRE TRANSFER (USD)
+              </Typography>
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Bank Name: UNITED BANK FOR AFRICA PLC, NIGERIA
+              </Typography>
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Account Number: 2XXX34XXXX
+              </Typography>
+
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                International Routing (SWIFT-BIC) Code: UNAFNGLA
+              </Typography>
+            </Box>
+            <Box mt="8px">
+              <Typography
+                component="h2"
+                variant="subtitle2"
+                fontWeight={700}
+                color="text.grey.400"
+                fontFamily="'DM Sans', sans-serif"
+                textTransform="uppercase"
+              >
+                NAIRA ACCOUNT
+              </Typography>
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Bank Name: UNITED BANK FOR AFRICA PLC, NIGERIA
+              </Typography>
+              <Typography
+                component="h3"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Bank Account Name: DEVCAREER
+              </Typography>
+              <Typography
+                component="h3"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Account Number: 2XXX34XXXX
+              </Typography>
+            </Box>
+          </Box>
+        )}
+        <Box>
+          <Typography
+            sx={{
+              color: '#363636',
+              fontSize: '20px',
+              fontWeight: '400',
+              marginTop: '16px',
+              '& span': {
+                color: 'primary.main',
+                component: 'h3',
+                variant: 'h3',
+                fontWeight: '700',
+                fontSize: '24px',
+              },
+            }}
+          >
+            Total Donation: <span>${amount || inputAmount}</span>
+          </Typography>
         </Box>
       </DialogContent>
-      <DialogActions sx={{ justifyContent: 'flex-start' }}>
-        <MuiButton
-          variant="contained"
-          sx={{
-            py: '20px',
-            borderRadius: '8px',
-            width: '100%',
-            mt: '32px',
-            color: '#FEFEFE',
-            maxWidth: '404px',
-          }}
-        >
-          Donate Now
-        </MuiButton>
-      </DialogActions>
     </Dialog>
   );
 };
@@ -250,12 +299,13 @@ const DonateModal = () => {
 const Button = styled(MuiButton)(({ isSelected, theme }) => ({
   border: '1px solid #E0E0E0',
   borderRadius: '8px',
-  color: '#363636',
+  color: isSelected ? '#FEFEFE' : '#363636',
   padding: '8px 16px',
   backgroundColor: isSelected ? theme.palette.primary.main : '#FEFEFE',
 
   '&:hover': {
     backgroundColor: isSelected ? theme.palette.primary.main : '#FEFEFE',
+    color: isSelected ? '#FEFEFE' : '#363636',
   },
 }));
 
