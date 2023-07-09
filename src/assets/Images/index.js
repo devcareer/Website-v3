@@ -70,8 +70,7 @@ export { default as ukflag } from './ukflag.png';
 export { default as idris } from './Idris.jpg';
 export { default as john } from './John.jpg';
 export { default as ayomikun } from './Ayomikun.jpg';
-export {default as Ibukun} from './Ibukun.png'
-export {default as joyce} from './joyce.png'
-export {default as dev} from './dev.png'
-
-
+export { default as Ibukun } from './Ibukun.png';
+export { default as joyce } from './joyce.png';
+export { default as dev } from './dev.png';
+export { default as signOut } from './SignOut.png';

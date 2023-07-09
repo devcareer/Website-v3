@@ -46,7 +46,7 @@ const BaseTalents = () => {
   // Records to be displayed on the current page
   const currentRecords = talent.slice(indexOfFirstRecord, indexOfLastRecord);
   const nPages = Math.ceil(talents.length / recordsPerPage);
- 
+
   const [isBlue, setIsBlue] = useState(1);
   const handleClick = (id, subtitle) => {
     setIsBlue(id);
@@ -104,7 +104,7 @@ const BaseTalents = () => {
           members.
         </Typography>
       </Box>
-    
+
       <Box>
         <Stack direction="row" sx={{ flexWrap: { xs: 'wrap' } }} py={3} gap={2}>
           {Track.map((item) => {
@@ -142,10 +142,14 @@ const BaseTalents = () => {
           );
         })}
       </Grid>
-    <Box sx={{display:"flex",justifyContent:"center",mt:"4rem"}}>
-<Pagination  page={currentPage} count={nPages} onChange={handleChange} size='large'/>
-    </Box>
-      
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: '4rem' }}>
+        <Pagination
+          page={currentPage}
+          count={nPages}
+          onChange={handleChange}
+          size="large"
+        />
+      </Box>
     </Box>
   );
 };

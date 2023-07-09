@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
-import { Footer, NavBar,TopNav} from '../../components';
+import { Footer, NavBar, TopNav } from '../../components';
 const Root = () => {
   const { pathname } = useLocation();
 
@@ -9,7 +9,7 @@ const Root = () => {
   }, [pathname]);
   return (
     <>
-    <TopNav />
+      <TopNav />
       <NavBar />
       <Outlet />
       <Footer />

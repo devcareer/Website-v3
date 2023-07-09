@@ -7,5 +7,6 @@ export { default as Talents } from './Talents/Talents';
 export { default as AboutUs } from './AboutUs/AboutUs';
 export { default as ContactUs } from './ContactUs/ContactUs';
 export { default as DpdsRegistration } from './DCTP/DpdsRegistration';
-export { default as AccountSettings } from './AccountSettings/AccountSettings';
-export { default as EditProfile } from './EditProfile/EditProfile';
+export { default as AccountSettings } from './Profile/AccountSettings/AccountSettings';
+export { default as EditProfile } from './Profile/EditProfile/EditProfile';
+export { default as ProfileRoot } from './Profile/ProfileRoot/ProfileRoot';
