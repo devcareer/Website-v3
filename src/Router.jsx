@@ -11,8 +11,9 @@ import {
   DpdsRegistration,
   AccountSettings,
   EditProfile,
+  ProfileRoot,
 } from './Pages';
-import { ForgetPassword } from './Auth';
+import { AuthRoot } from './Auth';
 
 export const router = createBrowserRouter([
   {
@@ -66,21 +67,13 @@ export const router = createBrowserRouter([
     ],
   },
   {
-    path: '/profile',
-    children: [
-      {
-        path: 'forgetpassword',
-        element: <ForgetPassword />,
-      },
-      {
-        path: 'settings',
-        element: <AccountSettings />,
-      },
-      {
-        path: 'edit',
-        element: <EditProfile />,
-      },
-    ],
+    path: 'auth',
+    element: <AuthRoot />,
   },
+  {
+    path: 'profile',
+    element: <ProfileRoot />,
+  },
+
   { path: 'programs/dpds/registration', element: <DpdsRegistration /> },
 ]);
