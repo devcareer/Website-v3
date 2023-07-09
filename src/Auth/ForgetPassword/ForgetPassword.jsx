@@ -1,14 +1,12 @@
 import React from 'react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { Typography, Box, Button, Stack } from '@mui/material';
 import { Input } from '../../components';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
 import { AuthCard } from '../../Auth';
 
 const ForgetPassword = () => {
-  const [searchParms, setParams] = useSearchParams();
-  const mode = searchParms.get('mode');
-  console.log(mode);
+  const navigate = useNavigate();
 
   return (
     <AuthCard>
@@ -53,10 +51,17 @@ const ForgetPassword = () => {
           <Typography variant="body1" color="initial">
             Don’t have an account?
           </Typography>
-          {/* <Typography variant="body1" color="initial" fontWeight="bold">
+          <Typography
+            variant="body1"
+            color="initial"
+            fontWeight="bold"
+            onClick={() => navigate('?mode=signup')}
+            sx={{
+              cursor: 'pointer',
+            }}
+          >
             Create an account
-          </Typography> */}
-          <Link to="?mode=signup"> Create an account</Link>
+          </Typography>
         </Stack>
       </Stack>
     </AuthCard>
