@@ -33,7 +33,11 @@ const DonateModal = ({ showModal, onClose }) => {
     setAmount(null);
   };
   const handleCloseModal = () => {
+    setShowBankDetails(false);
     onClose();
+  };
+  const handleShowDebitCard = () => {
+    setShowBankDetails(false);
   };
   return (
     <Dialog
@@ -183,10 +187,13 @@ const DonateModal = ({ showModal, onClose }) => {
             Payment Method
           </Typography>
           <Box display="flex" columnGap="20px" marginTop="12px">
-            <Button onClick={() => setShowBankDetails(true)}>
+            <Button
+              onClick={() => setShowBankDetails(true)}
+              sx={{ '& :hover': {} }}
+            >
               Bank Transfer
             </Button>
-            <Button>Debit Card</Button>
+            <Button onClick={() => handleShowDebitCard()}>Debit Card</Button>
           </Box>
         </Box>
         {showBankDetails && (
@@ -218,7 +225,16 @@ const DonateModal = ({ showModal, onClose }) => {
                 fontStyle="italic"
                 fontSize="16px"
               >
-                Account Number: 2XXX34XXXX
+                Bank Account Name: DEVELOPERS CAREER ADVANCEMENT INITIATIVE
+              </Typography>
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Account Number: 3004017548
               </Typography>
 
               <Typography
@@ -231,7 +247,56 @@ const DonateModal = ({ showModal, onClose }) => {
                 International Routing (SWIFT-BIC) Code: UNAFNGLA
               </Typography>
             </Box>
-            <Box mt="8px">
+            <Box mt="16px">
+              <Typography
+                component="h2"
+                variant="subtitle2"
+                fontWeight={700}
+                color="text.grey.400"
+                fontFamily="'DM Sans', sans-serif"
+                textTransform="uppercase"
+              >
+                DOM ACCOUNT WIRE TRANSFER (GBP)
+              </Typography>
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Bank Name: UNITED BANK FOR AFRICA PLC, NIGERIA
+              </Typography>
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Bank Account Name: DEVELOPERS CAREER ADVANCEMENT INITIATIVE
+              </Typography>
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                Account Number: 3004017555
+              </Typography>
+
+              <Typography
+                component="p"
+                variant="h6"
+                color="text.grey.600"
+                fontStyle="italic"
+                fontSize="16px"
+              >
+                International Routing (SWIFT-BIC) Code: UNAFNGLA
+              </Typography>
+            </Box>
+            <Box mt="16px">
               <Typography
                 component="h2"
                 variant="subtitle2"
@@ -258,7 +323,7 @@ const DonateModal = ({ showModal, onClose }) => {
                 fontStyle="italic"
                 fontSize="16px"
               >
-                Bank Account Name: DEVCAREER
+                Bank Account Name: DEVELOPERS CAREER ADVANCEMENT INITIATIVE
               </Typography>
               <Typography
                 component="h3"
@@ -267,7 +332,7 @@ const DonateModal = ({ showModal, onClose }) => {
                 fontStyle="italic"
                 fontSize="16px"
               >
-                Account Number: 2XXX34XXXX
+                Account Number: 1026010237
               </Typography>
             </Box>
           </Box>
@@ -304,7 +369,7 @@ const Button = styled(MuiButton)(({ isSelected, theme }) => ({
   backgroundColor: isSelected ? theme.palette.primary.main : '#FEFEFE',
 
   '&:hover': {
-    backgroundColor: isSelected ? theme.palette.primary.main : '#FEFEFE',
+    backgroundColor: isSelected ? theme.palette.primary.main : '#F8F9F5',
     color: isSelected ? '#FEFEFE' : '#363636',
   },
 }));
