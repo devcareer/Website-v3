@@ -15,6 +15,8 @@ import {
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactComponent as Dollar } from '../../assets/Images/dollar-circle.svg';
 import { ReactComponent as Edit } from '../../assets/images/edit-input.svg';
+import BankTransferDetails from './components/BankTransferDetails';
+import { BankTransferTitle } from './components/BankTransferTitle';
 
 const DonateModal = ({ showModal, onClose }) => {
   const [amount, setAmount] = useState(500);
@@ -46,7 +48,10 @@ const DonateModal = ({ showModal, onClose }) => {
       sx={{
         '& .MuiPaper-root': {
           py: '16px',
-          px: '40px',
+          px: { xs: '20px', sm: '30px', md: '40px' },
+          width: '90%',
+          maxWidth: '550px',
+          overflowX: 'hidden',
         },
       }}
     >
@@ -56,6 +61,7 @@ const DonateModal = ({ showModal, onClose }) => {
           columnGap: '30px',
           alignItems: 'center',
           justifyContent: 'space-between',
+          paddingBottom: '16px',
         }}
       >
         <Typography
@@ -63,19 +69,42 @@ const DonateModal = ({ showModal, onClose }) => {
           variant="h3"
           color="primary.main"
           fontWeight={700}
-          fontSize="28px"
+          fontSize={{ xs: '20px', md: '28px' }}
         >
           Make A Donation Today
         </Typography>
         <IconButton
-          sx={{ color: 'text.grey.700' }}
+          sx={{
+            color: 'text.grey.700',
+            position: 'absolute',
+            right: { xs: '4%', sm: '4%', md: '6%' },
+            top: 8,
+          }}
           edge="end"
           onClick={() => handleCloseModal()}
         >
           <CloseIcon sx={{ fontSize: '28px' }} />
         </IconButton>
       </Box>
-      <DialogContent sx={{ px: '0' }}>
+      <DialogContent
+        sx={{
+          px: '0',
+          scrollbarWidth: 'thin',
+          scrollbarColor: '#b2b2b2 #fff',
+
+          '&::-webkit-scrollbar': {
+            width: '4px',
+          },
+
+          '&::-webkit-scrollbar-track': {
+            backgroundColor: '#fff',
+          },
+          '&::-webkit-scrollbar-thumb': {
+            backgroundColor: 'text.grey.400',
+            borderRadius: '50px',
+          },
+        }}
+      >
         <Box>
           <Typography
             component="h2"
@@ -117,8 +146,10 @@ const DonateModal = ({ showModal, onClose }) => {
           <Box
             display="flex"
             columnGap="20px"
+            rowGap={{ xs: '10px' }}
             alignItems="center"
             marginTop="20px"
+            flexWrap={{ xs: 'wrap' }}
           >
             <Button
               value={100}
@@ -186,7 +217,13 @@ const DonateModal = ({ showModal, onClose }) => {
           >
             Payment Method
           </Typography>
-          <Box display="flex" columnGap="20px" marginTop="12px">
+          <Box
+            display="flex"
+            rowGap={{ xs: '10px' }}
+            columnGap={{ sm: '20px' }}
+            marginTop="12px"
+            flexDirection={{ xs: 'column', sm: 'row' }}
+          >
             <Button
               onClick={() => setShowBankDetails(true)}
               sx={{ '& :hover': {} }}
@@ -199,141 +236,59 @@ const DonateModal = ({ showModal, onClose }) => {
         {showBankDetails && (
           <Box my="20px" mx="auto">
             <Box>
-              <Typography
-                component="h2"
-                variant="subtitle2"
-                fontWeight={700}
-                color="text.grey.400"
-                fontFamily="'DM Sans', sans-serif"
-                textTransform="uppercase"
-              >
+              <BankTransferTitle>
                 DOM ACCOUNT WIRE TRANSFER (USD)
-              </Typography>
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Bank Name: UNITED BANK FOR AFRICA PLC, NIGERIA
-              </Typography>
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Bank Account Name: DEVELOPERS CAREER ADVANCEMENT INITIATIVE
-              </Typography>
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Account Number: 3004017548
-              </Typography>
+              </BankTransferTitle>
 
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                International Routing (SWIFT-BIC) Code: UNAFNGLA
-              </Typography>
+              <BankTransferDetails
+                title="Bank Name"
+                text="UNITED BANK FOR AFRICA PLC, NIGERIA"
+              />
+              <BankTransferDetails
+                title="Bank Account Name"
+                text="DEVELOPERS CAREER ADVANCEMENT
+                INITIATIVE"
+              />
+              <BankTransferDetails title="Account Number" text="3004017548" />
+              <BankTransferDetails
+                title="International Routing (SWIFT-BIC) Code"
+                text="UNAFNGLA"
+              />
             </Box>
             <Box mt="16px">
-              <Typography
-                component="h2"
-                variant="subtitle2"
-                fontWeight={700}
-                color="text.grey.400"
-                fontFamily="'DM Sans', sans-serif"
-                textTransform="uppercase"
-              >
-                DOM ACCOUNT WIRE TRANSFER (GBP)
-              </Typography>
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Bank Name: UNITED BANK FOR AFRICA PLC, NIGERIA
-              </Typography>
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Bank Account Name: DEVELOPERS CAREER ADVANCEMENT INITIATIVE
-              </Typography>
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Account Number: 3004017555
-              </Typography>
+              <Box>
+                <BankTransferTitle>
+                  DOM ACCOUNT WIRE TRANSFER (GBP)
+                </BankTransferTitle>
 
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                International Routing (SWIFT-BIC) Code: UNAFNGLA
-              </Typography>
-            </Box>
-            <Box mt="16px">
-              <Typography
-                component="h2"
-                variant="subtitle2"
-                fontWeight={700}
-                color="text.grey.400"
-                fontFamily="'DM Sans', sans-serif"
-                textTransform="uppercase"
-              >
-                NAIRA ACCOUNT
-              </Typography>
-              <Typography
-                component="p"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Bank Name: UNITED BANK FOR AFRICA PLC, NIGERIA
-              </Typography>
-              <Typography
-                component="h3"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Bank Account Name: DEVELOPERS CAREER ADVANCEMENT INITIATIVE
-              </Typography>
-              <Typography
-                component="h3"
-                variant="h6"
-                color="text.grey.600"
-                fontStyle="italic"
-                fontSize="16px"
-              >
-                Account Number: 1026010237
-              </Typography>
+                <BankTransferDetails
+                  title="Bank Name"
+                  text="UNITED BANK FOR AFRICA PLC, NIGERIA"
+                />
+                <BankTransferDetails
+                  title="Bank Account Name"
+                  text="DEVELOPERS CAREER ADVANCEMENT
+                INITIATIVE"
+                />
+                <BankTransferDetails title="Account Number" text="3004017555" />
+                <BankTransferDetails
+                  title="International Routing (SWIFT-BIC) Code"
+                  text="UNAFNGLA"
+                />
+              </Box>
+              <Box mt="16px">
+                <BankTransferTitle>NAIRA ACCOUNT</BankTransferTitle>
+                <BankTransferDetails
+                  title="Bank Name"
+                  text="UNITED BANK FOR AFRICA PLC, NIGERIA"
+                />
+                <BankTransferDetails
+                  title="Account Name"
+                  text="DEVELOPERS CAREER ADVANCEMENT
+                  INITIATIVE"
+                />
+                <BankTransferDetails title="Account Number" text="1026010237" />
+              </Box>
             </Box>
           </Box>
         )}
