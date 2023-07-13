@@ -14,7 +14,7 @@ import {
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import { ReactComponent as Dollar } from '../../assets/Images/dollar-circle.svg';
-import { ReactComponent as Edit } from '../../assets/images/edit-input.svg';
+import { ReactComponent as Edit } from '../../assets/Images/edit-input.svg';
 import BankTransferDetails from './components/BankTransferDetails';
 import { BankTransferTitle } from './components/BankTransferTitle';
 
@@ -334,9 +334,6 @@ const OutlinedInput = styled(MuiOutlinedInput)({
     webkitAppearance: 'none',
     margin: 0,
   },
-  // input[type="number"] {
-  //   -moz-appearance: textfield;
-  // }
 });
 
 export default DonateModal;
