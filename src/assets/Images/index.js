@@ -74,3 +74,4 @@ export { default as Ibukun } from './Ibukun.png';
 export { default as joyce } from './joyce.png';
 export { default as dev } from './dev.png';
 export { default as signOut } from './SignOut.png';
+// export { ReactComponent as Dollar } from './dollar-circle.svg';
