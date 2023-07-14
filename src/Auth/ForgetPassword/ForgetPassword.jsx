@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Typography, Box, Button, Stack } from '@mui/material';
 import { Input } from '../../components';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';

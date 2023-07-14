@@ -1,4 +1,4 @@
-import { FormLabel, TextField, Stack } from '@mui/material';
+import { FormLabel, TextField, Stack, Typography } from '@mui/material';
 
 const Input = ({
   title,
@@ -8,6 +8,8 @@ const Input = ({
   placeholder,
   type,
   multiline,
+  onBlur,
+  error,
 }) => {
   return (
     <Stack direction="column" gap={0.5}>
@@ -19,10 +21,17 @@ const Input = ({
         name={name}
         value={value}
         onChange={onChange}
+        onBlur={onBlur || null}
         placeholder={placeholder}
         multiline={multiline ?? false}
         type={type ?? 'text'}
+        error={error ? true : false}
       />
+      {error && (
+        <Typography color="#f00" fontSize="14px">
+          {error}
+        </Typography>
+      )}
     </Stack>
   );
 };
