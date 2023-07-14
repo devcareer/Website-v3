@@ -13,8 +13,8 @@ import {
   InputAdornment,
 } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
-import { ReactComponent as Dollar } from '../../assets/Images/dollar-circle.svg';
-import { ReactComponent as Edit } from '../../assets/Images/edit-input.svg';
+// import { ReactComponent as Dollar } from '../../assets/Images/dollar-circle.svg';
+// import { ReactComponent as Edit } from '../../assets/Images/edit-input.svg';
 import BankTransferDetails from './components/BankTransferDetails';
 import { BankTransferTitle } from './components/BankTransferTitle';
 
@@ -336,4 +336,83 @@ const OutlinedInput = styled(MuiOutlinedInput)({
   },
 });
 
+const Dollar = () => {
+  return (
+    <svg
+      width="40"
+      height="40"
+      viewBox="0 0 40 40"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M14.4531 23.883C14.4531 26.033 16.1031 27.7664 18.1531 27.7664H22.3365C24.1198 27.7664 25.5698 26.2497 25.5698 24.383C25.5698 22.3497 24.6865 21.633 23.3698 21.1664L16.6531 18.833C15.3365 18.3664 14.4531 17.6497 14.4531 15.6164C14.4531 13.7497 15.9031 12.233 17.6865 12.233H21.8698C23.9198 12.233 25.5698 13.9664 25.5698 16.1164"
+        stroke="#212121"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M20 10V30"
+        stroke="#212121"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+      <path
+        d="M20.0002 36.6667C29.2049 36.6667 36.6668 29.2048 36.6668 20C36.6668 10.7953 29.2049 3.33337 20.0002 3.33337C10.7954 3.33337 3.3335 10.7953 3.3335 20C3.3335 29.2048 10.7954 36.6667 20.0002 36.6667Z"
+        stroke="#212121"
+        stroke-width="3"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+};
+
+const Edit = () => {
+  return (
+    <svg
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <g id="vuesax/linear/edit-2">
+        <g id="vuesax/linear/edit-2_2">
+          <g id="edit-2">
+            <path
+              id="Vector"
+              d="M13.2599 3.59997L5.04985 12.29C4.73985 12.62 4.43985 13.27 4.37985 13.72L4.00985 16.96C3.87985 18.13 4.71985 18.93 5.87985 18.73L9.09985 18.18C9.54985 18.1 10.1799 17.77 10.4899 17.43L18.6999 8.73997C20.1199 7.23997 20.7599 5.52997 18.5499 3.43997C16.3499 1.36997 14.6799 2.09997 13.2599 3.59997Z"
+              stroke="#6D6D6D"
+              stroke-width="1.5"
+              stroke-miterlimit="10"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              id="Vector_2"
+              d="M11.8901 5.05005C12.3201 7.81005 14.5601 9.92005 17.3401 10.2"
+              stroke="#6D6D6D"
+              stroke-width="1.5"
+              stroke-miterlimit="10"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+            <path
+              id="Vector_3"
+              d="M3 22H21"
+              stroke="#6D6D6D"
+              stroke-width="1.5"
+              stroke-miterlimit="10"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            />
+          </g>
+        </g>
+      </g>
+    </svg>
+  );
+};
 export default DonateModal;
