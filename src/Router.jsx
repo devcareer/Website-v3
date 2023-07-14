@@ -9,8 +9,6 @@ import {
   Talents,
   ContactUs,
   DpdsRegistration,
-  AccountSettings,
-  EditProfile,
   ProfileRoot,
 } from './Pages';
 import { AuthRoot } from './Auth';

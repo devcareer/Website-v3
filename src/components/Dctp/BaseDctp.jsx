@@ -292,6 +292,7 @@ const BaseDctp = () => {
           </Stack>
           <Stack alignItems="center" marginY="4rem">
             <Button
+              disabled
               onClick={() => navigate('/programs/dpds/registration')}
               variant="contained"
               disableElevation

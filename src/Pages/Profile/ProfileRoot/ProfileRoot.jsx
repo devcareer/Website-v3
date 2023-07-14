@@ -1,10 +1,13 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { devcareerhub, signOut } from '../../../assets/Images';
 import { AccountSettings, EditProfile } from '../../../Pages';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 
 const ProfileRoot = () => {
+  useEffect(() => {
+    console.log(import.meta.env.VITE_BASE_URL + 'signup');
+  }, []);
   const LINK_ACTIONS = [
     {
       text: 'Overview',
@@ -32,12 +35,14 @@ const ProfileRoot = () => {
         mx="auto"
         maxWidth="1200px"
       >
-        <Box
-          component="img"
-          src={devcareerhub}
-          alt="devcareer logo"
-          width="182px"
-        ></Box>
+        <Link>
+          <Box
+            component="img"
+            src={devcareerhub}
+            alt="devcareer logo"
+            width="182px"
+          ></Box>
+        </Link>
         <Stack
           direction={{ xs: 'column', sm: 'row' }}
           justifyContent="space-around"
@@ -49,12 +54,7 @@ const ProfileRoot = () => {
           flexGrow="1"
         >
           {LINK_ACTIONS.map((data, i) => (
-            <ProfileLink
-              key={i}
-              data={data}
-              active={mode === data.to}
-              index={i}
-            />
+            <ProfileLink key={i} data={data} active={mode === data.to} />
           ))}
         </Stack>
         <Button
@@ -113,7 +113,6 @@ const ProfileLink = ({ data, active }) => {
     </Button>
   );
 };
-
 // THE ICONS FOR EACH BUTTON. OVERVIEW, SETTINGS & EDIT.
 
 const SettingsIcon = ({ active }) => {
