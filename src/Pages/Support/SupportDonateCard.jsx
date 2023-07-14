@@ -1,7 +1,14 @@
 import React from 'react';
 import { Typography, Box, Button } from '@mui/material';
 
-const SupportDonateCard = ({ image, name, text, title, btntxt }) => {
+const SupportDonateCard = ({
+  image,
+  name,
+  text,
+  title,
+  btntxt,
+  onShowModal,
+}) => {
   return (
     <Box
       sx={{
@@ -21,7 +28,7 @@ const SupportDonateCard = ({ image, name, text, title, btntxt }) => {
           component="h3"
           fontSize={{ xs: '26px', lg: '32px' }}
           fontWeight={700}
-          color="#05B993"
+          color="primary.main"
         >
           {title}
         </Typography>
@@ -36,6 +43,7 @@ const SupportDonateCard = ({ image, name, text, title, btntxt }) => {
         <Box component="img" src={image} alt={name} />
         <Button
           variant="contained"
+          onClick={() => onShowModal()}
           sx={{
             py: '20px',
             borderRadius: '8px',
