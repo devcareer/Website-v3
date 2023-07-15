@@ -32,7 +32,7 @@ const DpdsRegistration = () => {
     window.scrollTo({ top: 0 });
   }, [pathname]);
 
-  return (
+  return false ? (
     <Box component="section" className="container" py="32px">
       <Button
         sx={{
@@ -109,6 +109,8 @@ const DpdsRegistration = () => {
       </Stack>
       <DpdsForm />
     </Box>
+  ) : (
+    <div>We are currently not taking application for this program!!!</div>
   );
 };
 
@@ -512,7 +514,7 @@ const DpdsForm = () => {
           updateForm={updateForm}
         />
       </Stack>
-      <Stack direction="row" mt="50px" >
+      <Stack direction="row" mt="50px">
         <FormControlLabel
           required
           control={<Checkbox onClick={handleDisclaimer} />}
@@ -520,7 +522,7 @@ const DpdsForm = () => {
         />
       </Stack>
       <Button
-        disabled={!disclaimer}
+        disabled
         onClick={submitHandler}
         fontWeight="500"
         fontSize="20px"

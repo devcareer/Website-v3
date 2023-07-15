@@ -4,17 +4,67 @@ import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
 import { Link } from 'react-router-dom';
 import PasswordChecklist from 'react-password-checklist';
+// import signUpApi from '../../../api/signUp';
+// import axios from 'axios';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 
 const SignUp = () => {
   const [password, setPassword] = useState('');
-  const [passwordAgain, setPasswordAgain] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordValid, setPasswordValid] = useState(false);
+  // const [formIsValid, setFormIsValid] = useState(false);
 
   const handlePassword = (e) => {
     setPassword(e.target.value);
   };
   const handlePasswordConfirm = (e) => {
-    setPasswordAgain(e.target.value);
+    setConfirmPassword(e.target.value);
   };
+  const validationSchema = Yup.object({
+    email: Yup.string()
+      .required('This field is required')
+      .email('Please enter a valid mail'),
+    username: Yup.string()
+      .required('This field is required')
+      .min(5, 'Username must be contain atleast 5 characters'),
+  });
+  const formik = useFormik({
+    initialValues: {
+      email: '',
+      username: '',
+    },
+    validationSchema,
+    onSubmit: (values) => {
+      if (passwordValid) {
+        console.log('Everything is clear');
+      } else {
+        console.log('Everything is not clear yet');
+      }
+    },
+  });
+  // const handleSubmit = () => {
+  //   console.log(import.meta.env.VITE_AUTH_BASE_URL + 'signup');
+  //   const data = {
+  //     email: 'Olaniranolatubosun@gmail.com',
+  //     username: 'Niceguy',
+  //     password: 'password',
+  //     confirmPassword: 'password',
+  //   };
+  //   fetch('https://website-v3-znmt.onrender.com/api/v1/auth/signup', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify(data),
+  //   })
+  //     .then((res) => {
+  //       console.log(res);
+  //       return res.json();
+  //     })
+  //     .then((data) => console.log(data))
+  //     .catch((err) => console.log(err));
+  // };
   return (
     <AuthCard>
       <Typography fontWeight="700" fontSize={{ xs: '16px', md: '24px' }}>
@@ -35,8 +85,31 @@ const SignUp = () => {
         Sign In
       </Link>
       <Stack gap="10px" mt="50px" mb="24px">
-        <Input title="Email"></Input>
-        <Input title="Username"></Input>
+        <Input
+          title="Email"
+          name="email"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.email}
+          error={
+            formik.errors.email && formik.touched.email
+              ? formik.errors.email
+              : ''
+          }
+        ></Input>
+        <Input
+          title="Username"
+          placeholder="Must contain atleast 5 characters"
+          name="username"
+          onChange={formik.handleChange}
+          onBlur={formik.handleBlur}
+          value={formik.values.username}
+          error={
+            formik.errors.username && formik.touched.username
+              ? formik.errors.username
+              : ''
+          }
+        ></Input>
         <Input
           title="Password"
           onChange={handlePassword}
@@ -53,9 +126,17 @@ const SignUp = () => {
         rules={['minLength', 'capital', 'lowercase', 'number', 'match']}
         minLength={8}
         value={password}
-        valueAgain={passwordAgain}
+        valueAgain={confirmPassword}
         onChange={(isValid) => {
-          console.log('Password Valid!');
+          console.log(
+            formik.errors.email,
+            formik.errors.username,
+            formik.errors,
+            !undefined
+          );
+
+          isValid && setPasswordValid(true);
+          !isValid && setPasswordValid(false);
         }}
         messages={{
           minLength: 'Be at least 8 characters long',
@@ -68,6 +149,7 @@ const SignUp = () => {
 
       <Button
         variant="contained"
+        disabled={!passwordValid}
         sx={{
           color: '#FEFEFE',
           py: '16px',
@@ -77,9 +159,11 @@ const SignUp = () => {
           fontWeight: '500',
           mt: '24px',
         }}
+        onClick={formik.handleSubmit}
       >
         Create Account
       </Button>
+      {/* <Button onClick={handleSubmit}>Send request</Button> */}
     </AuthCard>
   );
 };
