@@ -1,13 +1,33 @@
-import React from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Typography, Box, Button, Stack } from '@mui/material';
-import { Input } from '../../components';
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { forgetPassword } from '../../API/api';
 import { AuthCard } from '../../Auth';
-
+import { Input } from '../../components';
 const ForgetPassword = () => {
   const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
 
+  const handleChange = (e) => {
+    setEmail(e.target.value);
+  };
+  const handleClick = async () => {
+    setLoading(true);
+    try {
+      const response = await forgetPassword({ email });
+      toast.success('we just emailed you');
+      setLoading(false);
+      console.log(response);
+    } catch (error) {
+      toast.error('The email address you provided does not exist');
+      setLoading(false);
+      console.log(error.message);
+    }
+  };
   return (
     <AuthCard>
       <Box
@@ -30,15 +50,22 @@ const ForgetPassword = () => {
         </Typography>
       </Box>
       <Stack direction="column" sx={{ gap: '24px', mt: '64px' }}>
-        <Input title="Email Address" placeholder="Enter your email address" />
-        <Button
+        <Input
+          title="Email Address"
+          placeholder="Enter your email address"
+          value={email}
+          onChange={handleChange}
+        />
+        <LoadingButton
+          loading={loading}
           variant="contained"
           color="primary"
           fontSize="20px"
           sx={{ py: '24px', color: '#FEFEFE' }}
+          onClick={handleClick}
         >
           Reset Password
-        </Button>
+        </LoadingButton>
         <Button
           variant="outlined"
           color="primary"
@@ -55,7 +82,9 @@ const ForgetPassword = () => {
             variant="body1"
             color="initial"
             fontWeight="bold"
-            onClick={() => navigate('?mode=signup')}
+            onClick={() => {
+              navigate('?mode=signup');
+            }}
             sx={{
               cursor: 'pointer',
             }}
