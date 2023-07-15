@@ -27,7 +27,7 @@ const CreateNewPassword = () => {
       toast.success(response.data.message);
       setLoading(false);
       console.log(response);
-      navigate('/auth/?mode=signup')
+      navigate('/auth/?mode=signup');
     } catch (error) {
       toast.error('Email Authentication Failed');
       setLoading(false);
@@ -48,10 +48,10 @@ const CreateNewPassword = () => {
         <Input
           title="Password"
           onChange={handlePassword}
-          type="password"
+          type="Enter New Password"
         ></Input>
         <Input
-          title="Confirm Password"
+          title="Confirm New Password "
           onChange={handlePasswordConfirm}
           type="password"
         ></Input>
