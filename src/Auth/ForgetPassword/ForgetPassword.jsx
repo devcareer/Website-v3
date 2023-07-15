@@ -1,31 +1,31 @@
 import KeyboardBackspaceIcon from '@mui/icons-material/KeyboardBackspace';
+import LoadingButton from '@mui/lab/LoadingButton';
 import { Box, Button, Stack, Typography } from '@mui/material';
-import axios from 'axios';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import { forgetPassword } from '../../API/api';
 import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
 const ForgetPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+
   const handleChange = (e) => {
     setEmail(e.target.value);
   };
   const handleClick = async () => {
+    setLoading(true);
     try {
-      const response = await axios.post(
-        'https://website-v3-znmt.onrender.com/api/v1/auth/signup',
-        {
-          email,
-          username: 'sarah200',
-          password: '12345',
-          confirmPassword: '12345',
-        }
-      );
-      const data = await response.data;
-      console.log(data);
+      const response = await forgetPassword({ email });
+      toast.success('we just emailed you');
+      setLoading(false);
+      console.log(response);
     } catch (error) {
-      console.log(error);
+      toast.error('The email address you provided does not exist');
+      setLoading(false);
+      console.log(error.message);
     }
   };
   return (
@@ -56,7 +56,8 @@ const ForgetPassword = () => {
           value={email}
           onChange={handleChange}
         />
-        <Button
+        <LoadingButton
+          loading={loading}
           variant="contained"
           color="primary"
           fontSize="20px"
@@ -64,7 +65,7 @@ const ForgetPassword = () => {
           onClick={handleClick}
         >
           Reset Password
-        </Button>
+        </LoadingButton>
         <Button
           variant="outlined"
           color="primary"

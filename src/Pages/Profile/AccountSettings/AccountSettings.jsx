@@ -1,8 +1,38 @@
-import { Box, Typography, Stack, Button } from '@mui/material';
+import LoadingButton from '@mui/lab/LoadingButton';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import { useState } from 'react';
+import PasswordChecklist from 'react-password-checklist';
+import { toast } from 'react-toastify';
+import { changePassword } from '../../../API/api';
 import { Input } from '../../../components';
-import CheckIcon from '@mui/icons-material/Check';
-
 const AccountSettings = () => {
+  const [loading, setLoading] = useState(false);
+  const [password, setPassword] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: '',
+  });
+  const handlePassword = (e) => {
+    const { name, value } = e.target;
+    setPassword({ ...password, [name]: value });
+  };
+  const handleSubmit = async () => {
+    setLoading(true);
+    try {
+      const response = await changePassword({
+        userId: '64abb8b4acc4e4690c5cbc87',
+        currentPassword:password.currentPassword,
+        newPassword: password.newPassword,
+      });
+      toast.success(response.data.message);
+      setLoading(false);
+      console.log(response);
+    } catch (error) {
+      toast.error('network error');
+      setLoading(false);
+      console.log(error.message);
+    }
+  };
   return (
     <Box sx={{ maxWidth: '1018px', mx: 'auto', px: '136px', py: '48px' }}>
       <Typography variant="body1" color="#888888" fontSize="24px">
@@ -26,11 +56,26 @@ const AccountSettings = () => {
         security for your account.
       </Typography>
       <Stack gap="16px" mt="24px">
-        <Input title="Current Password" value="●●●●●●●●●●" />
-        <Input title="New Password" value="●●●●●●●●●●" />
-        <Input title="Confirm Password" value="●●●●●●●●●●" />
+        <Input
+          name="currentPassword"
+          title="Current Password"
+          type="password"
+          onChange={handlePassword}
+        />
+        <Input
+          name="newPassword"
+          title="New Password"
+          type="password"
+          onChange={handlePassword}
+        />
+        <Input
+          name="confirmPassword"
+          title="Confirm Password"
+          type="password"
+          onChange={handlePassword}
+        />
       </Stack>
-      <Typography variant="body1" color="initial" mt="32px">
+      {/* <Typography variant="body1" color="initial" mt="32px">
         Password Requirements:
       </Typography>
       <Stack direction="row">
@@ -56,7 +101,24 @@ const AccountSettings = () => {
         <Typography variant="body1" color="initial" fontSize="20px">
           Contains at least one number
         </Typography>
-      </Stack>
+      </Stack> */}
+      <Typography color="grey.700">Password must:</Typography>
+      <PasswordChecklist
+        rules={['minLength', 'capital', 'lowercase', 'number', 'match']}
+        minLength={8}
+        value={password.newPassword}
+        valueAgain={password.confirmPassword}
+        onChange={(isValid) => {
+          console.log('Password Valid!');
+        }}
+        messages={{
+          minLength: 'Be at least 8 characters long',
+          capital: 'Contains at least one uppercase letter',
+          lowercase: 'Contains at least one lowercase letter',
+          number: 'Contains at least one number',
+          match: 'Match',
+        }}
+      />
       <Stack direction="row" justifyContent="space-between" mt="32px">
         <Button
           variant="outlined"
@@ -64,12 +126,14 @@ const AccountSettings = () => {
         >
           Cancel
         </Button>
-        <Button
+        <LoadingButton
+          loading={loading}
+          onClick={handleSubmit}
           variant="contained"
           sx={{ px: '32px', py: '24px', color: '#FEFEFE', borderRadius: '8px' }}
         >
           Apply Changes
-        </Button>
+        </LoadingButton>
       </Stack>
     </Box>
   );
