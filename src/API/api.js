@@ -13,9 +13,13 @@ export const forgetPassword = async (formData) => {
 };
 //Reset Password
 export const resetPassword = async (formData) => {
-    return axios.post(`${BASE_URL}/auth/reset`, formData);
-  };
+  return axios.post(`${BASE_URL}/auth/reset`, formData);
+};
 //  change Password
 export const changePassword = async (formData) => {
-    return axios.post(`${BASE_URL}/auth/change`, formData);
-  };
+  return axios.post(`${BASE_URL}/auth/change`, formData);
+};
+
+export const signUp = async (formData) => {
+  return axios.post(`${BASE_URL}/auth/signup`, formData);
+};

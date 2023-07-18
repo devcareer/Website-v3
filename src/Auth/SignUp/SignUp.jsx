@@ -4,16 +4,17 @@ import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
 import { Link } from 'react-router-dom';
 import PasswordChecklist from 'react-password-checklist';
-// import signUpApi from '../../../api/signUp';
-// import axios from 'axios';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
+import { signUp } from '../../API/api';
+import { toast } from 'react-toastify';
+import { LoadingButton } from '@mui/lab';
 
 const SignUp = () => {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [passwordValid, setPasswordValid] = useState(false);
-  // const [formIsValid, setFormIsValid] = useState(false);
+  const [loading, setloading] = useState(false);
 
   const handlePassword = (e) => {
     setPassword(e.target.value);
@@ -35,36 +36,21 @@ const SignUp = () => {
       username: '',
     },
     validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       if (passwordValid) {
-        console.log('Everything is clear');
-      } else {
-        console.log('Everything is not clear yet');
+        setloading(true);
+        try {
+          const res = await signUp({ ...values, password, confirmPassword });
+          toast.success(res.data.message, { autoClose: 7000 });
+          setloading(false);
+        } catch (err) {
+          toast.error(err.response.data.message, { autoClose: 7000 });
+          setloading(false);
+        }
       }
     },
   });
-  // const handleSubmit = () => {
-  //   console.log(import.meta.env.VITE_AUTH_BASE_URL + 'signup');
-  //   const data = {
-  //     email: 'Olaniranolatubosun@gmail.com',
-  //     username: 'Niceguy',
-  //     password: 'password',
-  //     confirmPassword: 'password',
-  //   };
-  //   fetch('https://website-v3-znmt.onrender.com/api/v1/auth/signup', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify(data),
-  //   })
-  //     .then((res) => {
-  //       console.log(res);
-  //       return res.json();
-  //     })
-  //     .then((data) => console.log(data))
-  //     .catch((err) => console.log(err));
-  // };
+
   return (
     <AuthCard>
       <Typography fontWeight="700" fontSize={{ xs: '16px', md: '24px' }}>
@@ -128,13 +114,6 @@ const SignUp = () => {
         value={password}
         valueAgain={confirmPassword}
         onChange={(isValid) => {
-          console.log(
-            formik.errors.email,
-            formik.errors.username,
-            formik.errors,
-            !undefined
-          );
-
           isValid && setPasswordValid(true);
           !isValid && setPasswordValid(false);
         }}
@@ -147,7 +126,8 @@ const SignUp = () => {
         }}
       />
 
-      <Button
+      <LoadingButton
+        loading={loading}
         variant="contained"
         disabled={!passwordValid}
         sx={{
@@ -162,7 +142,7 @@ const SignUp = () => {
         onClick={formik.handleSubmit}
       >
         Create Account
-      </Button>
+      </LoadingButton>
       {/* <Button onClick={handleSubmit}>Send request</Button> */}
     </AuthCard>
   );
