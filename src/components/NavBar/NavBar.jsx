@@ -148,14 +148,14 @@ const NavBar = () => {
             <CommunityCard />
           </Box>
         </Box>
-        <Box>
+        {/* <Box>
           <NavLink
             to="/contact"
             style={({ isActive }) => (isActive ? activeStyle : navStyle)}
           >
             Contact Us
           </NavLink>
-        </Box>
+        </Box> */}
       </Stack>
       <Link to="/support" style={{ textDecoration: 'none' }}>
         <Button
