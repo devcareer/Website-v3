@@ -1,7 +1,7 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import React from 'react';
-import { hero } from '../../assets/Images';
 import { Link } from 'react-router-dom';
+import { hero } from '../../assets/Images';
 
 const Header = () => {
   return (
@@ -42,7 +42,7 @@ const Header = () => {
           direction={{ xs: 'column-reverse', sm: 'row' }}
           gap={{ xs: '20px', md: '40px' }}
         >
-          <Link to="/auth?mode=signup" style={{ flexBasis: '40%' }}>
+          <Link to="/" style={{ flexBasis: '40%' }}>
             <Button
               fontWeight="500"
               fontSize="20px"
