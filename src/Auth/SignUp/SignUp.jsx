@@ -60,7 +60,7 @@ const SignUp = () => {
         Already have an account?
       </Typography>
       <Link
-        to="?mode=forgetpassword"
+        to="?mode=signin"
         style={{
           fontWeight: 700,
           color: '#181818',
