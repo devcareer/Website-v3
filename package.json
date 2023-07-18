@@ -13,8 +13,10 @@
   "dependencies": {
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
+    "@material-ui/lab": "^4.0.0-alpha.61",
     "@mui/icons-material": "^5.11.16",
-    "@mui/material": "^5.13.3",
+    "@mui/lab": "^5.0.0-alpha.136",
+    "@mui/material": "^5.14.0",
     "add": "^2.0.6",
     "axios": "^1.4.0",
     "formik": "^2.4.2",
