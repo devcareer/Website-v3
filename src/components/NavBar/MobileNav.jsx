@@ -153,7 +153,7 @@ const MobileNav = ({ menu }) => {
           </Stack>
         )} */}
       </Box>
-      <Box borderBottom="1px solid #E8E8E8" pb="10px">
+      {/* <Box borderBottom="1px solid #E8E8E8" pb="10px">
         <Link
         to='/contact'
           style={navStyle}
@@ -163,7 +163,7 @@ const MobileNav = ({ menu }) => {
         >
           Contact Us
         </Link>
-      </Box>
+      </Box> */}
        <Link to="/support" style={{textDecoration:"none"}}  onClick={() => menu(false)}>
        <Button
           disableElevation

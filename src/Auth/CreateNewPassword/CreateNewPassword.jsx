@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import PasswordChecklist from 'react-password-checklist';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { resetPassword } from '../../API/api';
+import { resetPassword } from '../../../API/api';
 import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
 

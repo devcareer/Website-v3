@@ -3,7 +3,7 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import PasswordChecklist from 'react-password-checklist';
 import { toast } from 'react-toastify';
-import { changePassword } from '../../../API/api';
+import { changePassword } from '../../../../API/api';
 import { Input } from '../../../components';
 const AccountSettings = () => {
   const [loading, setLoading] = useState(false);

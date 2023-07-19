@@ -4,7 +4,7 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import { forgetPassword } from '../../API/api';
+import { forgetPassword } from '../../../API/api';
 import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
 const ForgetPassword = () => {

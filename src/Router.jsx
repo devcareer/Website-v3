@@ -59,7 +59,7 @@ export const router = createBrowserRouter([
         element: <AboutUs />,
       },
       {
-        path: 'contact',
+        path: 'contactunavailable',
         element: <ContactUs />,
       },
     ],

@@ -1,14 +1,14 @@
-import { Button, Stack, Typography } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
+import { Stack, Typography } from '@mui/material';
+import { useFormik } from 'formik';
 import React, { useState } from 'react';
+import PasswordChecklist from 'react-password-checklist';
+import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import * as Yup from 'yup';
+import { signUp } from '../../../API/api';
 import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
-import { Link } from 'react-router-dom';
-import PasswordChecklist from 'react-password-checklist';
-import { useFormik } from 'formik';
-import * as Yup from 'yup';
-import { signUp } from '../../API/api';
-import { toast } from 'react-toastify';
-import { LoadingButton } from '@mui/lab';
 
 const SignUp = () => {
   const [password, setPassword] = useState('');
