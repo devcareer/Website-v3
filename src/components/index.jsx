@@ -24,5 +24,6 @@ export { default as DpdInput } from './Input/DpdInput';
 export {default as TagInput} from './Input/TagInput'
 export { default as DpdRadio } from './Input/DpdRadio';
 export { default as SuccessModal } from './Modal/SuccessModal';
-export {default as GovernmentCard} from './NavBar/GovernmentCard'
-export {default as TopNav} from './TopNav/TopNav'
+export { default as GovernmentCard } from './NavBar/GovernmentCard';
+export { default as TopNav } from './TopNav/TopNav';
+export { default as AddExperienceModal } from './Modal/AddExperienceModal';

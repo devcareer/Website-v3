@@ -21,7 +21,7 @@ const AccountSettings = () => {
     try {
       const response = await changePassword({
         userId: '64abb8b4acc4e4690c5cbc87',
-        currentPassword:password.currentPassword,
+        currentPassword: password.currentPassword,
         newPassword: password.newPassword,
       });
       toast.success(response.data.message);
@@ -34,7 +34,7 @@ const AccountSettings = () => {
     }
   };
   return (
-    <Box sx={{ maxWidth: '1018px', mx: 'auto', px: '136px', py: '48px' }}>
+    <Box sx={{ maxWidth: '1018px', mx: 'auto', width: '90%', py: '48px' }}>
       <Typography variant="body1" color="#888888" fontSize="24px">
         Account Settings
       </Typography>

@@ -1,9 +1,11 @@
 import { Input,TagInput } from '../../../components';
 import { Typography, Box, Stack } from '@mui/material';
-
+import WorkExperience, { ActionButtons, AddButton } from './WorkExperience';
+import Education from './Education';
+import { link } from '../../../assets/Images';
 const EditProfile = () => {
   return (
-    <Box px="136px" py="48px" sx={{ maxWidth: '1018px', mx: 'auto' }}>
+    <Box width="90%" py="48px" sx={{ maxWidth: '1018px', mx: 'auto' }}>
       <Typography variant="body1" color="#888888" fontSize="24px">
         Edit Profile
       </Typography>
@@ -27,6 +29,12 @@ const EditProfile = () => {
         <Input title="Portfolio Link" placeholder="https://adevikthur.xyz" />
         <TagInput  />
       </Stack>
+      <>
+        <WorkExperience />
+        <Education />
+        <ActionButtons text="Apply Changes" />
+        <AddButton title="Generate Preview Link" src={link} />
+      </>
     </Box>
   );
 };
