@@ -24,3 +24,7 @@ export const changePassword = async (formData) => {
 export const signUp = async (formData) => {
   return axios.post(`${BASE_URL}/auth/signup`, formData);
 };
+export const signIn = async (formData) => {
+  console.log(formData);
+  return axios.post(`${BASE_URL}/auth/login`, formData);
+};
