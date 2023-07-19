@@ -1,7 +1,8 @@
 import Cookies from 'js-cookie';
 import { useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { CreateNewPassword, ForgetPassword, SignUp } from '../../Auth';
+import { ForgetPassword, SignUp, CreateNewPassword, SignIn } from '../../Auth';
+
 const AuthRoot = () => {
   useEffect(() => {
     const currentUrl = window.location.href;
@@ -20,6 +21,7 @@ const AuthRoot = () => {
   const mode = searchParams.get('mode');
   if (mode === 'forgetpassword') return <ForgetPassword />;
   if (mode === 'signup') return <SignUp />;
+  if (mode === 'signin') return <SignIn />;
   if (mode === 'createnewpassword') return <CreateNewPassword />;
 };
 
