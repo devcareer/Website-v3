@@ -10,14 +10,15 @@ const Input = ({
   multiline,
   onBlur,
   error,
+  width,
 }) => {
   return (
-    <Stack direction="column" gap={0.5}>
+    <Stack direction="column" gap={0.5} width={width ?? '100%'}>
       <FormLabel sx={{ fontWeight: '700', color: '#363636' }}>
         {title}
       </FormLabel>
       <TextField
-        fullwidth="true"
+        fullWidth="true"
         name={name}
         value={value}
         onChange={onChange}

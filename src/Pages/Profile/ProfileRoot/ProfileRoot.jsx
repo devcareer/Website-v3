@@ -35,7 +35,7 @@ const ProfileRoot = () => {
         mx="auto"
         maxWidth="1200px"
       >
-        <Link>
+        <Link to="/">
           <Box
             component="img"
             src={devcareerhub}
