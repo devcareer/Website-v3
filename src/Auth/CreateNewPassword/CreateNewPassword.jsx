@@ -1,13 +1,13 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Stack, Typography } from '@mui/material';
+import Cookies from 'js-cookie';
+import { toast } from 'react-toastify';
 import React, { useState } from 'react';
 import PasswordChecklist from 'react-password-checklist';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
-import { resetPassword } from '../../../API/api';
 import { AuthCard } from '../../Auth';
+import { resetPassword } from '../../../API/api';
 import { Input } from '../../components';
-
 const CreateNewPassword = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
@@ -21,9 +21,11 @@ const CreateNewPassword = () => {
     setPasswordAgain(e.target.value);
   };
   const handleSubmit = async () => {
+    const token = Cookies.get('resetPasswordToken');
+    const cleanedToken = token.substring(2);
     setLoading(true);
     try {
-      const response = await resetPassword({ newPassword: password });
+      const response = await resetPassword({ newPassword: password,token:cleanedToken });
       toast.success(response.data.message);
       setLoading(false);
       console.log(response);
