@@ -1,4 +1,4 @@
-import { Input } from '../../../components';
+import { Input,TagInput } from '../../../components';
 import { Typography, Box, Stack } from '@mui/material';
 
 const EditProfile = () => {
@@ -25,6 +25,7 @@ const EditProfile = () => {
         <Input title="Job Title" placeholder="Product Designer" />
         <Input title="Location" placeholder="Washington DC, United States. " />
         <Input title="Portfolio Link" placeholder="https://adevikthur.xyz" />
+        <TagInput  />
       </Stack>
     </Box>
   );
