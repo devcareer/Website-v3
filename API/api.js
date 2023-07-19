@@ -1,11 +1,10 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
+import { getResetToken } from '../src/utils';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-const token = Cookies.get('resetPasswordToken');
-    const cleanedToken = token.substring(2);
+const resetToken=getResetToken()
 const resetconfig = {
   headers: {
-    Authorization: cleanedToken
+    Authorization: resetToken
   }
 };
 
