@@ -1,11 +1,11 @@
 import axios from 'axios';
 
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-// const config = {
-//   headers: {
-//     'Content-Type': 'multipart/form-data',
-//   },
-// };
+const config = {
+  headers: {
+    'Content-Type': 'multipart/form-data',
+  },
+};
 
 //  Forget password flow
 export const forgetPassword = async (formData) => {
@@ -20,3 +20,6 @@ export const changePassword = async (formData) => {
   return axios.post(`${BASE_URL}/auth/change`, formData);
 };
 
+export const signUp = async (formData) => {
+  return axios.post(`${BASE_URL}/auth/signup`, formData);
+};
