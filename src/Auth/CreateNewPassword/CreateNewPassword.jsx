@@ -1,12 +1,12 @@
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Stack, Typography } from '@mui/material';
 import Cookies from 'js-cookie';
-import { toast } from 'react-toastify';
 import React, { useState } from 'react';
 import PasswordChecklist from 'react-password-checklist';
 import { useNavigate } from 'react-router-dom';
-import { AuthCard } from '../../Auth';
+import { toast } from 'react-toastify';
 import { resetPassword } from '../../../API/api';
+import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
 const CreateNewPassword = () => {
   const navigate = useNavigate();
@@ -25,7 +25,10 @@ const CreateNewPassword = () => {
     const cleanedToken = token.substring(2);
     setLoading(true);
     try {
-      const response = await resetPassword({ newPassword: password,token:cleanedToken });
+      const response = await resetPassword({
+        newPassword: password,
+        token: cleanedToken,
+      });
       toast.success(response.data.message);
       setLoading(false);
       console.log(response);
@@ -39,7 +42,7 @@ const CreateNewPassword = () => {
   return (
     <AuthCard>
       <Typography fontWeight="700" fontSize={{ xs: '16px', md: '24px' }}>
-        Create Account
+        Create New Password
       </Typography>
       <Typography component="span" color="grey.600" mr="5px">
         Not to worry, follow the instructions below and you’ll be back in no
@@ -90,7 +93,7 @@ const CreateNewPassword = () => {
           mt: '24px',
         }}
       >
-        Create Account
+        Reset Password
       </LoadingButton>
     </AuthCard>
   );

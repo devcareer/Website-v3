@@ -61,7 +61,7 @@ const ForgetPassword = () => {
           variant="contained"
           color="primary"
           fontSize="20px"
-          sx={{ py: '24px', color: '#FEFEFE' }}
+          sx={{ py: '16px', color: '#FEFEFE' }}
           onClick={handleClick}
         >
           Reset Password
@@ -70,7 +70,10 @@ const ForgetPassword = () => {
           variant="outlined"
           color="primary"
           fontSize="20px"
-          sx={{ py: '24px', color: '#888' }}
+          sx={{ py: '16px', color: '#888' }}
+          onClick={() => {
+            navigate('?mode=signin');
+          }}
         >
           <KeyboardBackspaceIcon /> <Box ml={0.5}>Back to Login</Box>
         </Button>

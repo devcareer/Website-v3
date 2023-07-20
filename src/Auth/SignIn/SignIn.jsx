@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
-import { Typography, Stack, styled, Box } from '@mui/material';
-import { AuthCard } from '../../Auth';
-import { Link } from 'react-router-dom';
-import { Input } from '../../components';
+import { LoadingButton } from '@mui/lab';
+import { Box, Stack, Typography, styled } from '@mui/material';
 import { useFormik } from 'formik';
+import Cookies from 'js-cookie';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import * as Yup from 'yup';
 import { signIn } from '../../../API/api';
-import { toast } from 'react-toastify';
-import { LoadingButton } from '@mui/lab';
-
+import { AuthCard } from '../../Auth';
+import { Input } from '../../components';
 const SignIn = () => {
+  const navigate = useNavigate();
   const [loading, setloading] = useState(false);
 
   const validationSchema = Yup.object({
@@ -31,6 +32,9 @@ const SignIn = () => {
         const res = await signIn({ ...values });
         toast.success(res.data.message, { autoClose: 7000 });
         setloading(false);
+        const token = res.data.accessToken;
+        Cookies.set('accessToken', token, { expires: 1 });
+        navigate('/profile/?mode=overview', { replace: true });
       } catch (err) {
         toast.error(err.response.data.message, { autoClose: 7000 });
         setloading(false);
