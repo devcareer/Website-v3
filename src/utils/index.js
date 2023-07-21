@@ -9,3 +9,11 @@ export const getResetToken=()=>{
     return 
    }
 }
+
+export const useAuth = () => {
+   const accessToken = Cookies.get('accessToken');
+ 
+   const isAuthenticated = !!accessToken;
+ 
+   return { accessToken, isAuthenticated };
+ };
