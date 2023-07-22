@@ -1,17 +1,18 @@
 import { createBrowserRouter } from 'react-router-dom';
+import { AuthRoot } from './Auth';
+import ProtectedRoute from './Auth/PrivateRoute/ProtectedRoute';
 import {
-  Dctp,
-  Home,
   AboutUs,
+  ContactUs,
+  Dctp,
+  DpdsRegistration,
+  Home,
   LaptopForDevelopers,
+  ProfileRoot,
   Root,
   Support,
   Talents,
-  ContactUs,
-  DpdsRegistration,
-  ProfileRoot,
 } from './Pages';
-import { AuthRoot } from './Auth';
 
 export const router = createBrowserRouter([
   {
@@ -70,7 +71,8 @@ export const router = createBrowserRouter([
   },
   {
     path: 'profile',
-    element: <ProfileRoot />,
+    // element: <ProfileRoot />,
+    element: <ProtectedRoute><ProfileRoot /></ProtectedRoute>,
   },
 
   { path: 'programs/dpds/registration', element: <DpdsRegistration /> },
