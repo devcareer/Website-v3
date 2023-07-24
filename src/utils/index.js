@@ -17,3 +17,9 @@ export const useAuth = () => {
  
    return { accessToken, isAuthenticated };
  };
+ 
+
+ export const getId=()=>{
+   const id=Cookies.get('id')
+   return id
+ }
