@@ -8,7 +8,8 @@ import {
   useParams,
   useSearchParams,
 } from 'react-router-dom';
-
+import { store } from '../../../store'
+import { Provider} from 'react-redux'
 const ProfileRoot = () => {
   useEffect(() => {
     console.log(import.meta.env.VITE_BASE_URL + 'signup');
@@ -30,6 +31,7 @@ const ProfileRoot = () => {
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
   return (
+    <Provider store={store}>
     <Box bgcolor="#E0E0E0" pt="50px">
       <Stack
         component="nav"
@@ -81,6 +83,7 @@ const ProfileRoot = () => {
       {mode === 'settings' && <AccountSettings />}
       {(mode === 'edit' || !mode) && <EditProfile />}
     </Box>
+    </Provider>
   );
 };
 

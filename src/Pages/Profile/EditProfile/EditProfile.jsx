@@ -3,8 +3,12 @@ import { Typography, Box, Stack } from '@mui/material';
 import WorkExperience, { ActionButtons, AddButton } from './WorkExperience';
 import Education from './Education';
 import { link } from '../../../assets/Images';
+import {profileActions } from '../../../store'
+import { useDispatch } from 'react-redux'
 const EditProfile = () => {
+  const dispatch=useDispatch()
   return (
+   
     <Box width="90%" py="48px" sx={{ maxWidth: '1018px', mx: 'auto' }}>
       <Typography variant="body1" color="#888888" fontSize="24px">
         Edit Profile
@@ -19,7 +23,7 @@ const EditProfile = () => {
         Basic Information
       </Typography>
       <Stack gap="16px">
-        <Input title="Full Name" placeholder="Adekanbi Julius Asaolu" />
+        <Input title="Full Name" placeholder="Adekanbi Julius Asaolu" onChange={(e)=>{dispatch(profileActions.addFullName(e.target.value))}}/>
         <Input
           title="About"
           placeholder="With over 3 years of experience in brand identity, illustration, and Product Design, I specialize in creating aesthetically pleasing and usable products for various industries. My focus is on transforming complex technology into straightforward, user-friendly solutions."
@@ -36,6 +40,7 @@ const EditProfile = () => {
         <AddButton title="Generate Preview Link" src={link} />
       </>
     </Box>
+  
   );
 };
 
