@@ -1,18 +1,19 @@
 import React from 'react';
-import {
-  Box,
-  Stack,
-  Typography,
-  FormControlLabel,
-  Checkbox,
-} from '@mui/material';
+import { Box, Stack, Typography } from '@mui/material';
 import { Input } from '../../components';
 import { ActionButtons } from '../../Pages/Profile/EditProfile/WorkExperience';
-const AddExperienceModal = ({ closeModal }) => {
+import { useSearchParams } from 'react-router-dom/dist';
+const AddEducationModal = ({ closeModal }) => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  console.log(searchParams.get('id'));
   return (
     <Box>
       <Box
-        onClick={closeModal}
+        onClick={() => {
+          closeModal();
+          searchParams.delete('id');
+          setSearchParams(searchParams);
+        }}
         className="overlay"
         bgcolor="rgba(0,0,0,0.5)"
         position="fixed"
@@ -43,7 +44,7 @@ const AddExperienceModal = ({ closeModal }) => {
           color="text.grey.600"
           mb="40px"
         >
-          Add Work Experience
+          Add Education
         </Typography>
         <Typography
           fontWeight="700"
@@ -51,34 +52,29 @@ const AddExperienceModal = ({ closeModal }) => {
           color="text.grey.300"
           mb="16px"
         >
-          Work Information
+          Academic Information
         </Typography>
         <Stack component="form" gap="16px">
-          <Input title="Company Name" placeholder="e.g Amazon" />
-          <Input title="Job Title" placeholder="e.g Frontend Engineer" />
-          <Input title="Type of Employment" placeholder="e.g Psychology" />
+          <Input title="School" placeholder="e.g Yale University" />
+          <Input title="Degree" placeholder="e.g Master's" />
+          <Input title="Field of Study" placeholder="e.g Psychology" />
           <Stack direction={{ xs: 'column', md: 'row' }} gap="8px">
             <Input
-              title="Start Date"
+              title="Start Year"
               type="date"
               width={{ xs: '100%', md: '50%' }}
             />
             <Input
-              title="End Date"
+              title="End Year (or expected)"
               type="date"
               width={{ xs: '100%', md: '50%' }}
             />
           </Stack>
         </Stack>
-        <FormControlLabel
-          required
-          control={<Checkbox />}
-          label="I'm currently working in this role"
-        />
         <ActionButtons text="Save Changes" closeModal={closeModal} />
       </Stack>
     </Box>
   );
 };
 
-export default AddExperienceModal;
+export default AddEducationModal;

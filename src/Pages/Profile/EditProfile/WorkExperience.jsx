@@ -94,7 +94,7 @@ export const AddButton = ({ title, src, openModal }) => {
         display: 'flex',
         gap: '8px',
         justifyContent: 'center',
-        py: '20px',
+        py: { xs: '16px', md: '20px' },
         mt: '16px',
         textTransform: 'capitalize',
         fontSize: '20px',

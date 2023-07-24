@@ -2,7 +2,12 @@ import { Box, Button, Stack, Typography } from '@mui/material';
 import React, { useEffect } from 'react';
 import { devcareerhub, signOut } from '../../../assets/Images';
 import { AccountSettings, EditProfile } from '../../../Pages';
-import { Link, useNavigate, useSearchParams } from 'react-router-dom';
+import {
+  Link,
+  useNavigate,
+  useParams,
+  useSearchParams,
+} from 'react-router-dom';
 
 const ProfileRoot = () => {
   useEffect(() => {
