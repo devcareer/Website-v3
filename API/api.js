@@ -1,10 +1,11 @@
 import axios from 'axios';
-
+import { getResetToken } from '../src/utils';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
-const config = {
+const resetToken=getResetToken()
+const resetconfig = {
   headers: {
-    'Content-Type': 'multipart/form-data',
-  },
+    Authorization: resetToken
+  }
 };
 
 //  Forget password flow
@@ -13,7 +14,7 @@ export const forgetPassword = async (formData) => {
 };
 //Reset Password
 export const resetPassword = async (formData) => {
-  return axios.post(`${BASE_URL}/auth/reset`, formData);
+  return axios.post(`${BASE_URL}/auth/reset`, formData,resetconfig);
 };
 //  change Password
 export const changePassword = async (formData) => {
@@ -22,4 +23,8 @@ export const changePassword = async (formData) => {
 
 export const signUp = async (formData) => {
   return axios.post(`${BASE_URL}/auth/signup`, formData);
+};
+export const signIn = async (formData) => {
+  console.log(formData);
+  return axios.post(`${BASE_URL}/auth/login`, formData);
 };
