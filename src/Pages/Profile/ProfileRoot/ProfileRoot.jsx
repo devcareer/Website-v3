@@ -79,7 +79,7 @@ const ProfileRoot = () => {
         </Button>
       </Stack>
       {mode === 'settings' && <AccountSettings />}
-      {mode === 'edit' && <EditProfile />}
+      {(mode === 'edit' || !mode) && <EditProfile />}
     </Box>
   );
 };

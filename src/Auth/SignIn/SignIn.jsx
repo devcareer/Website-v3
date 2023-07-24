@@ -32,12 +32,12 @@ const SignIn = () => {
         const res = await signIn({ ...values });
         toast.success(res.data.message, { autoClose: 7000 });
         setloading(false);
-        console.log(res.data)
+        console.log(res.data);
         const token = res.data.accessToken;
-        const id=res.data.result._id
+        const id = res.data.result._id;
         Cookies.set('accessToken', token, { expires: 1 });
-        Cookies.set('id',id, {expires:1})
-        navigate('/profile/?mode=overview', { replace: true });
+        Cookies.set('id', id, { expires: 1 });
+        navigate('/profile/?mode=edit', { replace: true });
       } catch (err) {
         toast.error(err.response.data.message, { autoClose: 7000 });
         setloading(false);

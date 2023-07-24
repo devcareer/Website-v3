@@ -61,12 +61,12 @@ const AddEducationModal = ({ closeModal }) => {
           <Stack direction={{ xs: 'column', md: 'row' }} gap="8px">
             <Input
               title="Start Year"
-              type="date"
+              type="month"
               width={{ xs: '100%', md: '50%' }}
             />
             <Input
               title="End Year (or expected)"
-              type="date"
+              type="month"
               width={{ xs: '100%', md: '50%' }}
             />
           </Stack>
