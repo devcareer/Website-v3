@@ -5,8 +5,10 @@ import PasswordChecklist from 'react-password-checklist';
 import { toast } from 'react-toastify';
 import { changePassword } from '../../../../API/api';
 import { Input } from '../../../components';
+import { getId } from '../../../utils';
 const AccountSettings = () => {
   const [loading, setLoading] = useState(false);
+  const [passwordValid, setPasswordValid] = useState(false);
   const [password, setPassword] = useState({
     currentPassword: '',
     newPassword: '',
@@ -17,20 +19,23 @@ const AccountSettings = () => {
     setPassword({ ...password, [name]: value });
   };
   const handleSubmit = async () => {
-    setLoading(true);
-    try {
-      const response = await changePassword({
-        userId: '64abb8b4acc4e4690c5cbc87',
-        currentPassword: password.currentPassword,
-        newPassword: password.newPassword,
-      });
-      toast.success(response.data.message);
-      setLoading(false);
-      console.log(response);
-    } catch (error) {
-      toast.error('network error');
-      setLoading(false);
-      console.log(error.message);
+    if (passwordValid) {
+      setLoading(true);
+      const id=getId()
+      try {
+        const response = await changePassword({
+          userId: id,
+          currentPassword: password.currentPassword,
+          newPassword: password.newPassword,
+        });
+        toast.success(response.data.message);
+        setLoading(false);
+        console.log(response);
+      } catch (error) {
+        toast.error('network error');
+        setLoading(false);
+        console.log(error.message);
+      }
     }
   };
   return (
@@ -75,41 +80,16 @@ const AccountSettings = () => {
           onChange={handlePassword}
         />
       </Stack>
-      {/* <Typography variant="body1" color="initial" mt="32px">
-        Password Requirements:
-      </Typography>
-      <Stack direction="row">
-        <CheckIcon sx={{ color: '#05B993' }} />
-        <Typography variant="body1" color="initial" fontSize="20px">
-          Be at least 8 characters long
-        </Typography>
-      </Stack>
-      <Stack direction="row">
-        <CheckIcon sx={{ color: '#05B993' }} />
-        <Typography variant="body1" color="initial" fontSize="20px">
-          Contains at least one uppercase letter
-        </Typography>
-      </Stack>
-      <Stack direction="row">
-        <CheckIcon sx={{ color: '#05B993' }} />
-        <Typography variant="body1" color="initial" fontSize="20px">
-          Contains at least one lowercase letter
-        </Typography>
-      </Stack>
-      <Stack direction="row">
-        <CheckIcon sx={{ color: '#05B993' }} />
-        <Typography variant="body1" color="initial" fontSize="20px">
-          Contains at least one number
-        </Typography>
-      </Stack> */}
-      <Typography color="grey.700">Password must:</Typography>
+ 
+      <Typography color="grey.700" mt={2}>Password must:</Typography>
       <PasswordChecklist
         rules={['minLength', 'capital', 'lowercase', 'number', 'match']}
         minLength={8}
         value={password.newPassword}
         valueAgain={password.confirmPassword}
         onChange={(isValid) => {
-          console.log('Password Valid!');
+          isValid && setPasswordValid(true);
+          !isValid && setPasswordValid(false);
         }}
         messages={{
           minLength: 'Be at least 8 characters long',
