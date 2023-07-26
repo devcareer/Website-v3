@@ -11,9 +11,6 @@ import {
 import { store } from '../../../store';
 import { Provider } from 'react-redux';
 const ProfileRoot = () => {
-  useEffect(() => {
-    console.log(import.meta.env.VITE_BASE_URL + 'signup');
-  }, []);
   const LINK_ACTIONS = [
     {
       text: 'Overview',
@@ -82,6 +79,7 @@ const ProfileRoot = () => {
         </Stack>
         {mode === 'settings' && <AccountSettings />}
         {mode === 'edit' && <EditProfile />}
+        {mode === 'overview' && <Overview />}
       </Box>
     </Provider>
   );

@@ -5,15 +5,15 @@ import { ActionButtons } from '../../Pages/Profile/EditProfile/WorkExperience';
 import { useSearchParams } from 'react-router-dom/dist';
 const AddEducationModal = ({ closeModal }) => {
   const [searchParams, setSearchParams] = useSearchParams();
-  console.log(searchParams.get('id'));
+  const handleCloseModal = () => {
+    closeModal();
+    searchParams.delete('id');
+    setSearchParams(searchParams);
+  };
   return (
     <Box>
       <Box
-        onClick={() => {
-          closeModal();
-          searchParams.delete('id');
-          setSearchParams(searchParams);
-        }}
+        onClick={handleCloseModal}
         className="overlay"
         bgcolor="rgba(0,0,0,0.5)"
         position="fixed"
