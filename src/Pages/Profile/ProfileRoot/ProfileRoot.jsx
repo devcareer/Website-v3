@@ -1,13 +1,8 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { devcareerhub, signOut } from '../../../assets/Images';
 import { AccountSettings, EditProfile, Overview } from '../../../Pages';
-import {
-  Link,
-  useNavigate,
-  useParams,
-  useSearchParams,
-} from 'react-router-dom';
+import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { store } from '../../../store';
 import { Provider } from 'react-redux';
 const ProfileRoot = () => {

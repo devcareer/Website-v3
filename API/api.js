@@ -1,7 +1,9 @@
 import axios from 'axios';
-import { getResetToken } from '../src/utils';
+import { getResetToken, useAuth } from '../src/utils';
+import Cookies from 'js-cookie';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const resetToken = getResetToken();
+const accessToken = Cookies.get('accessToken');
 const resetconfig = {
   headers: {
     Authorization: resetToken,
@@ -25,7 +27,11 @@ export const signUp = async (formData) => {
   return axios.post(`${BASE_URL}/auth/signup`, formData);
 };
 export const createProfile = async (formData) => {
-  return axios.post(`${BASE_URL}/profile`, formData);
+  return axios.patch(`${BASE_URL}/profile`, formData, {
+    headers: {
+      Authorization: 'Bearer ' + accessToken,
+    },
+  });
 };
 export const signIn = async (formData) => {
   console.log(formData);

@@ -4,9 +4,21 @@ import WorkExperience, { ActionButtons, AddButton } from './WorkExperience';
 import Education from './Education';
 import { link } from '../../../assets/Images';
 import { profileActions } from '../../../store';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { createProfile } from '../../../../API/api';
+import { toast } from 'react-toastify';
 const EditProfile = () => {
   const dispatch = useDispatch();
+  const profileData = useSelector((state) => state);
+  // const submitProfile = async () => {
+  //   try {
+  //     const res = await createProfile(profileData);
+  //     console.log(res);
+  //   } catch (err) {
+  //     console.log(err);
+  //     toast.error(err.response.data.message, { autoClose: 5000 });
+  //   }
+  // };
   return (
     <Box width="90%" py="48px" sx={{ maxWidth: '1018px', mx: 'auto' }}>
       <Typography variant="body1" color="#888888" fontSize="24px">
@@ -41,7 +53,7 @@ const EditProfile = () => {
       <>
         <WorkExperience />
         <Education />
-        <ActionButtons text="Apply Changes" />
+        <ActionButtons text="Apply Changes" /*handleSubmit={submitProfile}*/ />
         <AddButton title="Generate Preview Link" src={link} />
       </>
     </Box>

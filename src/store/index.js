@@ -34,6 +34,19 @@ const profileSlice = createSlice({
       experienceToEdit.endDate = endDate;
       experienceToEdit.employmentType = employmentType;
     },
+    addEducation(state, action) {
+      state.educations.push(action.payload);
+    },
+    editEducation(state, action) {
+      const { schoolName, course, degree, startYear, endYear, id } =
+        action.payload;
+      const educationToEdit = state.educations.find((edu) => edu.id === id);
+      educationToEdit.schoolName = schoolName;
+      educationToEdit.course = course;
+      educationToEdit.degree = degree;
+      educationToEdit.startYear = startYear;
+      educationToEdit.endYear = endYear;
+    },
   },
 });
 
