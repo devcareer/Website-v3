@@ -10,3 +10,4 @@ export { default as DpdsRegistration } from './DCTP/DpdsRegistration';
 export { default as AccountSettings } from './Profile/AccountSettings/AccountSettings';
 export { default as EditProfile } from './Profile/EditProfile/EditProfile';
 export { default as ProfileRoot } from './Profile/ProfileRoot/ProfileRoot';
+export { default as Overview } from './Profile/Overview/Overview';
