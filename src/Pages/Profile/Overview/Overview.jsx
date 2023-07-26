@@ -43,7 +43,7 @@ const Overview = () => {
           color="text.grey.300"
           fontWeight={400}
           fontSize="16px"
-          mt="8px"
+          mt="12px"
         >
           With over 3 years of experience in brand identity, illustration, and
           Product Design, I specialize in creating aesthetically pleasing and
@@ -53,12 +53,168 @@ const Overview = () => {
       </Box>
       <Box mt="28px">
         <Title>Skills</Title>
-        <Box display="flex" columnGap="20px">
+        <Box display="flex" columnGap="20px" mt="12px">
           <Skill skill="CSS" />
           <Skill skill="HTML" />
           <Skill skill="JavaScript" />
           <Skill skill="VueJs" />
           <Skill skill="Figma" />
+        </Box>
+      </Box>
+      <Box mt="28px">
+        <Title>Work Experience</Title>
+        <Box mt="12px">
+          <Box
+            display="grid"
+            gridTemplateColumns="175px 1fr"
+            mb="8px"
+            columnGap="20px"
+          >
+            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
+              <span>Jan 2023</span> - <span>Apr 2023</span>
+            </Typography>
+            <Box>
+              <Typography
+                fontWeight="500"
+                color="text.grey.300"
+                fontSize="16px"
+              >
+                Frontend Developer
+              </Typography>
+              <Typography
+                fontSize="16px"
+                fontWeight={400}
+                color="text.grey.700"
+              >
+                <span>MoneyAfrica</span> • <span>Full-Time</span>
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            display="grid"
+            gridTemplateColumns="175px 1fr"
+            mb="8px"
+            columnGap="20px"
+          >
+            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
+              <span>Sept 2023</span> - <span>Sept 2023</span>
+            </Typography>
+            <Box>
+              <Typography
+                fontWeight="500"
+                color="text.grey.300"
+                fontSize="16px"
+              >
+                Frontend Development Intern
+              </Typography>
+              <Typography
+                fontSize="16px"
+                fontWeight={400}
+                color="text.grey.700"
+              >
+                <span>ZubiPay</span> • <span>Internship</span>
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            display="grid"
+            gridTemplateColumns="175px 1fr"
+            mb="8px"
+            columnGap="20px"
+          >
+            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
+              <span>Sept 2023</span> - <span>Sept 2023</span>
+            </Typography>
+            <Box>
+              <Typography
+                fontWeight="500"
+                color="text.grey.300"
+                fontSize="16px"
+              >
+                Frontend Development Intern
+              </Typography>
+              <Typography
+                fontSize="16px"
+                fontWeight={400}
+                color="text.grey.700"
+              >
+                <span>MoneyAfrica</span> • <span>Internship</span>
+              </Typography>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+      <Box mt="28px">
+        <Title>Education</Title>
+        <Box mt="12px">
+          <Box
+            display="grid"
+            gridTemplateColumns="175px 1fr"
+            mb="8px"
+            columnGap="20px"
+          >
+            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
+              <span>Jan 2023</span> - <span>Apr 2023</span>
+            </Typography>
+            <Box>
+              <Typography
+                color="text.grey.800"
+                fontWeight={500}
+                fontSize="16px"
+                sx={{
+                  '& .degree': {
+                    fontWeight: '500',
+                    fontSize: '16px',
+                    color: 'text.grey.700',
+                  },
+                }}
+              >
+                <span className="degree">Bachelor’s</span> •{' '}
+                <span>Interaction Design</span>
+              </Typography>
+              <Typography
+                fontSize="16px"
+                fontWeight={400}
+                color="text.grey.700"
+              >
+                <span>Harvard University</span>
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            display="grid"
+            gridTemplateColumns="175px 1fr"
+            mb="8px"
+            columnGap="20px"
+          >
+            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
+              <span>Jan 2023</span> -<span>Apr 2023</span>
+            </Typography>
+            <Box>
+              <Typography
+                color="text.grey.800"
+                fontWeight={500}
+                fontSize="16px"
+                sx={{
+                  '& .degree': {
+                    fontWeight: '500',
+                    fontSize: '16px',
+                    color: 'text.grey.700',
+                  },
+                }}
+              >
+                <span className="degree">Master’s</span> •
+                <span> User Heuristics</span>
+              </Typography>
+              <Typography
+                fontSize="16px"
+                fontWeight={400}
+                color="text.grey.700"
+              >
+                <span>Oklahoma State University</span>
+              </Typography>
+            </Box>
+          </Box>
         </Box>
       </Box>
     </Box>
