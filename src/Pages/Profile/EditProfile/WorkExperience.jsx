@@ -3,24 +3,28 @@ import { Box, Typography, Stack, Button } from '@mui/material';
 import { editIcon } from '../../../assets/Images';
 import { AddExperienceModal } from '../../../components';
 import { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { useSearchParams } from 'react-router-dom';
 const WorkExperience = () => {
   const [showModal, setShowModal] = useState(false);
-  const WORK_EXPERIENCE = [
-    {
-      companyName: 'Money Africa',
-      jobTitle: 'Frontend Developer',
-      startDate: 'Jan 2023',
-      endDate: 'Apr 2023',
-      status: 'Full Time',
-    },
-    {
-      companyName: 'ZubiPay',
-      jobTitle: 'Frontend Development Intern',
-      startDate: 'Jan 2023',
-      endDate: 'Apr 2023',
-      status: 'Internship',
-    },
-  ];
+  // const WORK_EXPERIENCE = [
+  //   {
+  //     companyName: 'Money Africa',
+  //     jobTitle: 'Frontend Developer',
+  //     startDate: 'Jan 2023',
+  //     endDate: 'Apr 2023',
+  //     status: 'Full Time',
+  //   },
+  //   {
+  //     companyName: 'ZubiPay',
+  //     jobTitle: 'Frontend Development Intern',
+  //     startDate: 'Jan 2023',
+  //     endDate: 'Apr 2023',
+  //     status: 'Internship',
+  //   },
+  // ];
+  const WORK_EXPERIENCE = useSelector((state) => state.experiences);
+  // console.log(WORK_EXPERIENCE);
   const handleModalPopUp = () => {
     setShowModal(true);
   };
@@ -51,7 +55,22 @@ export default WorkExperience;
 
 const IndividualExperience = (props) => {
   const { experience, openModal } = props;
-  const { companyName, jobTitle, startDate, endDate, status } = experience;
+  const [searchParams, setSearchParams] = useSearchParams();
+  const { companyName, jobTitle, startDate, endDate, employmentType, id } =
+    experience;
+  const startMonth = new Date(startDate).toLocaleString('default', {
+    month: 'short',
+  });
+  const startYear = new Date(startDate).getFullYear();
+  const endMonth = new Date(endDate).toLocaleString('default', {
+    month: 'short',
+  });
+  const endYear = new Date(endDate).getFullYear();
+  const editExperience = () => {
+    openModal();
+    searchParams.set('id', id);
+    setSearchParams(searchParams);
+  };
   return (
     <Stack
       direction="row"
@@ -69,14 +88,14 @@ const IndividualExperience = (props) => {
         </Typography>
         <Stack direction="row" color="text.grey.300" gap="4px">
           <Typography component="span">{companyName}</Typography> •
-          <Typography component="span">{status}</Typography>
+          <Typography component="span">{employmentType}</Typography>
         </Stack>
         <Stack direction="row" color="text.grey.300" gap="4px">
-          <Typography component="span">{startDate}</Typography> -
-          <Typography component="span">{endDate}</Typography>
+          <Typography component="span">{`${startMonth} ${startYear}`}</Typography>{' '}
+          -<Typography component="span">{`${endMonth} ${endYear}`}</Typography>
         </Stack>
       </Box>
-      <Button onClick={openModal}>
+      <Button onClick={editExperience}>
         <Box component="img" src={editIcon}></Box>
       </Button>
     </Stack>
@@ -116,7 +135,7 @@ export const AddButton = ({ title, src, openModal }) => {
   );
 };
 
-export const ActionButtons = ({ text, closeModal }) => {
+export const ActionButtons = ({ text, closeModal, handleSubmit }) => {
   return (
     <Stack my="40px" direction="row" justifyContent="space-between">
       <Button
@@ -133,6 +152,7 @@ export const ActionButtons = ({ text, closeModal }) => {
         Cancel
       </Button>
       <Button
+        onClick={handleSubmit}
         variant="contained"
         sx={{
           color: '#FFF',

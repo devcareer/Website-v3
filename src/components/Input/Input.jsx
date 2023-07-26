@@ -12,7 +12,6 @@ const Input = ({
   error,
   width,
 }) => {
-  console.log(width);
   return (
     <Stack direction="column" gap={0.5} width={width ?? '100%'}>
       <FormLabel sx={{ fontWeight: '700', color: '#363636' }}>

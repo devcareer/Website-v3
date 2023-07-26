@@ -5,7 +5,6 @@ import React, { useState } from 'react';
 import PasswordChecklist from 'react-password-checklist';
 import { Link } from 'react-router-dom';
 import { toast } from 'react-toastify';
-import * as Yup from 'yup';
 import { signUp } from '../../../API/api';
 import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
@@ -22,20 +21,33 @@ const SignUp = () => {
   const handlePasswordConfirm = (e) => {
     setConfirmPassword(e.target.value);
   };
-  const validationSchema = Yup.object({
-    email: Yup.string()
-      .required('This field is required')
-      .email('Please enter a valid mail'),
-    username: Yup.string()
-      .required('This field is required')
-      .min(5, 'Username must be contain atleast 5 characters'),
-  });
+  const validate = (values) => {
+    const errors = {};
+    const userNameRegEx = /^[a-zA-Z0-9]{5,}$/;
+    const emailRegex = /^\s*([^\s@]+)@([^\s@]+\.[^\s@]+)\s*$/;
+    const userNameIsValid = userNameRegEx.test(values.username);
+    const emailIsValid = emailRegex.test(values.email);
+    if (!values.email) {
+      errors.email = 'This field is required';
+    }
+    if (!emailIsValid) {
+      errors.email = 'Please enter a valid mail';
+    }
+    if (!values.username) {
+      errors.username = 'This field is required';
+    }
+    if (!userNameIsValid) {
+      errors.username =
+        'Must contain atleast 5 characters with no special characters included';
+    }
+    return errors;
+  };
   const formik = useFormik({
     initialValues: {
       email: '',
       username: '',
     },
-    validationSchema,
+    validate,
     onSubmit: async (values) => {
       if (passwordValid) {
         setloading(true);
