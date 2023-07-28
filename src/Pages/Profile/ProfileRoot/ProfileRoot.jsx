@@ -5,7 +5,9 @@ import { AccountSettings, EditProfile, Overview } from '../../../Pages';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { store } from '../../../store';
 import { Provider } from 'react-redux';
+import Cookies from 'js-cookie';
 const ProfileRoot = () => {
+  const navigate = useNavigate();
   const LINK_ACTIONS = [
     {
       text: 'Overview',
@@ -22,6 +24,12 @@ const ProfileRoot = () => {
   ];
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
+  const logOut = () => {
+    Cookies.remove('accessToken');
+    Cookies.remove('id');
+    localStorage.removeItem('accessToken');
+    navigate('?mode=signin');
+  };
   return (
     <Provider store={store}>
       <Box bgcolor="#E0E0E0" pt="50px">
@@ -57,6 +65,7 @@ const ProfileRoot = () => {
             ))}
           </Stack>
           <Button
+            onClick={logOut}
             sx={{
               py: { xs: '8px', sm: '16px' },
               px: '20px',

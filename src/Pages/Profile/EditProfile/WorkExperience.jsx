@@ -56,7 +56,7 @@ export default WorkExperience;
 const IndividualExperience = (props) => {
   const { experience, openModal } = props;
   const [searchParams, setSearchParams] = useSearchParams();
-  const { companyName, jobTitle, startDate, endDate, employmentType, id } =
+  const { companyName, jobTitle, startDate, endDate, employmentType, _id } =
     experience;
   const startMonth = new Date(startDate).toLocaleString('default', {
     month: 'short',
@@ -68,7 +68,7 @@ const IndividualExperience = (props) => {
   const endYear = new Date(endDate).getFullYear();
   const editExperience = () => {
     openModal();
-    searchParams.set('id', id);
+    searchParams.set('id', _id);
     setSearchParams(searchParams);
   };
   return (

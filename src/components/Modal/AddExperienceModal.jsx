@@ -18,14 +18,14 @@ const AddExperienceModal = ({ closeModal }) => {
   const experiences = useSelector((state) => state.experiences);
   console.log(experiences);
   const experienceId = searchParams.get('id');
-  const experienceToEdit = experiences.find((exp) => exp.id == experienceId);
+  const experienceToEdit = experiences.find((exp) => exp._id == experienceId);
   const handleCloseModal = () => {
     closeModal();
     searchParams.delete('id');
     setSearchParams(searchParams);
   };
   const initialValues = {
-    id: experienceToEdit?.id ?? Math.random(),
+    _id: experienceToEdit?._id ?? Math.random(),
     companyName: experienceToEdit?.companyName ?? '',
     jobTitle: experienceToEdit?.jobTitle ?? '',
     startDate: experienceToEdit?.startDate ?? '',
