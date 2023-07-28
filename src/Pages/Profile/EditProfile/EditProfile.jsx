@@ -5,20 +5,40 @@ import Education from './Education';
 import { link } from '../../../assets/Images';
 import { profileActions } from '../../../store';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProfile } from '../../../../API/api';
+import { createProfile, getProfile } from '../../../../API/api';
 import { toast } from 'react-toastify';
+import { useEffect } from 'react';
 const EditProfile = () => {
   const dispatch = useDispatch();
+  useEffect(() => {
+    console.log('How many times did you render?');
+    const getProfileData = async () => {
+      try {
+        const res = await getProfile();
+        const profileData = res.data.profile?.[0];
+        console.log(profileData);
+        const { experiences, education } = profileData;
+        // experiences.forEach((exp) =>
+        //   dispatch(profileActions.addExperience(exp))
+        // );
+        dispatch(profileActions.writeExistingProfile(profileData));
+      } catch (err) {
+        console.log(err);
+      }
+    };
+    getProfileData();
+  }, []);
   const profileData = useSelector((state) => state);
-  // const submitProfile = async () => {
-  //   try {
-  //     const res = await createProfile(profileData);
-  //     console.log(res);
-  //   } catch (err) {
-  //     console.log(err);
-  //     toast.error(err.response.data.message, { autoClose: 5000 });
-  //   }
-  // };
+  const submitProfile = async () => {
+    try {
+      const res = await createProfile(profileData);
+      console.log(res);
+      toast.success(res.data.message);
+    } catch (err) {
+      console.log(err);
+      toast.error(err.response.data.message, { autoClose: 5000 });
+    }
+  };
   return (
     <Box width="90%" py="48px" sx={{ maxWidth: '1018px', mx: 'auto' }}>
       <Typography variant="body1" color="#888888" fontSize="24px">
@@ -53,7 +73,7 @@ const EditProfile = () => {
       <>
         <WorkExperience />
         <Education />
-        <ActionButtons text="Apply Changes" /*handleSubmit={submitProfile}*/ />
+        <ActionButtons text="Apply Changes" handleSubmit={submitProfile} />
         <AddButton title="Generate Preview Link" src={link} />
       </>
     </Box>

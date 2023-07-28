@@ -11,14 +11,14 @@ const AddEducationModal = ({ closeModal }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const educations = useSelector((state) => state.educations);
   const educationId = searchParams.get('id');
-  const educationToEdit = educations.find((edu) => edu.id == educationId);
+  const educationToEdit = educations.find((edu) => edu._id == educationId);
   const handleCloseModal = () => {
     closeModal();
     searchParams.delete('id');
     setSearchParams(searchParams);
   };
   const initialValues = {
-    id: educationToEdit?.id ?? Math.random(),
+    _id: educationToEdit?._id ?? Math.random(),
     schoolName: educationToEdit?.schoolName ?? '',
     degree: educationToEdit?.degree ?? '',
     course: educationToEdit?.course ?? '',

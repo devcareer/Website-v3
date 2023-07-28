@@ -17,17 +17,22 @@ const profileSlice = createSlice({
   initialState,
   name: 'profileSlice',
   reducers: {
+    writeExistingProfile(state, action) {
+      const { experiences, educations } = action.payload;
+      state.experiences = experiences;
+    },
     addFullName(state, action) {
       state.fullName = action.payload;
     },
+
     addExperience(state, action) {
       const { payload } = action;
       state.experiences.push(payload);
     },
     editExperience(state, action) {
-      const { companyName, jobTitle, startDate, endDate, employmentType, id } =
+      const { companyName, jobTitle, startDate, endDate, employmentType, _id } =
         action.payload;
-      const experienceToEdit = state.experiences.find((exp) => exp.id === id);
+      const experienceToEdit = state.experiences.find((exp) => exp._id === _id);
       experienceToEdit.companyName = companyName;
       experienceToEdit.jobTitle = jobTitle;
       experienceToEdit.startDate = startDate;
@@ -38,9 +43,9 @@ const profileSlice = createSlice({
       state.educations.push(action.payload);
     },
     editEducation(state, action) {
-      const { schoolName, course, degree, startYear, endYear, id } =
+      const { schoolName, course, degree, startYear, endYear, _id } =
         action.payload;
-      const educationToEdit = state.educations.find((edu) => edu.id === id);
+      const educationToEdit = state.educations.find((edu) => edu._id === _id);
       educationToEdit.schoolName = schoolName;
       educationToEdit.course = course;
       educationToEdit.degree = degree;

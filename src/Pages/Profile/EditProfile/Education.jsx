@@ -64,13 +64,13 @@ const IndividualEducation = (props) => {
     degree,
     startYear: startDate,
     endYear: endDate,
-    id,
+    _id,
   } = education;
   const startYear = new Date(startDate).getFullYear();
   const endYear = new Date(endDate).getFullYear();
   const editEducation = () => {
     openModal();
-    searchParams.set('id', id);
+    searchParams.set('id', _id);
     setSearchParams(searchParams);
   };
   return (
