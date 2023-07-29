@@ -11,13 +11,18 @@ const Input = ({
   onBlur,
   error,
   width,
+  disabled,
 }) => {
   return (
     <Stack direction="column" gap={0.5} width={width ?? '100%'}>
-      <FormLabel sx={{ fontWeight: '700', color: '#363636' }}>
+      <FormLabel
+        sx={{ fontWeight: '700', color: '#363636' }}
+        disabled={!!disabled}
+      >
         {title}
       </FormLabel>
       <TextField
+        disabled={!!disabled}
         fullWidth={true}
         name={name}
         value={value}

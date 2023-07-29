@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Box,
   Stack,
@@ -12,13 +12,16 @@ import { useDispatch, useSelector } from 'react-redux';
 import { profileActions } from '../../store';
 import { useFormik } from 'formik';
 import { useSearchParams } from 'react-router-dom';
+
 const AddExperienceModal = ({ closeModal }) => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const experiences = useSelector((state) => state.experiences);
-  console.log(experiences);
   const experienceId = searchParams.get('id');
   const experienceToEdit = experiences.find((exp) => exp._id == experienceId);
+  const [tillPresent, setTillPresent] = useState(
+    experienceToEdit?.tillPresent ?? true
+  );
   const handleCloseModal = () => {
     closeModal();
     searchParams.delete('id');
@@ -32,7 +35,9 @@ const AddExperienceModal = ({ closeModal }) => {
     employmentType: experienceToEdit?.employmentType ?? '',
     endDate: experienceToEdit?.endDate ?? '',
   };
-
+  const handleTillPresentCheck = () => {
+    setTillPresent((prev) => !prev);
+  };
   const formik = useFormik({
     initialValues,
     validate: (values) => {
@@ -49,16 +54,16 @@ const AddExperienceModal = ({ closeModal }) => {
       if (!values.startDate) {
         errors.startDate = 'This field is required';
       }
-      if (!values.endDate) {
+      if (!tillPresent && !values.endDate) {
         errors.endDate = 'This field is required';
       }
       return errors;
     },
     onSubmit: (values) => {
-      console.log(values);
+      console.log({ ...values, tillPresent });
       experienceToEdit
-        ? dispatch(profileActions.editExperience(values))
-        : dispatch(profileActions.addExperience(values));
+        ? dispatch(profileActions.editExperience({ ...values, tillPresent }))
+        : dispatch(profileActions.addExperience({ ...values, tillPresent }));
       closeModal();
     },
   });
@@ -150,7 +155,7 @@ const AddExperienceModal = ({ closeModal }) => {
           <Stack direction={{ xs: 'column', md: 'row' }} gap="8px">
             <Input
               title="Start Date"
-              type="date"
+              type="month"
               width={{ xs: '100%', md: '50%' }}
               name="startDate"
               onChange={formik.handleChange}
@@ -163,8 +168,9 @@ const AddExperienceModal = ({ closeModal }) => {
               }
             />
             <Input
+              disabled={tillPresent}
               title="End Date"
-              type="date"
+              type="month"
               width={{ xs: '100%', md: '50%' }}
               name="endDate"
               onChange={formik.handleChange}
@@ -180,7 +186,12 @@ const AddExperienceModal = ({ closeModal }) => {
         </Stack>
         <FormControlLabel
           required
-          control={<Checkbox />}
+          control={
+            <Checkbox
+              onClick={handleTillPresentCheck}
+              defaultChecked={tillPresent}
+            />
+          }
           label="I'm currently working in this role"
         />
         <ActionButtons

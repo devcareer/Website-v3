@@ -3,18 +3,19 @@ import { getResetToken } from '../src/utils';
 import Cookies from 'js-cookie';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
 const resetToken = getResetToken();
-// const accessToken = Cookies.get('accessToken');
-const accessToken = localStorage.getItem('accessToken');
-console.log(accessToken);
+
 const resetconfig = {
   headers: {
     Authorization: resetToken,
   },
 };
-const profileConfig = {
-  headers: {
-    Authorization: `Bearer ${accessToken}`,
-  },
+const profileConfig = () => {
+  const accessToken = Cookies.get('accessToken');
+  return {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+  };
 };
 //  Forget password flow
 export const forgetPassword = async (formData) => {
@@ -36,14 +37,23 @@ export const createProfile = async (formData) => {
   return axios.patch(
     `https://website-v3-znmt.onrender.com/api/v1/profile`,
     formData,
-    profileConfig
+    profileConfig()
   );
 };
 export const getProfile = async () => {
   return axios.get(
     `https://website-v3-znmt.onrender.com/api/v1/profile`,
-    profileConfig
+    profileConfig()
   );
+};
+export const makeRequest = (config) => {
+  const accessToken = localStorage.getItem('accessToken');
+  return axios.request({
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+    },
+    ...config,
+  });
 };
 export const signIn = async (formData) => {
   console.log(formData);
@@ -51,4 +61,11 @@ export const signIn = async (formData) => {
     `https://website-v3-znmt.onrender.com/api/v1/auth/login`,
     formData
   );
+};
+
+const get = (url) => {
+  return makeRequest({
+    url,
+    method: 'GET',
+  });
 };

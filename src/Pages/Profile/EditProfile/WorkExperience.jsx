@@ -56,8 +56,15 @@ export default WorkExperience;
 const IndividualExperience = (props) => {
   const { experience, openModal } = props;
   const [searchParams, setSearchParams] = useSearchParams();
-  const { companyName, jobTitle, startDate, endDate, employmentType, _id } =
-    experience;
+  const {
+    companyName,
+    jobTitle,
+    startDate,
+    endDate,
+    employmentType,
+    _id,
+    tillPresent,
+  } = experience;
   const startMonth = new Date(startDate).toLocaleString('default', {
     month: 'short',
   });
@@ -92,7 +99,10 @@ const IndividualExperience = (props) => {
         </Stack>
         <Stack direction="row" color="text.grey.300" gap="4px">
           <Typography component="span">{`${startMonth} ${startYear}`}</Typography>{' '}
-          -<Typography component="span">{`${endMonth} ${endYear}`}</Typography>
+          -
+          <Typography component="span">
+            {tillPresent ? 'Present' : `${endMonth} ${endYear}`}
+          </Typography>
         </Stack>
       </Box>
       <Button onClick={editExperience}>
