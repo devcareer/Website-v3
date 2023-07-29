@@ -2,7 +2,7 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Stack, Typography, styled } from '@mui/material';
 import { useFormik } from 'formik';
 import Cookies from 'js-cookie';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
@@ -10,6 +10,15 @@ import { signIn } from '../../../API/api';
 import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
 const SignIn = () => {
+  useEffect(() => {
+    const verified = Cookies.get('verified');
+    if (verified) {
+      toast.success('Account Verification Successful please login');
+      Cookies.remove('verified');
+    } else {
+      return;
+    }
+  });
   const navigate = useNavigate();
   const [loading, setloading] = useState(false);
 
