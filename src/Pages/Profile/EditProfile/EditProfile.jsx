@@ -32,9 +32,7 @@ const EditProfile = () => {
       toast.success(res.data.message);
     } catch (err) {
       console.log(err);
-      toast.error(err.response.data.message || err.response.data.error, {
-        autoClose: 5000,
-      });
+      toast.error(err.response.data.message || err.response.data.error);
     }
   };
   return (
