@@ -72,7 +72,11 @@ export const router = createBrowserRouter([
   {
     path: 'profile',
     // element: <ProfileRoot />,
-    element: <ProtectedRoute><ProfileRoot /></ProtectedRoute>,
+    element: (
+      <ProtectedRoute>
+        <ProfileRoot />
+      </ProtectedRoute>
+    ),
   },
 
   { path: 'programs/dpds/registration', element: <DpdsRegistration /> },

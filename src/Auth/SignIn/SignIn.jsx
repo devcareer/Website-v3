@@ -2,7 +2,7 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Stack, Typography, styled } from '@mui/material';
 import { useFormik } from 'formik';
 import Cookies from 'js-cookie';
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
@@ -43,7 +43,6 @@ const SignIn = () => {
         setloading(false);
         const token = res.data.accessToken;
         const id = res.data.result._id;
-        localStorage.setItem('accessToken', token);
         Cookies.set('accessToken', token, { expires: 1 });
         Cookies.set('id', id, { expires: 1 });
         navigate('/profile/?mode=edit', { replace: true });
@@ -53,7 +52,6 @@ const SignIn = () => {
       }
     },
   });
-
   return (
     <AuthCard>
       <Typography fontWeight="700" fontSize={{ xs: '16px', md: '24px' }}>
