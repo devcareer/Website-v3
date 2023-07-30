@@ -6,6 +6,7 @@ import {
   ContactUs,
   Dctp,
   DpdsRegistration,
+  FreeProfile,
   Home,
   LaptopForDevelopers,
   ProfileRoot,
@@ -80,4 +81,5 @@ export const router = createBrowserRouter([
   },
 
   { path: 'programs/dpds/registration', element: <DpdsRegistration /> },
+  { path: '/profile/:id', element: <FreeProfile /> },
 ]);

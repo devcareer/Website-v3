@@ -60,10 +60,25 @@ const EditProfile = () => {
         <Input
           title="About"
           placeholder="With over 3 years of experience in brand identity, illustration, and Product Design, I specialize in creating aesthetically pleasing and usable products for various industries. My focus is on transforming complex technology into straightforward, user-friendly solutions."
+          onChange={(e) => {
+            dispatch(profileActions.addAbout(e.target.value));
+          }}
         />
-        <Input title="Job Title" placeholder="Product Designer" />
-        <Input title="Location" placeholder="Washington DC, United States. " />
-        <Input title="Portfolio Link" placeholder="https://adevikthur.xyz" />
+        <Input title="Job Title" placeholder="Product Designer"
+         onChange={(e) => {
+          dispatch(profileActions.addJobTitle(e.target.value));
+        }}
+        />
+        <Input title="Location" placeholder="Washington DC, United States. " 
+         onChange={(e) => {
+          dispatch(profileActions.addLocation(e.target.value));
+        }}
+        />
+        <Input title="Portfolio Link" placeholder="https://adevikthur.xyz" 
+         onChange={(e) => {
+          dispatch(profileActions.addPortfolioUrl(e.target.value));
+        }}
+        />
         <TagInput />
       </Stack>
       <>
