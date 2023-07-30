@@ -23,3 +23,8 @@ export const useAuth = () => {
    const id=Cookies.get('id')
    return id
  }
+
+ export const getUserName=()=>{
+    const userName=Cookies.get('userName')
+     return userName
+ }

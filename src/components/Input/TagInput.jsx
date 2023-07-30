@@ -1,10 +1,12 @@
 import { Chip, FormLabel, TextField } from '@mui/material';
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { profileActions } from '../../store/index';
 const TagInput = () => {
   const dispatch = useDispatch();
-  const [tags, setTags] = useState([]);
+  const state = useSelector((state) => state.skills);
+
+  const [tags, setTags] = useState(state);
   const [inputValue, setInputValue] = useState('');
 
   const handleKeyPress = (event) => {
