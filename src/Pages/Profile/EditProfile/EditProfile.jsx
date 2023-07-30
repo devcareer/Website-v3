@@ -92,7 +92,7 @@ const EditProfile = () => {
           onChange={(e) => {
             dispatch(profileActions.addJobTitle(e.target.value));
           }}
-          value={state.addJobTitle}
+          value={state. jobTitle}
         />
         <Input
           title="Location"
