@@ -28,7 +28,20 @@ const profileSlice = createSlice({
       state.personal.portfolioURL = personal.portfolioURL;
     },
     addFullName(state, action) {
-      state.fullName = action.payload;
+      state.personal.fullName = action.payload;
+    },
+    addAbout(state, action) {
+      state.personal.about = action.payload;
+    }, addJobTitle(state, action) {
+      state.personal.jobTitle = action.payload;
+    }, addLocation(state, action) {
+      state.personal.location = action.payload;
+    }, addPortfolioUrl(state, action) {
+      state.personal.portfolioURL = action.payload;
+    },
+    addSkill(state,action){
+      const { payload } = action;
+      state.skills.push(payload)
     },
 
     addExperience(state, action) {
