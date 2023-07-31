@@ -1,3 +1,4 @@
+import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import copy from 'copy-to-clipboard';
 import { useState } from 'react';
@@ -9,50 +10,28 @@ import { AddButton } from '../EditProfile/WorkExperience';
 import { Skill } from './components/Skill';
 import { Title } from './components/Title';
 import { Skill } from './components/Skill';
+import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
-
-const profile = {
-  personal: {
-    fullName: 'Adekanbi Julius Asaolu',
-    about: 'Passionate software engineer with a love for problem-solving.',
-    jobTitle: 'Product Designer',
-    location: 'New York, USA',
-    portfolioURL: 'https://www.johndoeportfolio.com',
-  },
-
-  educations: [
-    {
-      schoolName: 'University of XYZ',
-      degree: 'Bachelor of Science in Computer Science',
-      course: 'Computer Science',
-      startYear: '2015',
-      endYear: '2019',
-    },
-  ],
-
-  experiences: [
-    {
-      companyName: 'Tech Solutions Inc.',
-      jobTitle: 'Software Developer',
-      employmentType: 'Full-time',
-      startDate: '2020-01-01',
-      endDate: '2022-06-30',
-    },
-    {
-      companyName: 'Tech Solutions 2',
-      jobTitle: 'Software Developer',
-      employmentType: 'Intern',
-      startDate: '2020-01-01',
-      endDate: '2022-06-30',
-    },
-  ],
-
-  skills: ['JavaScript', 'Nodejs', 'React', 'MongoDB'],
-};
+import { getProfile } from '../../../../API/api';
 
 const Overview = () => {
-  const username = getUserName();
+  const [profileData, setProfileData] = useState(null);
   const [generatedLink, setGeneratedLink] = useState('');
+
+  const username = getUserName();
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await getProfile();
+        const profileData = res.data.profile?.[0];
+        setProfileData(profileData);
+      } catch (err) {
+        toast.error('FAILED TO FETCH PROFILE DATA');
+      }
+    })();
+  }, []);
+
   const handleGenerateLink = () => {
     setGeneratedLink(`https://devcareers.io/${username}`);
   };
@@ -79,137 +58,150 @@ const Overview = () => {
       backgroundColor="#FEFEFE"
       mt="48px"
     >
-      <Box>
-        <Title>{profile.personal.fullName}</Title>
-        <Typography
-          component="h2"
-          variant="subtitle1"
-          color="text.grey.300"
-          fontWeight={500}
-          fontSize="16px"
-        >
-          {profile.personal.jobTitle}
-        </Typography>
-        <Typography
-          component="h3"
-          variant="subtitle2"
-          color="text.grey.700"
-          fontWeight={400}
-          fontSize="16px"
-        >
-          {profile.personal.location}
-        </Typography>
-      </Box>
-      <Box mt="28px">
-        <Title>About</Title>
-        <Typography
-          component="h2"
-          variant="body2"
-          color="text.grey.300"
-          fontWeight={400}
-          fontSize="16px"
-          mt="12px"
-        >
-          {profile.personal.about}
-        </Typography>
-      </Box>
-      <Box mt="28px">
-        <Title>Skills</Title>
-        <Box display="flex" columnGap="20px" mt="12px">
-          {profile.skills.map((skill) => {
-            return <Skill skill={skill} key={skill} />;
-          })}
+      {profileData ? (
+        <>
+          <Box>
+            <Title>{profileData.personal.fullName}</Title>
+            <Typography
+              component="h2"
+              variant="subtitle1"
+              color="text.grey.300"
+              fontWeight={500}
+              fontSize="16px"
+            >
+              {profileData.personal.jobTitle}
+            </Typography>
+            <Typography
+              component="h3"
+              variant="subtitle2"
+              color="text.grey.700"
+              fontWeight={400}
+              fontSize="16px"
+            >
+              {profileData.personal.location}
+            </Typography>
+          </Box>
+          <Box mt="28px">
+            <Title>About</Title>
+            <Typography
+              component="h2"
+              variant="body2"
+              color="text.grey.300"
+              fontWeight={400}
+              fontSize="16px"
+              mt="12px"
+            >
+              {profileData.personal.about}
+            </Typography>
+          </Box>
+          <Box mt="28px">
+            <Title>Skills</Title>
+            <Box display="flex" columnGap="20px" mt="12px">
+              {profileData.skills.map((skill) => {
+                return <Skill skill={skill} key={skill} />;
+              })}
+            </Box>
+          </Box>
+          <Box mt="28px">
+            <Title>Work Experience</Title>
+            <Box mt="12px">
+              {profileData.experiences.map((experience) => {
+                return (
+                  <Box
+                    display="grid"
+                    gridTemplateColumns="175px 1fr"
+                    mb="8px"
+                    columnGap="20px"
+                  >
+                    <Typography
+                      fontSize="16px"
+                      fontWeight={400}
+                      color="text.grey.700"
+                    >
+                      <span>
+                        {dayjs(experience.startDate).format('MMM YYYY')}
+                      </span>{' '}
+                      -{' '}
+                      <span>
+                        {dayjs(experience.endDate).format('MMM YYYY')}
+                      </span>
+                    </Typography>
+                    <Box>
+                      <Typography
+                        fontWeight="500"
+                        color="text.grey.300"
+                        fontSize="16px"
+                      >
+                        {experience.jobTitle}
+                      </Typography>
+                      <Typography
+                        fontSize="16px"
+                        fontWeight={400}
+                        color="text.grey.700"
+                      >
+                        <span>{experience.companyName}</span> •{' '}
+                        <span>{experience.employmentType}</span>
+                      </Typography>
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+          </Box>
+          <Box mt="28px">
+            <Title>Education</Title>
+            <Box mt="12px">
+              {profileData.educations.map((education) => {
+                return (
+                  <Box
+                    display="grid"
+                    gridTemplateColumns="175px 1fr"
+                    mb="8px"
+                    columnGap="20px"
+                  >
+                    <Typography
+                      fontSize="16px"
+                      fontWeight={400}
+                      color="text.grey.700"
+                    >
+                      <span>{education.startYear}</span>
+                      <span> - {education.endYear}</span>
+                    </Typography>
+                    <Box>
+                      <Typography
+                        color="text.grey.800"
+                        fontWeight={500}
+                        fontSize="16px"
+                        sx={{
+                          '& .degree': {
+                            fontWeight: '500',
+                            fontSize: '16px',
+                            color: 'text.grey.700',
+                          },
+                        }}
+                      >
+                        <span className="degree">{education.degree}</span>
+                        <span> • {education.course}</span>
+                      </Typography>
+                      <Typography
+                        fontSize="16px"
+                        fontWeight={400}
+                        color="text.grey.700"
+                      >
+                        <span>{education.schoolName}</span>
+                      </Typography>
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+          </Box>
+        </>
+      ) : (
+        <Box>
+          <Typography>You have not created a profile.</Typography>
         </Box>
-      </Box>
-      <Box mt="28px">
-        <Title>Work Experience</Title>
-        <Box mt="12px">
-          {profile.experiences.map((experience) => {
-            return (
-              <Box
-                display="grid"
-                gridTemplateColumns="175px 1fr"
-                mb="8px"
-                columnGap="20px"
-              >
-                <Typography
-                  fontSize="16px"
-                  fontWeight={400}
-                  color="text.grey.700"
-                >
-                  <span>{dayjs(experience.startDate).format('MMM YYYY')}</span>{' '}
-                  - <span>{dayjs(experience.endDate).format('MMM YYYY')}</span>
-                </Typography>
-                <Box>
-                  <Typography
-                    fontWeight="500"
-                    color="text.grey.300"
-                    fontSize="16px"
-                  >
-                    {experience.jobTitle}
-                  </Typography>
-                  <Typography
-                    fontSize="16px"
-                    fontWeight={400}
-                    color="text.grey.700"
-                  >
-                    <span>{experience.companyName}</span> •{' '}
-                    <span>{experience.employmentType}</span>
-                  </Typography>
-                </Box>
-              </Box>
-            );
-          })}
-        </Box>
-      </Box>
-      <Box mt="28px" mb="48px">
-        <Title>Education</Title>
-        <Box mt="12px">
-          {profile.educations.map((education) => {
-            return (
-              <Box
-                display="grid"
-                gridTemplateColumns="175px 1fr"
-                mb="8px"
-                columnGap="20px"
-              >
-                <Typography
-                  fontSize="16px"
-                  fontWeight={400}
-                  color="text.grey.700"
-                >
-                  <span>{education.startYear}</span>
-                  <span> - {education.endYear}</span>
-                </Typography>
-                <Box>
-                  <Typography
-                    color="text.grey.800"
-                    fontWeight={500}
-                    fontSize="16px"
-                    sx={{
-                      '& .degree': {
-                        fontWeight: '500',
-                        fontSize: '16px',
-                        color: 'text.grey.700',
-                      },
-                    }}
-                  >
-                    <span className="degree">{education.degree}</span>
-                    <span> • {education.course}</span>
-                  </Typography>
-                  <Typography
-                    fontSize="16px"
-                    fontWeight={400}
-                    color="text.grey.700"
-                  >
-                    <span>{education.schoolName}</span>
-                  </Typography>
-                </Box>
-              </Box>
-            );
-          })}
-        </Box>
-      </Box>
+      )}
       {generatedLink ? (
         <Box>
           <Input value={generatedLink} />
