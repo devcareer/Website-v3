@@ -13,7 +13,6 @@ import { Skill } from './components/Skill';
 import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { getProfile } from '../../../../API/api';
-import { useSelector } from 'react-redux';
 
 const Overview = () => {
   const [profileData, setProfileData] = useState(null);
