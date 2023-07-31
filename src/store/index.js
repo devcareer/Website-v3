@@ -47,6 +47,10 @@ const profileSlice = createSlice({
       const { payload } = action;
       state.skills.push(payload);
     },
+    removeSkill(state,action){
+      const {payload} =action;
+      state.skills.splice(payload, 1)
+    },
 
     addExperience(state, action) {
       const { payload } = action;

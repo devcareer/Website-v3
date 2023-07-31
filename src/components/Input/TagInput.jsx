@@ -28,6 +28,7 @@ const TagInput = () => {
   const removeTag = (index) => {
     // setTags((prevTags) => prevTags.filter((_, i) => i !== index));
     // dispatch(profileActions.removeSkill());
+    dispatch(profileActions.removeSkill(index));
   };
   return (
     <div>
