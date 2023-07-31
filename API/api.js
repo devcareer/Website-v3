@@ -1,7 +1,8 @@
 import axios from 'axios';
-import { getResetToken } from '../src/utils';
 import Cookies from 'js-cookie';
-const BASE_URL = import.meta.env.VITE_BASE_URL;
+import { getResetToken } from '../src/utils';
+// const BASE_URL = import.meta.env.VITE_BASE_URL;
+const BASE_URL = 'https://website-v3-znmt.onrender.com/api/v1';
 const resetToken = getResetToken();
 
 const resetconfig = {
