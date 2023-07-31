@@ -10,12 +10,11 @@ import { forgetPassword } from '../../../API/api';
 import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
 
-
 const ForgetPassword = () => {
   const navigate = useNavigate();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
-  const [error,setError]=useState(false)
+  const [error, setError] = useState(false);
 
   const handleChange = (e) => {
     setEmail(e.target.value);
@@ -26,14 +25,13 @@ const ForgetPassword = () => {
     return emailRegex.test(email);
   }
 
- 
-  const  handleClick= async () => {
-    if(isValidEmail(email)){
-      setError(false)
+  const handleClick = async () => {
+    if (isValidEmail(email)) {
+      setError(false);
       setLoading(true);
       try {
         const response = await forgetPassword({ email });
-        toast.success(`we just sent an email to ${email}`);
+        toast.success(`We just sent an email to ${email}`);
         setLoading(false);
         console.log(response);
       } catch (error) {
@@ -41,11 +39,10 @@ const ForgetPassword = () => {
         setLoading(false);
         console.log(error.message);
       }
-    }else{
-      setError(true)
+    } else {
+      setError(true);
     }
-  
-  }
+  };
 
   return (
     <AuthCard>
@@ -77,7 +74,7 @@ const ForgetPassword = () => {
           onChange={handleChange}
         />
         <Typography variant="body1" color="red" mt={-2}>
-          {error ?"Please enter a valid email address" : ''}
+          {error ? 'Please enter a valid email address' : ''}
         </Typography>
         <LoadingButton
           loading={loading}

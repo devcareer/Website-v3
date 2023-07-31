@@ -6,6 +6,7 @@ import { useSearchParams } from 'react-router-dom/dist';
 import { useDispatch, useSelector } from 'react-redux';
 import { useFormik } from 'formik';
 import { profileActions } from '../../store';
+import { LoadingButton } from '@mui/lab';
 const AddEducationModal = ({ closeModal }) => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -16,6 +17,10 @@ const AddEducationModal = ({ closeModal }) => {
     closeModal();
     searchParams.delete('id');
     setSearchParams(searchParams);
+  };
+  const deleteEducation = () => {
+    dispatch(profileActions.deleteEducation(educationId));
+    closeModal();
   };
   const initialValues = {
     _id: educationToEdit?._id ?? Math.random(),
@@ -175,6 +180,16 @@ const AddEducationModal = ({ closeModal }) => {
           closeModal={handleCloseModal}
           handleSubmit={formik.handleSubmit}
         />
+        {educationToEdit && (
+          <LoadingButton
+            onClick={deleteEducation}
+            sx={{
+              color: '#EE3011',
+            }}
+          >
+            Delete Education
+          </LoadingButton>
+        )}
       </Stack>
     </Box>
   );

@@ -6,27 +6,28 @@ const TagInput = () => {
   const dispatch = useDispatch();
   const state = useSelector((state) => state.skills);
 
-  const [tags, setTags] = useState(state);
+  // const [tags, setTags] = useState(state);
   const [inputValue, setInputValue] = useState('');
 
   const handleKeyPress = (event) => {
     if (event.key === 'Enter') {
       event.preventDefault();
-      addTag();
-      dispatch(profileActions.addSkill(event.target.value));
+      addTag(event.target.value);
     }
   };
 
-  const addTag = () => {
+  const addTag = (skill) => {
     const trimmedValue = inputValue.trim();
     if (trimmedValue) {
-      setTags((prevTags) => [...prevTags, trimmedValue]);
+      dispatch(profileActions.addSkill(skill));
+      // setTags((prevTags) => [...prevTags, trimmedValue]);
       setInputValue('');
     }
   };
 
   const removeTag = (index) => {
-    setTags((prevTags) => prevTags.filter((_, i) => i !== index));
+    // setTags((prevTags) => prevTags.filter((_, i) => i !== index));
+    // dispatch(profileActions.removeSkill());
   };
   return (
     <div>
@@ -41,7 +42,7 @@ const TagInput = () => {
         placeholder="Press Enter to add a skill"
       />
       <div>
-        {tags.map((tag, index) => (
+        {state.map((tag, index) => (
           <Chip
             key={index}
             label={tag}
