@@ -4,10 +4,11 @@ import Cookies from 'js-cookie';
 import React, { useState } from 'react';
 import PasswordChecklist from 'react-password-checklist';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'react-toastify';
 import { resetPassword } from '../../../API/api';
 import { AuthCard } from '../../Auth';
 import { Input } from '../../components';
+import { toast } from 'react-toastify';
+
 const CreateNewPassword = () => {
   const navigate = useNavigate();
   const [password, setPassword] = useState('');
@@ -31,12 +32,10 @@ const CreateNewPassword = () => {
       });
       toast.success(response.data.message);
       setLoading(false);
-      console.log(response);
-      navigate('/auth/?mode=signup');
+      navigate('/auth/?mode=signin');
     } catch (error) {
-      toast.error('Email Authentication Failed');
+      toast.error(error.message);
       setLoading(false);
-      console.log(error.message);
     }
   };
   return (
