@@ -2,7 +2,7 @@ import { LoadingButton } from '@mui/lab';
 import { Box, Stack, Typography, styled } from '@mui/material';
 import { useFormik } from 'formik';
 import Cookies from 'js-cookie';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import * as Yup from 'yup';
@@ -42,9 +42,11 @@ const SignIn = () => {
         toast.success(res.data.message, { autoClose: 7000 });
         setloading(false);
         const token = res.data.accessToken;
+        const username = res.data.result.username;
         const id = res.data.result._id;
         Cookies.set('accessToken', token, { expires: 1 });
         Cookies.set('id', id, { expires: 1 });
+        Cookies.set('userName', username);
         navigate('/profile?mode=edit', { replace: true });
       } catch (err) {
         toast.error(err.response.data.message, { autoClose: 7000 });

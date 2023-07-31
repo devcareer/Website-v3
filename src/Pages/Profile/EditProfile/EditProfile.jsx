@@ -1,16 +1,19 @@
-import { Input, TagInput } from '../../../components';
-import { Typography, Box, Stack } from '@mui/material';
-import WorkExperience, { ActionButtons, AddButton } from './WorkExperience';
-import Education from './Education';
-import { link } from '../../../assets/Images';
-import { profileActions } from '../../../store';
+import { Box, Stack, Typography } from '@mui/material';
+import copy from 'copy-to-clipboard';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createProfile, getProfile } from '../../../../API/api';
 import { toast } from 'react-toastify';
-import { useEffect } from 'react';
-
+import { createProfile, getProfile } from '../../../../API/api';
+import { link } from '../../../assets/Images';
+import { Input, TagInput } from '../../../components';
+import { profileActions } from '../../../store';
+import { getUserName } from '../../../utils';
+import Education from './Education';
+import WorkExperience, { ActionButtons, AddButton } from './WorkExperience';
 const EditProfile = () => {
+  const username = getUserName();
   const dispatch = useDispatch();
+  const state = useSelector((state) => state.personal);
   useEffect(() => {
     console.log('How many times did you render?');
     const getProfileData = async () => {
@@ -24,6 +27,23 @@ const EditProfile = () => {
     };
     getProfileData();
   }, [dispatch]);
+  const [generatedLink, setGeneratedLink] = useState('');
+  const handleGenerateLink = () => {
+    setGeneratedLink(`devcareers.io/${username}`);
+  };
+  const handleCopy = () => {
+    copy(generatedLink);
+    toast.success('Linked copied!', {
+      position: 'bottom-center',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored',
+    });
+  };
   const profileData = useSelector((state) => state);
 
   const submitProfile = async () => {
@@ -55,21 +75,58 @@ const EditProfile = () => {
           onChange={(e) => {
             dispatch(profileActions.addFullName(e.target.value));
           }}
+          value={state.fullName}
         />
         <Input
           title="About"
           placeholder="With over 3 years of experience in brand identity, illustration, and Product Design, I specialize in creating aesthetically pleasing and usable products for various industries. My focus is on transforming complex technology into straightforward, user-friendly solutions."
+          onChange={(e) => {
+            dispatch(profileActions.addAbout(e.target.value));
+          }}
+          value={state.about}
         />
-        <Input title="Job Title" placeholder="Product Designer" />
-        <Input title="Location" placeholder="Washington DC, United States. " />
-        <Input title="Portfolio Link" placeholder="https://adevikthur.xyz" />
+        <Input
+          title="Job Title"
+          placeholder="Product Designer"
+          onChange={(e) => {
+            dispatch(profileActions.addJobTitle(e.target.value));
+          }}
+          value={state. jobTitle}
+        />
+        <Input
+          title="Location"
+          placeholder="Washington DC, United States. "
+          onChange={(e) => {
+            dispatch(profileActions.addLocation(e.target.value));
+          }}
+          value={state.location}
+        />
+        <Input
+          title="Portfolio Link"
+          placeholder="https://adevikthur.xyz"
+          onChange={(e) => {
+            dispatch(profileActions.addPortfolioUrl(e.target.value));
+          }}
+          value={state.portfolioURL}
+        />
         <TagInput />
       </Stack>
       <>
         <WorkExperience />
         <Education />
         <ActionButtons text="Apply Changes" handleSubmit={submitProfile} />
-        <AddButton title="Generate Preview Link" src={link} />
+        {generatedLink ? (
+          <div>
+            <Input value={generatedLink} />
+            <AddButton title="Copy Link" src={link} openModal={handleCopy} />
+          </div>
+        ) : (
+          <AddButton
+            title="Generate Preview Link"
+            src={link}
+            openModal={handleGenerateLink}
+          />
+        )}
       </>
     </Box>
   );
