@@ -8,6 +8,47 @@ import { getUserName } from '../../../utils';
 import { AddButton } from '../EditProfile/WorkExperience';
 import { Skill } from './components/Skill';
 import { Title } from './components/Title';
+import { Skill } from './components/Skill';
+import dayjs from 'dayjs';
+
+const profile = {
+  personal: {
+    fullName: 'Adekanbi Julius Asaolu',
+    about: 'Passionate software engineer with a love for problem-solving.',
+    jobTitle: 'Product Designer',
+    location: 'New York, USA',
+    portfolioURL: 'https://www.johndoeportfolio.com',
+  },
+
+  educations: [
+    {
+      schoolName: 'University of XYZ',
+      degree: 'Bachelor of Science in Computer Science',
+      course: 'Computer Science',
+      startYear: '2015',
+      endYear: '2019',
+    },
+  ],
+
+  experiences: [
+    {
+      companyName: 'Tech Solutions Inc.',
+      jobTitle: 'Software Developer',
+      employmentType: 'Full-time',
+      startDate: '2020-01-01',
+      endDate: '2022-06-30',
+    },
+    {
+      companyName: 'Tech Solutions 2',
+      jobTitle: 'Software Developer',
+      employmentType: 'Intern',
+      startDate: '2020-01-01',
+      endDate: '2022-06-30',
+    },
+  ],
+
+  skills: ['JavaScript', 'Nodejs', 'React', 'MongoDB'],
+};
 
 const Overview = () => {
   const username = getUserName();
@@ -39,7 +80,7 @@ const Overview = () => {
       mt="48px"
     >
       <Box>
-        <Title>Adekanbi Julius Asaolu</Title>
+        <Title>{profile.personal.fullName}</Title>
         <Typography
           component="h2"
           variant="subtitle1"
@@ -47,7 +88,7 @@ const Overview = () => {
           fontWeight={500}
           fontSize="16px"
         >
-          Product Designer
+          {profile.personal.jobTitle}
         </Typography>
         <Typography
           component="h3"
@@ -56,7 +97,7 @@ const Overview = () => {
           fontWeight={400}
           fontSize="16px"
         >
-          adevikthur.xyz
+          {profile.personal.location}
         </Typography>
       </Box>
       <Box mt="28px">
@@ -69,176 +110,104 @@ const Overview = () => {
           fontSize="16px"
           mt="12px"
         >
-          With over 3 years of experience in brand identity, illustration, and
-          Product Design, I specialize in creating aesthetically pleasing and
-          usable products for various industries. My focus is on transforming
-          complex technology into straightforward, user-friendly solutions.
+          {profile.personal.about}
         </Typography>
       </Box>
       <Box mt="28px">
         <Title>Skills</Title>
         <Box display="flex" columnGap="20px" mt="12px">
-          <Skill skill="CSS" />
-          <Skill skill="HTML" />
-          <Skill skill="JavaScript" />
-          <Skill skill="VueJs" />
-          <Skill skill="Figma" />
+          {profile.skills.map((skill) => {
+            return <Skill skill={skill} key={skill} />;
+          })}
         </Box>
       </Box>
       <Box mt="28px">
         <Title>Work Experience</Title>
         <Box mt="12px">
-          <Box
-            display="grid"
-            gridTemplateColumns="175px 1fr"
-            mb="8px"
-            columnGap="20px"
-          >
-            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
-              <span>Jan 2023</span> - <span>Apr 2023</span>
-            </Typography>
-            <Box>
-              <Typography
-                fontWeight="500"
-                color="text.grey.300"
-                fontSize="16px"
+          {profile.experiences.map((experience) => {
+            return (
+              <Box
+                display="grid"
+                gridTemplateColumns="175px 1fr"
+                mb="8px"
+                columnGap="20px"
               >
-                Frontend Developer
-              </Typography>
-              <Typography
-                fontSize="16px"
-                fontWeight={400}
-                color="text.grey.700"
-              >
-                <span>MoneyAfrica</span> • <span>Full-Time</span>
-              </Typography>
-            </Box>
-          </Box>
-          <Box
-            display="grid"
-            gridTemplateColumns="175px 1fr"
-            mb="8px"
-            columnGap="20px"
-          >
-            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
-              <span>Sept 2023</span> - <span>Sept 2023</span>
-            </Typography>
-            <Box>
-              <Typography
-                fontWeight="500"
-                color="text.grey.300"
-                fontSize="16px"
-              >
-                Frontend Development Intern
-              </Typography>
-              <Typography
-                fontSize="16px"
-                fontWeight={400}
-                color="text.grey.700"
-              >
-                <span>ZubiPay</span> • <span>Internship</span>
-              </Typography>
-            </Box>
-          </Box>
-          <Box
-            display="grid"
-            gridTemplateColumns="175px 1fr"
-            mb="8px"
-            columnGap="20px"
-          >
-            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
-              <span>Sept 2023</span> - <span>Sept 2023</span>
-            </Typography>
-            <Box>
-              <Typography
-                fontWeight="500"
-                color="text.grey.300"
-                fontSize="16px"
-              >
-                Frontend Development Intern
-              </Typography>
-              <Typography
-                fontSize="16px"
-                fontWeight={400}
-                color="text.grey.700"
-              >
-                <span>MoneyAfrica</span> • <span>Internship</span>
-              </Typography>
-            </Box>
-          </Box>
+                <Typography
+                  fontSize="16px"
+                  fontWeight={400}
+                  color="text.grey.700"
+                >
+                  <span>{dayjs(experience.startDate).format('MMM YYYY')}</span>{' '}
+                  - <span>{dayjs(experience.endDate).format('MMM YYYY')}</span>
+                </Typography>
+                <Box>
+                  <Typography
+                    fontWeight="500"
+                    color="text.grey.300"
+                    fontSize="16px"
+                  >
+                    {experience.jobTitle}
+                  </Typography>
+                  <Typography
+                    fontSize="16px"
+                    fontWeight={400}
+                    color="text.grey.700"
+                  >
+                    <span>{experience.companyName}</span> •{' '}
+                    <span>{experience.employmentType}</span>
+                  </Typography>
+                </Box>
+              </Box>
+            );
+          })}
         </Box>
       </Box>
       <Box mt="28px" mb="48px">
         <Title>Education</Title>
         <Box mt="12px">
-          <Box
-            display="grid"
-            gridTemplateColumns="175px 1fr"
-            mb="8px"
-            columnGap="20px"
-          >
-            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
-              <span>Jan 2023</span> - <span>Apr 2023</span>
-            </Typography>
-            <Box>
-              <Typography
-                color="text.grey.800"
-                fontWeight={500}
-                fontSize="16px"
-                sx={{
-                  '& .degree': {
-                    fontWeight: '500',
-                    fontSize: '16px',
-                    color: 'text.grey.700',
-                  },
-                }}
+          {profile.educations.map((education) => {
+            return (
+              <Box
+                display="grid"
+                gridTemplateColumns="175px 1fr"
+                mb="8px"
+                columnGap="20px"
               >
-                <span className="degree">Bachelor’s</span> •{' '}
-                <span>Interaction Design</span>
-              </Typography>
-              <Typography
-                fontSize="16px"
-                fontWeight={400}
-                color="text.grey.700"
-              >
-                <span>Harvard University</span>
-              </Typography>
-            </Box>
-          </Box>
-          <Box
-            display="grid"
-            gridTemplateColumns="175px 1fr"
-            mb="8px"
-            columnGap="20px"
-          >
-            <Typography fontSize="16px" fontWeight={400} color="text.grey.700">
-              <span>Jan 2023</span> -<span>Apr 2023</span>
-            </Typography>
-            <Box>
-              <Typography
-                color="text.grey.800"
-                fontWeight={500}
-                fontSize="16px"
-                sx={{
-                  '& .degree': {
-                    fontWeight: '500',
-                    fontSize: '16px',
-                    color: 'text.grey.700',
-                  },
-                }}
-              >
-                <span className="degree">Master’s</span> •
-                <span> User Heuristics</span>
-              </Typography>
-              <Typography
-                fontSize="16px"
-                fontWeight={400}
-                color="text.grey.700"
-              >
-                <span>Oklahoma State University</span>
-              </Typography>
-            </Box>
-          </Box>
+                <Typography
+                  fontSize="16px"
+                  fontWeight={400}
+                  color="text.grey.700"
+                >
+                  <span>{education.startYear}</span>
+                  <span> - {education.endYear}</span>
+                </Typography>
+                <Box>
+                  <Typography
+                    color="text.grey.800"
+                    fontWeight={500}
+                    fontSize="16px"
+                    sx={{
+                      '& .degree': {
+                        fontWeight: '500',
+                        fontSize: '16px',
+                        color: 'text.grey.700',
+                      },
+                    }}
+                  >
+                    <span className="degree">{education.degree}</span>
+                    <span> • {education.course}</span>
+                  </Typography>
+                  <Typography
+                    fontSize="16px"
+                    fontWeight={400}
+                    color="text.grey.700"
+                  >
+                    <span>{education.schoolName}</span>
+                  </Typography>
+                </Box>
+              </Box>
+            );
+          })}
         </Box>
       </Box>
       {generatedLink ? (
