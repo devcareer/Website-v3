@@ -70,6 +70,10 @@ const profileSlice = createSlice({
       experienceToEdit.employmentType = employmentType;
       experienceToEdit.tillPresent = tillPresent;
     },
+    deleteExperience(state, action) {
+      const id = action.payload;
+      state.experiences = state.experiences.filter((exp) => exp._id !== id);
+    },
     addEducation(state, action) {
       state.educations.push(action.payload);
     },
@@ -82,6 +86,10 @@ const profileSlice = createSlice({
       educationToEdit.degree = degree;
       educationToEdit.startYear = startYear;
       educationToEdit.endYear = endYear;
+    },
+    deleteEducation(state, action) {
+      const id = action.payload;
+      state.educations = state.educations.filter((edu) => edu._id !== id);
     },
   },
 });

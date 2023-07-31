@@ -12,13 +12,14 @@ import { useDispatch, useSelector } from 'react-redux';
 import { profileActions } from '../../store';
 import { useFormik } from 'formik';
 import { useSearchParams } from 'react-router-dom';
+import { LoadingButton } from '@mui/lab';
 
 const AddExperienceModal = ({ closeModal }) => {
   const dispatch = useDispatch();
   const [searchParams, setSearchParams] = useSearchParams();
   const experiences = useSelector((state) => state.experiences);
   const experienceId = searchParams.get('id');
-  const experienceToEdit = experiences.find((exp) => exp._id == experienceId);
+  const experienceToEdit = experiences.find((exp) => exp._id === experienceId);
   const [tillPresent, setTillPresent] = useState(
     experienceToEdit?.tillPresent ?? true
   );
@@ -27,8 +28,12 @@ const AddExperienceModal = ({ closeModal }) => {
     searchParams.delete('id');
     setSearchParams(searchParams);
   };
+  const deleteExperience = () => {
+    dispatch(profileActions.deleteExperience(experienceId));
+    closeModal();
+  };
   const initialValues = {
-    _id: experienceToEdit?._id ?? Math.random(),
+    _id: experienceToEdit?._id ?? Math.random().toString(),
     companyName: experienceToEdit?.companyName ?? '',
     jobTitle: experienceToEdit?.jobTitle ?? '',
     startDate: experienceToEdit?.startDate ?? '',
@@ -199,6 +204,16 @@ const AddExperienceModal = ({ closeModal }) => {
           closeModal={handleCloseModal}
           handleSubmit={formik.handleSubmit}
         />
+        {experienceToEdit && (
+          <LoadingButton
+            onClick={deleteExperience}
+            sx={{
+              color: '#EE3011',
+            }}
+          >
+            Delete Experience
+          </LoadingButton>
+        )}
       </Stack>
     </Box>
   );

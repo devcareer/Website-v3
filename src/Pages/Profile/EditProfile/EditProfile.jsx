@@ -23,6 +23,7 @@ const EditProfile = () => {
         dispatch(profileActions.writeExistingProfile(profileData));
       } catch (err) {
         toast.error('FAILED TO FETCH PROFILE DATA');
+        console.log(err);
       }
     };
     getProfileData();
@@ -49,7 +50,7 @@ const EditProfile = () => {
   const submitProfile = async () => {
     try {
       const res = await createProfile(profileData);
-      toast.success(res.data.message);
+      toast.success('Profile Updated Successfully');
     } catch (err) {
       toast.error(err.response.data.message || err.response.data.error);
     }
@@ -91,7 +92,7 @@ const EditProfile = () => {
           onChange={(e) => {
             dispatch(profileActions.addJobTitle(e.target.value));
           }}
-          value={state. jobTitle}
+          value={state.jobTitle}
         />
         <Input
           title="Location"
