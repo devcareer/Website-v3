@@ -34,18 +34,16 @@ export const signUp = async (formData) => {
   return axios.post(`${BASE_URL}/auth/signup`, formData);
 };
 export const createProfile = async (formData) => {
-  return axios.patch(
-    `https://website-v3-znmt.onrender.com/api/v1/profile`,
-    formData,
-    profileConfig()
-  );
+  return axios.patch(`${BASE_URL}/profile`, formData, profileConfig());
 };
 export const getProfile = async () => {
-  return axios.get(
-    `https://website-v3-znmt.onrender.com/api/v1/profile`,
-    profileConfig()
-  );
+  return axios.get(`${BASE_URL}/profile`, profileConfig());
 };
+export const signIn = async (formData) => {
+  console.log(formData);
+  return axios.post(`${BASE_URL}/auth/login`, formData);
+};
+
 export const makeRequest = (config) => {
   const accessToken = localStorage.getItem('accessToken');
   return axios.request({
@@ -55,14 +53,6 @@ export const makeRequest = (config) => {
     ...config,
   });
 };
-export const signIn = async (formData) => {
-  console.log(formData);
-  return axios.post(
-    `https://website-v3-znmt.onrender.com/api/v1/auth/login`,
-    formData
-  );
-};
-
 const get = (url) => {
   return makeRequest({
     url,

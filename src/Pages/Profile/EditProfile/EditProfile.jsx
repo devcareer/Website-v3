@@ -19,19 +19,18 @@ const EditProfile = () => {
         const profileData = res.data.profile?.[0];
         dispatch(profileActions.writeExistingProfile(profileData));
       } catch (err) {
-        console.log(err);
+        toast.error('FAILED TO FETCH PROFILE DATA');
       }
     };
     getProfileData();
   }, [dispatch]);
   const profileData = useSelector((state) => state);
+
   const submitProfile = async () => {
     try {
       const res = await createProfile(profileData);
-      console.log(res);
       toast.success(res.data.message);
     } catch (err) {
-      console.log(err);
       toast.error(err.response.data.message || err.response.data.error);
     }
   };

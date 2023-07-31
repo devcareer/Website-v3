@@ -45,7 +45,7 @@ const SignIn = () => {
         const id = res.data.result._id;
         Cookies.set('accessToken', token, { expires: 1 });
         Cookies.set('id', id, { expires: 1 });
-        navigate('/profile/?mode=edit', { replace: true });
+        navigate('/profile?mode=edit', { replace: true });
       } catch (err) {
         toast.error(err.response.data.message, { autoClose: 7000 });
         setloading(false);
