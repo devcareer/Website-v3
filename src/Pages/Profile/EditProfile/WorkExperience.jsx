@@ -145,7 +145,12 @@ export const AddButton = ({ title, src, openModal }) => {
   );
 };
 
-export const ActionButtons = ({ text, closeModal, handleSubmit }) => {
+export const ActionButtons = ({
+  text,
+  closeModal,
+  handleSubmit,
+  isActive = true,
+}) => {
   return (
     <Stack my="40px" direction="row" justifyContent="space-between">
       <Button
@@ -162,6 +167,7 @@ export const ActionButtons = ({ text, closeModal, handleSubmit }) => {
         Cancel
       </Button>
       <Button
+        disabled={!isActive}
         onClick={handleSubmit}
         variant="contained"
         sx={{
