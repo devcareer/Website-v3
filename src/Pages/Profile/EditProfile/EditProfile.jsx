@@ -1,17 +1,13 @@
 import { Box, Stack, Typography } from '@mui/material';
-import copy from 'copy-to-clipboard';
 import { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { createProfile, getProfile } from '../../../../API/api';
-import { link } from '../../../assets/Images';
 import { Input, TagInput } from '../../../components';
 import { profileActions } from '../../../store';
-import { getUserName } from '../../../utils';
 import Education from './Education';
-import WorkExperience, { ActionButtons, AddButton } from './WorkExperience';
+import WorkExperience, { ActionButtons } from './WorkExperience';
 const EditProfile = () => {
-  const username = getUserName();
   const dispatch = useDispatch();
   const state = useSelector((state) => state.personal);
   const profileData = useSelector((state) => state);
@@ -40,23 +36,7 @@ const EditProfile = () => {
     }
     setIsActive(true);
   }, [profileData]);
-  const [generatedLink, setGeneratedLink] = useState('');
-  const handleGenerateLink = () => {
-    setGeneratedLink(`devcareers.io/${username}`);
-  };
-  const handleCopy = () => {
-    copy(generatedLink);
-    toast.success('Linked copied!', {
-      position: 'bottom-center',
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'colored',
-    });
-  };
+ 
 
   const submitProfile = async () => {
     try {
@@ -138,18 +118,7 @@ const EditProfile = () => {
             handleSubmit={submitProfile}
             isActive={isActive}
           />
-          {generatedLink ? (
-            <div>
-              <Input value={generatedLink} />
-              <AddButton title="Copy Link" src={link} openModal={handleCopy} />
-            </div>
-          ) : (
-            <AddButton
-              title="Generate Preview Link"
-              src={link}
-              openModal={handleGenerateLink}
-            />
-          )}
+         
         </>
       </Box>
     </Box>
