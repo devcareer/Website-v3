@@ -41,7 +41,6 @@ export const getProfile = async () => {
   return axios.get(`${BASE_URL}/profile`, profileConfig());
 };
 export const signIn = async (formData) => {
-  console.log(formData);
   return axios.post(`${BASE_URL}/auth/login`, formData);
 };
 
