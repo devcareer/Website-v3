@@ -1,9 +1,33 @@
-import React from 'react';
 import { Box, Typography } from '@mui/material';
-import { Title } from './components/Title';
+import copy from 'copy-to-clipboard';
+import { useState } from 'react';
+import { toast } from 'react-toastify';
+import { link } from '../../../assets/Images';
+import { Input } from '../../../components';
+import { getUserName } from '../../../utils';
+import { AddButton } from '../EditProfile/WorkExperience';
 import { Skill } from './components/Skill';
+import { Title } from './components/Title';
 
 const Overview = () => {
+  const username = getUserName();
+  const [generatedLink, setGeneratedLink] = useState('');
+  const handleGenerateLink = () => {
+    setGeneratedLink(`https://devcareers.io/${username}`);
+  };
+  const handleCopy = () => {
+    copy(generatedLink);
+    toast.success('Linked copied!', {
+      position: 'bottom-center',
+      autoClose: 1000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+      progress: undefined,
+      theme: 'colored',
+    });
+  };
   return (
     <Box
       width="90%"
@@ -217,6 +241,24 @@ const Overview = () => {
           </Box>
         </Box>
       </Box>
+      {generatedLink ? (
+        <div>
+          <Input value={generatedLink} />
+          <AddButton
+            title="Copy Link"
+            src={link}
+            openModal={handleCopy}
+            color="#05B993"
+          />
+        </div>
+      ) : (
+        <AddButton
+          title="Generate Preview Link"
+          src={link}
+          openModal={handleGenerateLink}
+          color="#05B993"
+        />
+      )}
     </Box>
   );
 };

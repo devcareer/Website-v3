@@ -1,10 +1,9 @@
-import React from 'react';
-import { Box, Typography, Stack, Button } from '@mui/material';
-import { editIcon } from '../../../assets/Images';
-import { AddExperienceModal } from '../../../components';
-import { useState } from 'react';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
+import { editIcon } from '../../../assets/Images';
+import { AddExperienceModal } from '../../../components';
 const WorkExperience = () => {
   const [showModal, setShowModal] = useState(false);
   // const WORK_EXPERIENCE = [
@@ -112,14 +111,14 @@ const IndividualExperience = (props) => {
   );
 };
 
-export const AddButton = ({ title, src, openModal }) => {
+export const AddButton = ({ title, src, openModal, color }) => {
   return (
     <Button
       onClick={openModal}
       variant="outline"
       sx={{
         borderRadius: '8px',
-        border: '1px solid #6D6D6D',
+        border: color ? '' : '1px solid #6D6D6D',
         display: 'flex',
         gap: '8px',
         justifyContent: 'center',
@@ -128,7 +127,11 @@ export const AddButton = ({ title, src, openModal }) => {
         textTransform: 'capitalize',
         fontSize: '20px',
         width: '100%',
-        color: '#6D6D6D',
+        color: color ? '#fff' : '#6D6D6D',
+        background: color ? color : '',
+        '&:hover': {
+          background: color ? color : '',
+        },
       }}
     >
       {src ? (
