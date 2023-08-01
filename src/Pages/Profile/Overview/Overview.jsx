@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
 import copy from 'copy-to-clipboard';
-import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { link } from '../../../assets/Images';
 import { Input } from '../../../components';
@@ -9,13 +8,12 @@ import { getUserName } from '../../../utils';
 import { AddButton } from '../EditProfile/WorkExperience';
 import { Skill } from './components/Skill';
 import { Title } from './components/Title';
-import { Skill } from './components/Skill';
-import { toast } from 'react-toastify';
 import dayjs from 'dayjs';
 import { getProfile } from '../../../../API/api';
 
 const Overview = () => {
-  const [profileData, setProfileData] = useState(null);
+  const [profileData, setProfileData] = useState({});
+  const [showNoProfile, setShowNoProfile] = useState(false);
   const [generatedLink, setGeneratedLink] = useState('');
 
   const username = getUserName();
@@ -25,8 +23,14 @@ const Overview = () => {
       try {
         const res = await getProfile();
         const profileData = res.data.profile?.[0];
-        setProfileData(profileData);
+        if (profileData) {
+          setProfileData(profileData);
+          setShowNoProfile(false);
+        } else {
+          setShowNoProfile(true);
+        }
       } catch (err) {
+        console.log(err);
         toast.error('FAILED TO FETCH PROFILE DATA');
       }
     })();
@@ -51,16 +55,16 @@ const Overview = () => {
   return (
     <Box
       width="90%"
-      py="48px"
-      px="120px"
+      py={{ lg: '48px', md: '30px', xs: '20px' }}
+      px={{ lg: '120px', md: '60px', xs: '40px' }}
       maxWidth="1018px"
       mx="auto"
       backgroundColor="#FEFEFE"
       mt="48px"
     >
-      {profileData ? (
+      {profileData && Object.keys(profileData).length ? (
         <>
-          <Box>
+          <Box display="flex" flexDirection={{ xs: 'column' }}>
             <Title>{profileData.personal.fullName}</Title>
             <Typography
               component="h2"
@@ -81,7 +85,7 @@ const Overview = () => {
               {profileData.personal.location}
             </Typography>
           </Box>
-          <Box mt="28px">
+          <Box mt="28px" display="flex" flexDirection={{ xs: 'column' }}>
             <Title>About</Title>
             <Typography
               component="h2"
@@ -96,7 +100,13 @@ const Overview = () => {
           </Box>
           <Box mt="28px">
             <Title>Skills</Title>
-            <Box display="flex" columnGap="20px" mt="12px">
+            <Box
+              display="flex"
+              columnGap="20px"
+              mt="12px"
+              rowGap={{ xs: '20px' }}
+              flexWrap={{ xs: 'wrap' }}
+            >
               {profileData.skills.map((skill) => {
                 return <Skill skill={skill} key={skill} />;
               })}
@@ -108,7 +118,8 @@ const Overview = () => {
               {profileData.experiences.map((experience) => {
                 return (
                   <Box
-                    display="grid"
+                    display={{ md: 'grid', xs: 'flex' }}
+                    flexDirection={{ xs: 'column' }}
                     gridTemplateColumns="175px 1fr"
                     mb="8px"
                     columnGap="20px"
@@ -123,10 +134,12 @@ const Overview = () => {
                       </span>{' '}
                       -{' '}
                       <span>
-                        {dayjs(experience.endDate).format('MMM YYYY')}
+                        {experience.tillPresent
+                          ? 'Present'
+                          : dayjs(experience.endDate).format('MMM YYYY')}
                       </span>
                     </Typography>
-                    <Box>
+                    <Box mb={{ xs: '10px' }}>
                       <Typography
                         fontWeight="500"
                         color="text.grey.300"
@@ -154,7 +167,8 @@ const Overview = () => {
               {profileData.educations.map((education) => {
                 return (
                   <Box
-                    display="grid"
+                    display={{ md: 'grid', xs: 'flex' }}
+                    flexDirection={{ xs: 'column' }}
                     gridTemplateColumns="175px 1fr"
                     mb="8px"
                     columnGap="20px"
@@ -164,10 +178,15 @@ const Overview = () => {
                       fontWeight={400}
                       color="text.grey.700"
                     >
-                      <span>{education.startYear}</span>
-                      <span> - {education.endYear}</span>
+                      <span>
+                        {dayjs(education.startYear).format('MMM YYYY')}
+                      </span>
+                      <span>
+                        {' '}
+                        - {dayjs(education.endYear).format('MMM YYYY')}
+                      </span>
                     </Typography>
-                    <Box>
+                    <Box mb={{ xs: '10px' }}>
                       <Typography
                         color="text.grey.800"
                         fontWeight={500}
@@ -197,7 +216,8 @@ const Overview = () => {
             </Box>
           </Box>
         </>
-      ) : (
+      ) : null}
+      {showNoProfile && (
         <Box>
           <Typography>You have not created a profile.</Typography>
         </Box>
