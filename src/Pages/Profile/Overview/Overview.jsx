@@ -168,7 +168,7 @@ const Overview = () => {
           </Box>
         </Box>
       </Box>
-      <Box mt="28px">
+      <Box mt="28px" mb="48px">
         <Title>Education</Title>
         <Box mt="12px">
           <Box
@@ -242,7 +242,7 @@ const Overview = () => {
         </Box>
       </Box>
       {generatedLink ? (
-        <div>
+        <Box>
           <Input value={generatedLink} />
           <AddButton
             title="Copy Link"
@@ -250,7 +250,7 @@ const Overview = () => {
             openModal={handleCopy}
             color="#05B993"
           />
-        </div>
+        </Box>
       ) : (
         <AddButton
           title="Generate Preview Link"
