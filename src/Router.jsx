@@ -1,6 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { AuthRoot } from './Auth';
-// import ProtectedRoute from './Auth/PrivateRoute/ProtectedRoute';
+import ProtectedRoute from './Auth/PrivateRoute/ProtectedRoute';
 import {
   AboutUs,
   ContactUs,
@@ -74,9 +74,9 @@ export const router = createBrowserRouter([
     path: 'profile',
     // element: <ProfileRoot />,
     element: (
-      // <ProtectedRoute>
+      <ProtectedRoute>
         <ProfileRoot />
-      // </ProtectedRoute>
+      </ProtectedRoute>
     ),
   },
 
