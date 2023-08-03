@@ -12,6 +12,7 @@ const EditProfile = () => {
   const state = useSelector((state) => state.personal);
   const profileData = useSelector((state) => state);
   const [isActive, setIsActive] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const initialRender = useRef(true);
   useEffect(() => {
     console.log('How many times did you render?');
@@ -36,14 +37,16 @@ const EditProfile = () => {
     }
     setIsActive(true);
   }, [profileData]);
- 
 
   const submitProfile = async () => {
+    setIsSubmitting(true);
     try {
       const res = await createProfile(profileData);
       toast.success('Profile Updated Successfully');
+      setIsSubmitting(false);
     } catch (err) {
       toast.error(err.response.data.message || err.response.data.error);
+      setIsSubmitting(false);
     }
   };
   return (
@@ -117,8 +120,8 @@ const EditProfile = () => {
             text="Apply Changes"
             handleSubmit={submitProfile}
             isActive={isActive}
+            isSubmitting={isSubmitting}
           />
-         
         </>
       </Box>
     </Box>

@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { useSearchParams } from 'react-router-dom';
 import { editIcon } from '../../../assets/Images';
 import { AddExperienceModal } from '../../../components';
+import { LoadingButton } from '@mui/lab';
 const WorkExperience = () => {
   const [showModal, setShowModal] = useState(false);
   // const WORK_EXPERIENCE = [
@@ -153,6 +154,7 @@ export const ActionButtons = ({
   closeModal,
   handleSubmit,
   isActive = true,
+  isSubmitting,
 }) => {
   return (
     <Stack my="40px" direction="row" justifyContent="space-between">
@@ -169,7 +171,8 @@ export const ActionButtons = ({
       >
         Cancel
       </Button>
-      <Button
+      <LoadingButton
+        loading={!!isSubmitting}
         disabled={!isActive}
         onClick={handleSubmit}
         variant="contained"
@@ -182,7 +185,7 @@ export const ActionButtons = ({
         }}
       >
         {text}
-      </Button>
+      </LoadingButton>
     </Stack>
   );
 };
