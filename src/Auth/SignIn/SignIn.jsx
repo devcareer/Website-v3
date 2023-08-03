@@ -41,15 +41,16 @@ const SignIn = () => {
         const res = await signIn({ ...values });
         toast.success(res.data.message, { autoClose: 7000 });
         setloading(false);
-        const token = res.data.accessToken;
-        const username = res.data.result.username;
-        const id = res.data.result._id;
+        const token = res.accessToken;
+        const username = res.data.data.user.username;
+        const id = res.data.data.user.userId;
         Cookies.set('accessToken', token, { expires: 1 });
         Cookies.set('id', id, { expires: 1 });
         Cookies.set('userName', username);
         navigate('/profile?mode=edit', { replace: true });
       } catch (err) {
         toast.error(err.response.data.message, { autoClose: 7000 });
+        console.log(err);
         setloading(false);
       }
     },
