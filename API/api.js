@@ -40,6 +40,9 @@ export const createProfile = async (formData) => {
 export const getProfile = async () => {
   return axios.get(`${BASE_URL}/profile`, profileConfig());
 };
+export const getFreeProfile=async(name)=>{
+  return axios.get(`${BASE_URL}/profile/${name}`)
+}
 export const signIn = async (formData) => {
   return axios.post(`${BASE_URL}/auth/login`, formData);
 };
