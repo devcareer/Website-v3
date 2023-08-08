@@ -4,19 +4,19 @@ import { toast } from 'react-toastify';
 import { Skill } from './components/Skill';
 import { Title } from './components/Title';
 import dayjs from 'dayjs';
-import { useParams } from 'react-router-dom'
-import { getFreeProfile} from '../../../API/api';
+import { useParams } from 'react-router-dom';
+import { getFreeProfile } from '../../../API/api';
 
 const FreeProfile = () => {
   const [profileData, setProfileData] = useState({});
   const [showNoProfile, setShowNoProfile] = useState(false);
- const userName=useParams().id
-
+  const userName = useParams().id;
   useEffect(() => {
     (async () => {
       try {
         const res = await getFreeProfile(userName);
-        const profileData = res.data.profile?.[0];
+        const profileData = res.data.profile;
+        console.log(profileData);
         if (profileData) {
           setProfileData(profileData);
           setShowNoProfile(false);
@@ -28,8 +28,6 @@ const FreeProfile = () => {
       }
     })();
   }, [userName]);
-
-
 
   return (
     <Box
@@ -94,9 +92,10 @@ const FreeProfile = () => {
           <Box mt="28px">
             <Title>Work Experience</Title>
             <Box mt="12px">
-              {profileData.experiences.map((experience) => {
+              {profileData.experiences.map((experience, index) => {
                 return (
                   <Box
+                    key={index}
                     display={{ md: 'grid', xs: 'flex' }}
                     flexDirection={{ xs: 'column' }}
                     gridTemplateColumns="175px 1fr"
@@ -143,9 +142,10 @@ const FreeProfile = () => {
           <Box mt="28px">
             <Title>Education</Title>
             <Box mt="12px">
-              {profileData.educations.map((education) => {
+              {profileData.educations.map((education, index) => {
                 return (
                   <Box
+                    key={index}
                     display={{ md: 'grid', xs: 'flex' }}
                     flexDirection={{ xs: 'column' }}
                     gridTemplateColumns="175px 1fr"
@@ -196,14 +196,15 @@ const FreeProfile = () => {
           </Box>
         </>
       ) : null}
-      {!showNoProfile && (
+      {showNoProfile && (
         <Box>
-          <Typography sx={{fontWeight:'500',fontSize:'20px'}}>Profile does not exit .</Typography>
+          <Typography sx={{ fontWeight: '500', fontSize: '20px' }}>
+            Profile does not exit .
+          </Typography>
         </Box>
       )}
-      
     </Box>
   );
 };
 
-export default FreeProfile
+export default FreeProfile;
