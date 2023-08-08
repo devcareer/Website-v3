@@ -1,27 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography } from '@mui/material';
-import copy from 'copy-to-clipboard';
 import { toast } from 'react-toastify';
-import { link } from '../../../assets/Images';
-import { Input } from '../../../components';
-import { getUserName } from '../../../utils';
-import { AddButton } from '../EditProfile/WorkExperience';
 import { Skill } from './components/Skill';
 import { Title } from './components/Title';
 import dayjs from 'dayjs';
-import { getProfile } from '../../../../API/api';
+import { useParams } from 'react-router-dom'
+import { getFreeProfile} from '../../../API/api';
 
-const Overview = () => {
+const FreeProfile = () => {
   const [profileData, setProfileData] = useState({});
   const [showNoProfile, setShowNoProfile] = useState(false);
-  const [generatedLink, setGeneratedLink] = useState('');
-
-  const username = getUserName();
+ const userName=useParams().id
 
   useEffect(() => {
     (async () => {
       try {
-        const res = await getProfile();
+        const res = await getFreeProfile(userName);
         const profileData = res.data.profile?.[0];
         if (profileData) {
           setProfileData(profileData);
@@ -29,29 +23,14 @@ const Overview = () => {
         } else {
           setShowNoProfile(true);
         }
-      } catch (err) {
-        console.log(err);
-        toast.error('FAILED TO FETCH PROFILE DATA');
+      } catch (error) {
+        toast.error(error.response.data.message);
       }
     })();
-  }, []);
+  }, [userName]);
 
-  const handleGenerateLink = () => {
-    setGeneratedLink(`https://devcareers.io/${username}`);
-  };
-  const handleCopy = () => {
-    copy(generatedLink);
-    toast.success('Linked copied!', {
-      position: 'bottom-center',
-      autoClose: 1000,
-      hideProgressBar: false,
-      closeOnClick: true,
-      pauseOnHover: true,
-      draggable: true,
-      progress: undefined,
-      theme: 'colored',
-    });
-  };
+
+
   return (
     <Box
       width="90%"
@@ -217,33 +196,14 @@ const Overview = () => {
           </Box>
         </>
       ) : null}
-      {showNoProfile && (
+      {!showNoProfile && (
         <Box>
-          <Typography>You have not created a profile.</Typography>
+          <Typography sx={{fontWeight:'500',fontSize:'20px'}}>Profile does not exit .</Typography>
         </Box>
       )}
       
-      {!showNoProfile && generatedLink ? (
-        <Box>
-          <Input value={generatedLink} />
-          <AddButton
-            title="Copy Link"
-            src={link}
-            openModal={handleCopy}
-            color="#05B993"
-          />
-        </Box>
-      ) : (
-        <AddButton
-          title="Generate Preview Link"
-          src={link}
-          openModal={handleGenerateLink}
-          color="#05B993"
-          isActive={!showNoProfile}
-        />
-      )}
     </Box>
   );
 };
 
-export default Overview;
+export default FreeProfile
