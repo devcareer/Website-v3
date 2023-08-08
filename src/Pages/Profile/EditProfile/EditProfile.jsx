@@ -24,7 +24,7 @@ const EditProfile = () => {
           dispatch(profileActions.writeExistingProfile(profileData));
         }
       } catch (err) {
-        toast.error('FAILED TO FETCH PROFILE DATA');
+        toast.error('Oops, Token expired! Please try signing in again ');
         console.log(err);
       }
     };

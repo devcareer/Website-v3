@@ -12,7 +12,7 @@ const AddEducationModal = ({ closeModal }) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const educations = useSelector((state) => state.educations);
   const educationId = searchParams.get('id');
-  const educationToEdit = educations.find((edu) => edu._id == educationId);
+  const educationToEdit = educations.find((edu) => edu._id === educationId);
   const handleCloseModal = () => {
     closeModal();
     searchParams.delete('id');
