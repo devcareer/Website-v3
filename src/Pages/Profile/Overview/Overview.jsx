@@ -37,7 +37,9 @@ const Overview = () => {
   }, []);
 
   const handleGenerateLink = () => {
-    setGeneratedLink(`https://devcareers.io/${username}`);
+    setGeneratedLink(
+      `https://cute-sable-24dd43.netlify.app/profile/${username}`
+    );
   };
   const handleCopy = () => {
     copy(generatedLink);
@@ -222,7 +224,7 @@ const Overview = () => {
           <Typography>You have not created a profile.</Typography>
         </Box>
       )}
-      
+
       {!showNoProfile && generatedLink ? (
         <Box>
           <Input value={generatedLink} />
