@@ -13,7 +13,8 @@ import {
   Root,
   Support,
   Talents,
-  Error
+  Error,
+  PageNotFound
 } from './Pages';
 
 export const router = createBrowserRouter([
@@ -84,4 +85,6 @@ export const router = createBrowserRouter([
   { path: 'programs/dpds/registration', element: <DpdsRegistration /> },
   { path: '/profile/:id', element: <FreeProfile /> },
   { path: '/error', element: <Error /> },
+  { path: '*', element: <PageNotFound /> },
+
 ]);
