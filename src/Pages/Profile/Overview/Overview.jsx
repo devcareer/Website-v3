@@ -41,9 +41,9 @@ const Overview = () => {
   }, []);
 
   const handleGenerateLink = () => {
-    localStorage.setItem(`link`,`https://cute-sable-24dd43.netlify.app/profile/${username}`)
+    localStorage.setItem(`link`,`https://devcareer.io/profile/${username}`)
     setGeneratedLink(
-      `https://cute-sable-24dd43.netlify.app/profile/${username}`
+      `https://devcareer.io/profile/${username}`
     );
   };
   const handleCopy = () => {
