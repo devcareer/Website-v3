@@ -1,9 +1,17 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { hero } from '../../assets/Images';
+import { useNavigate } from 'react-router-dom';
+import Cookies from 'js-cookie';
 
 const Header = () => {
+  const navigate = useNavigate();
+  const goToDashboard = () => {
+    const accessToken = Cookies.get('accessToken');
+    accessToken
+      ? navigate('/profile?mode=overview')
+      : navigate('/auth?mode=signin');
+  };
   return (
     <Box
       display="grid"
@@ -42,30 +50,30 @@ const Header = () => {
           direction={{ xs: 'column-reverse', sm: 'row' }}
           gap={{ xs: '20px', md: '40px' }}
         >
-          <Link to="/" style={{ flexBasis: '40%' }}>
-            <Button
-              fontWeight="500"
-              fontSize="20px"
-              variant="outlined"
-              sx={{
-                width: '100%',
-                py: { xs: '15px', md: '20px' },
-                borderRadius: '8px',
-                color: { xs: '#FEFEFE', sm: 'primary.main' },
-                bgcolor: { xs: 'primary.main', sm: 'inherit' },
-                animation: 'resume 3s forwards',
-                // opacity: 0,
-                // transform: 'translateX(100%)',
-              }}
-            >
-              Create Mini-CV
-              {/* <Link
+          {/* <Link to="/auth?mode=signup" style={{ flexBasis: '40%' }}> */}
+          <Button
+            onClick={goToDashboard}
+            fontWeight="500"
+            fontSize="20px"
+            variant="outlined"
+            sx={{
+              width: '100%',
+              py: { xs: '15px', md: '20px' },
+              borderRadius: '8px',
+              color: { xs: '#FEFEFE', sm: 'primary.main' },
+              bgcolor: { xs: 'primary.main', sm: 'inherit' },
+              animation: 'resume 3s forwards',
+              flexBasis: '40%',
+            }}
+          >
+            Create Mini-CV
+            {/* <Link
               to="/auth?mode=signup"
               style={{ textDecoration: 'none', color: 'inherit' }}
             >
             </Link> */}
-            </Button>
-          </Link>
+          </Button>
+          {/* </Link> */}
           <Button
             component="a"
             target="_blank"

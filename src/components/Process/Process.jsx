@@ -35,6 +35,7 @@ const Process = (props) => {
           >
             {process.map((stage, index) => (
               <Stack
+                key={index}
                 bgcolor="#FEFEFE"
                 border="1px solid #c2c2c2"
                 py="56px"
@@ -81,6 +82,7 @@ const Process = (props) => {
               {process.map((stage, index) =>
                 index === 0 || index % 2 === 0 ? (
                   <Stack
+                    key={index}
                     bgcolor="#FEFEFE"
                     border="1px solid #c2c2c2"
                     py="56px"
@@ -123,6 +125,7 @@ const Process = (props) => {
               {process.map((stage, index) =>
                 index === 1 || index % 2 !== 0 ? (
                   <Stack
+                    key={index}
                     bgcolor="#FEFEFE"
                     border="1px solid #c2c2c2"
                     py="56px"

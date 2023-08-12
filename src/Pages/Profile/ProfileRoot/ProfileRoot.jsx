@@ -1,13 +1,13 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { devcareerhub, signOut } from '../../../assets/Images';
-import { AccountSettings, EditProfile } from '../../../Pages';
+import { AccountSettings, EditProfile, Overview } from '../../../Pages';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-
+import { store } from '../../../store';
+import { Provider } from 'react-redux';
+import Cookies from 'js-cookie';
 const ProfileRoot = () => {
-  useEffect(() => {
-    console.log(import.meta.env.VITE_BASE_URL + 'signup');
-  }, []);
+  const navigate = useNavigate();
   const LINK_ACTIONS = [
     {
       text: 'Overview',
@@ -24,58 +24,68 @@ const ProfileRoot = () => {
   ];
   const [searchParams] = useSearchParams();
   const mode = searchParams.get('mode');
+  const logOut = () => {
+    Cookies.remove('accessToken');
+    Cookies.remove('id');
+    localStorage.removeItem('accessToken');
+    navigate('?mode=signin');
+  };
   return (
-    <Box bgcolor="#E0E0E0" pt="50px">
-      <Stack
-        component="nav"
-        direction={{ xs: 'column', lg: 'row' }}
-        alignItems="center"
-        gap="30px"
-        width="90%"
-        mx="auto"
-        maxWidth="1200px"
-      >
-        <Link>
-          <Box
-            component="img"
-            src={devcareerhub}
-            alt="devcareer logo"
-            width="182px"
-          ></Box>
-        </Link>
+    <Provider store={store}>
+      <Box bgcolor="#E0E0E0" pt="50px">
         <Stack
-          direction={{ xs: 'column', sm: 'row' }}
-          justifyContent="space-around"
-          py={{ xs: '24px', sm: '16px' }}
-          px={{ xs: '24px', lg: '0px' }}
-          bgcolor="background.offwhite"
-          border="1px solid #F4F4F4"
-          borderRadius="16px"
-          flexGrow="1"
+          component="nav"
+          direction={{ xs: 'column', lg: 'row' }}
+          alignItems="center"
+          gap="30px"
+          width="90%"
+          mx="auto"
+          maxWidth="1200px"
         >
-          {LINK_ACTIONS.map((data, i) => (
-            <ProfileLink key={i} data={data} active={mode === data.to} />
-          ))}
+          <Link to="/">
+            <Box
+              component="img"
+              src={devcareerhub}
+              alt="devcareer logo"
+              width="182px"
+            ></Box>
+          </Link>
+          <Stack
+            direction={{ xs: 'column', sm: 'row' }}
+            justifyContent="space-around"
+            py={{ xs: '24px', sm: '16px' }}
+            px={{ xs: '24px', lg: '0px' }}
+            bgcolor="background.offwhite"
+            border="1px solid #F4F4F4"
+            borderRadius="16px"
+            flexGrow="1"
+          >
+            {LINK_ACTIONS.map((data, i) => (
+              <ProfileLink key={i} data={data} active={mode === data.to} />
+            ))}
+          </Stack>
+          <Button
+            onClick={logOut}
+            sx={{
+              py: { xs: '8px', sm: '16px' },
+              px: '20px',
+              borderRadius: '8px',
+              display: 'flex',
+              gap: '8px',
+              bgcolor: 'background.offwhite',
+            }}
+          >
+            <Box component="img" src={signOut} alt="Logout"></Box>
+            <Typography color="grey.500" textTransform="capitalize">
+              Log Out
+            </Typography>
+          </Button>
         </Stack>
-        <Button
-          sx={{
-            py: { xs: '8px', sm: '16px' },
-            px: '20px',
-            borderRadius: '8px',
-            display: 'flex',
-            gap: '8px',
-            bgcolor: 'background.offwhite',
-          }}
-        >
-          <Box component="img" src={signOut} alt="Logout"></Box>
-          <Typography color="grey.500" textTransform="capitalize">
-            Log Out
-          </Typography>
-        </Button>
-      </Stack>
-      {mode === 'settings' && <AccountSettings />}
-      {mode === 'edit' && <EditProfile />}
-    </Box>
+        {mode === 'settings' && <AccountSettings />}
+        {mode === 'edit' && <EditProfile />}
+        {mode === 'overview' && <Overview />}
+      </Box>
+    </Provider>
   );
 };
 
