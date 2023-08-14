@@ -10,26 +10,30 @@ import { Skill } from './components/Skill';
 import { Title } from './components/Title';
 import dayjs from 'dayjs';
 import { getProfile } from '../../../../API/api';
+import LinearProgress from '@mui/material/LinearProgress';
 
 const Overview = () => {
   const [profileData, setProfileData] = useState({});
   const [showNoProfile, setShowNoProfile] = useState(false);
-  const [generatedLink, setGeneratedLink] = useState('');
-
+  const [generatedLink, setGeneratedLink] = useState(localStorage.getItem('link'));
+  const [loading,setLoading]=useState(false)
   const username = getUserName();
 
   useEffect(() => {
     (async () => {
+      setLoading(true)
       try {
         const res = await getProfile();
         const profileData = res.data.profile?.[0];
         if (profileData) {
           setProfileData(profileData);
           setShowNoProfile(false);
+          setLoading(false)
         } else {
           setShowNoProfile(true);
         }
       } catch (err) {
+        setLoading(false)
         console.log(err);
         toast.error('FAILED TO FETCH PROFILE DATA');
       }
@@ -37,8 +41,9 @@ const Overview = () => {
   }, []);
 
   const handleGenerateLink = () => {
+    localStorage.setItem(`link`,`https://devcareer.io/profile/${username}`)
     setGeneratedLink(
-      `https://cute-sable-24dd43.netlify.app/profile/${username}`
+      `https://devcareer.io/profile/${username}`
     );
   };
   const handleCopy = () => {
@@ -55,6 +60,7 @@ const Overview = () => {
     });
   };
   return (
+    loading?<LinearProgress  sx={{display:'flex',justifyContent:'center',alignItems:'center'}}/>:
     <Box
       width="90%"
       py={{ lg: '48px', md: '30px', xs: '20px' }}
@@ -225,7 +231,7 @@ const Overview = () => {
         </Box>
       )}
 
-      {!showNoProfile && generatedLink ? (
+      {/* {!showNoProfile && generatedLink ? (
         <Box>
           <Input value={generatedLink} />
           <AddButton
@@ -243,7 +249,26 @@ const Overview = () => {
           color="#05B993"
           isActive={!showNoProfile}
         />
-      )}
+      )} */}
+      {
+       (!showNoProfile && generatedLink) &&( <>
+       <Input value={generatedLink} />
+       <AddButton
+          title="Copy Link"
+          src={link}
+          openModal={handleCopy}
+          color="#05B993"
+        /></>)
+      }
+      {
+       (!showNoProfile && !generatedLink) && <AddButton
+        title="Generate Preview Link"
+        src={link}
+        openModal={handleGenerateLink}
+        color="#05B993"
+        isActive={!showNoProfile}
+      />
+      }
     </Box>
   );
 };
