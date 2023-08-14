@@ -41,9 +41,9 @@ const Overview = () => {
   }, []);
 
   const handleGenerateLink = () => {
-    localStorage.setItem(`link`,`https://devcareer.io/profile/${username}`)
+    localStorage.setItem(`link`,`https://devcareer.io/p/${username}`)
     setGeneratedLink(
-      `https://devcareer.io/profile/${username}`
+      `https://devcareer.io/p/${username}`
     );
   };
   const handleCopy = () => {
