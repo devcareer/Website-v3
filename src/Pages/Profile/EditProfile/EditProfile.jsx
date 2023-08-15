@@ -7,7 +7,9 @@ import { Input, TagInput } from '../../../components';
 import { profileActions } from '../../../store';
 import Education from './Education';
 import WorkExperience, { ActionButtons } from './WorkExperience';
+import { useNavigate } from 'react-router-dom';
 const EditProfile = () => {
+  const navigate=useNavigate()
   const dispatch = useDispatch();
   const state = useSelector((state) => state.personal);
   const profileData = useSelector((state) => state);
@@ -25,6 +27,7 @@ const EditProfile = () => {
         }
       } catch (err) {
         toast.error('Oops, Token expired! Please try signing in again ');
+        navigate('/auth/?mode=signin')
         console.log(err);
       }
     };
