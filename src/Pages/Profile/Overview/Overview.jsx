@@ -85,6 +85,7 @@ const Overview = () => {
               {profileData.personal.jobTitle}
             </Typography>
             <Typography color='#6D6D6D'>{profileData.personal.portfolioURL}</Typography>
+            <Typography color='#6D6D6D'>{profileData.personal.linkedinUrl}</Typography>
             <Typography
               component="h3"
               variant="subtitle2"
