@@ -29,6 +29,7 @@ const Overview = () => {
           setProfileData(profileData);
           setShowNoProfile(false);
           setLoading(false)
+          console.log(profileData)
         } else {
           setShowNoProfile(true);
         }
@@ -83,6 +84,7 @@ const Overview = () => {
             >
               {profileData.personal.jobTitle}
             </Typography>
+            <Typography color='#6D6D6D'>{profileData.personal.portfolioURL}</Typography>
             <Typography
               component="h3"
               variant="subtitle2"

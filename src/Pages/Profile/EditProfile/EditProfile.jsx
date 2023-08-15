@@ -41,9 +41,11 @@ const EditProfile = () => {
   const submitProfile = async () => {
     setIsSubmitting(true);
     try {
+      console.log(profileData)
       const res = await createProfile(profileData);
       toast.success('Profile Updated Successfully');
       setIsSubmitting(false);
+      
     } catch (err) {
       toast.error(err.response.data.message || err.response.data.error);
       setIsSubmitting(false);
@@ -104,12 +106,20 @@ const EditProfile = () => {
             value={state.location}
           />
           <Input
-            title="Portfolio Link"
+            title="Portfolio Link(Github,Behance,Dribble...)"
             placeholder="https://adevikthur.xyz"
             onChange={(e) => {
               dispatch(profileActions.addPortfolioUrl(e.target.value));
             }}
             value={state.portfolioURL}
+          />
+          <Input
+            title="Linkedin Url"
+            placeholder="https://www.linkedin.com/in/adevikthur.xyz/"
+            onChange={(e) => {
+              dispatch(profileActions.addLinkedinUrl(e.target.value));
+            }}
+            value={state.linkedinUrl}
           />
           <TagInput />
         </Stack>
