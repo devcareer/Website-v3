@@ -83,7 +83,7 @@ export const router = createBrowserRouter([
   },
 
   { path: 'programs/dpds/registration', element: <DpdsRegistration /> },
-  { path: '/profile/:id', element: <FreeProfile /> },
+  { path: '/p/:id', element: <FreeProfile /> },
   { path: '/error', element: <Error /> },
   { path: '*', element: <PageNotFound /> },
 
