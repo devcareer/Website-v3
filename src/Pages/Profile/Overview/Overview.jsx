@@ -15,7 +15,7 @@ import LinearProgress from '@mui/material/LinearProgress';
 const Overview = () => {
   const [profileData, setProfileData] = useState({});
   const [showNoProfile, setShowNoProfile] = useState(false);
-  const [generatedLink, setGeneratedLink] = useState(localStorage.getItem('link'));
+  const [generatedLink, setGeneratedLink] = useState(localStorage.getItem('linkd'));
   const [loading,setLoading]=useState(false)
   const username = getUserName();
 
@@ -42,7 +42,7 @@ const Overview = () => {
   }, []);
 
   const handleGenerateLink = () => {
-    localStorage.setItem(`link`,`https://devcareer.io/p/${username}`)
+    localStorage.setItem(`linkd`,`https://devcareer.io/p/${username}`)
     setGeneratedLink(
       `https://devcareer.io/p/${username}`
     );
