@@ -206,9 +206,9 @@ const FreeProfile = () => {
       {showNoProfile && (
         <Box>
           <Typography sx={{ fontWeight: '500', fontSize: '20px' }}>
-            This profile hasn't been created. Create an{' '}
+            This username hasn't been created kindly Create an{' '}
             <Link to="https://devcareer.io/auth/?mode=signup">account</Link> to
-            get one.
+            claim it.
           </Typography>
         </Box>
       )}
