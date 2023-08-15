@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import React from 'react';
 import { dev } from '../../assets/Images/index';
+import { Link } from 'react-router-dom';
 
 const AuthCard = (props) => {
   const { children } = props;
@@ -14,7 +15,10 @@ const AuthCard = (props) => {
       // px="20px"
       py="50px"
     >
-      <Box component="img" src={dev} alt="logo"></Box>
+      <Link to="/">
+        <Box component="img" src={dev} alt="logo"></Box>
+      </Link>
+
       {children}
     </Box>
     // </Stack>
