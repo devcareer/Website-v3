@@ -4,11 +4,11 @@ import { toast } from 'react-toastify';
 import { Skill } from './components/Skill';
 import { Title } from './components/Title';
 import dayjs from 'dayjs';
-import { useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { getFreeProfile } from '../../../API/api';
 
 const FreeProfile = () => {
-  const [profileData, setProfileData] = useState({});
+  const [profileData, setProfileData] = useState();
   const [showNoProfile, setShowNoProfile] = useState(false);
   const userName = useParams().id;
   useEffect(() => {
@@ -24,6 +24,7 @@ const FreeProfile = () => {
           setShowNoProfile(true);
         }
       } catch (error) {
+        setShowNoProfile(true);
         toast.error(error.response.data.message);
       }
     })();
@@ -52,8 +53,12 @@ const FreeProfile = () => {
             >
               {profileData.personal.jobTitle}
             </Typography>
-            <Typography color='#6D6D6D'>{profileData.personal.portfolioURL}</Typography>
-            <Typography color='#6D6D6D'>{profileData.personal.linkedinUrl}</Typography>
+            <Typography color="#6D6D6D">
+              {profileData.personal.portfolioURL}
+            </Typography>
+            <Typography color="#6D6D6D">
+              {profileData.personal.linkedinUrl}
+            </Typography>
             <Typography
               component="h3"
               variant="subtitle2"
@@ -201,7 +206,9 @@ const FreeProfile = () => {
       {showNoProfile && (
         <Box>
           <Typography sx={{ fontWeight: '500', fontSize: '20px' }}>
-            Profile does not exit .
+            This profile hasn't been created. Create an{' '}
+            <Link to="https://devcareer.io/auth/?mode=signup">account</Link> to
+            get one.
           </Typography>
         </Box>
       )}
