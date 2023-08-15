@@ -7,6 +7,7 @@ const initialState = {
     jobTitle: '',
     location: '',
     portfolioURL: '',
+    linkedinUrl:''
   },
   educations: [],
   experiences: [],
@@ -26,6 +27,7 @@ const profileSlice = createSlice({
       state.personal.jobTitle = personal.jobTitle;
       state.personal.location = personal.location;
       state.personal.portfolioURL = personal.portfolioURL;
+      state.personal.linkedinUrl=personal.linkedinUrl;
       state.skills = skills;
     },
     addFullName(state, action) {
@@ -42,6 +44,9 @@ const profileSlice = createSlice({
     },
     addPortfolioUrl(state, action) {
       state.personal.portfolioURL = action.payload;
+    },
+    addLinkedinUrl(state,action){
+      state.personal.linkedinUrl=action.payload
     },
     addSkill(state, action) {
       const { payload } = action;

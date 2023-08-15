@@ -2,6 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { getResetToken } from '../src/utils';
 const BASE_URL = import.meta.env.VITE_BASE_URL;
+// const BASE_URL = 'https://website-v3-znmt.onrender.com/api/v1';
 const resetToken = getResetToken();
 
 const resetconfig = {

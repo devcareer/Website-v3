@@ -29,6 +29,7 @@ const Overview = () => {
           setProfileData(profileData);
           setShowNoProfile(false);
           setLoading(false)
+          console.log(profileData)
         } else {
           setShowNoProfile(true);
         }
@@ -41,9 +42,9 @@ const Overview = () => {
   }, []);
 
   const handleGenerateLink = () => {
-    localStorage.setItem(`link`,`https://devcareer.io/profile/${username}`)
+    localStorage.setItem(`link`,`https://devcareer.io/p/${username}`)
     setGeneratedLink(
-      `https://devcareer.io/profile/${username}`
+      `https://devcareer.io/p/${username}`
     );
   };
   const handleCopy = () => {
@@ -83,6 +84,8 @@ const Overview = () => {
             >
               {profileData.personal.jobTitle}
             </Typography>
+            <Typography color='#6D6D6D'>{profileData.personal.portfolioURL}</Typography>
+            <Typography color='#6D6D6D'>{profileData.personal.linkedinUrl}</Typography>
             <Typography
               component="h3"
               variant="subtitle2"
