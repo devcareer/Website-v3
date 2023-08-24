@@ -82,10 +82,12 @@ const AddEducationModal = ({ closeModal }) => {
         py={{ xs: '20px', md: '48px' }}
         position="fixed"
         top={{ xs: '5%', md: '10%' }}
+        left="50%"
         zIndex="4"
         height="80vh"
         sx={{
           overflowY: 'scroll',
+          transform: 'translateX(-50%)',
         }}
       >
         <Typography
