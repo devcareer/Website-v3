@@ -14,5 +14,5 @@ export { default as Overview } from './Profile/Overview/Overview';
 export { default as FreeProfile } from './FreeProfile/Freeprofile'
 export {default as Error} from './Error/Error';
 export {default as PageNotFound} from './PageNotFound/PageNotFound';
-
+export {default as Web5} from './Web5/Web5'
 

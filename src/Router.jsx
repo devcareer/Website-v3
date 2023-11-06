@@ -14,7 +14,8 @@ import {
   Support,
   Talents,
   Error,
-  PageNotFound
+  PageNotFound,
+  Web5,
 } from './Pages';
 
 export const router = createBrowserRouter([
@@ -32,6 +33,10 @@ export const router = createBrowserRouter([
           {
             path: 'l4d',
             element: <LaptopForDevelopers />,
+          },
+          {
+            path: 'web5',
+            element: <Web5 />,
           },
         ],
       },
@@ -86,5 +91,4 @@ export const router = createBrowserRouter([
   { path: '/p/:id', element: <FreeProfile /> },
   { path: '/error', element: <Error /> },
   { path: '*', element: <PageNotFound /> },
-
 ]);
