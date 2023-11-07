@@ -5,6 +5,7 @@ const DpdInput = (props) => {
   const {
     name,
     label,
+    value,
     type,
     multiline = false,
     required = false,
@@ -12,17 +13,23 @@ const DpdInput = (props) => {
     updateValidity,
     error,
     id,
-    errorMessage = '',
+    onChange,
+    onBlur,
   } = props;
   const changeHandler = (e) => {
     updateForm(e.target.name, e.target.value);
   };
+  // We utilised this component for the DCTP form and as at then, we did manual validations which required us to write functions that updated a "big form object" with our values using the name as identifier.
+  //Now I wanna utilise this same component and use formik for validations, that way I can pass onChange swiftly, this component onChnage function will then be the onChange props passed for the newer(web5) forms and the 'radioChangeHandler' for the older form, i.e dctp...
   const blurHandler = (e) => {
     updateValidity(e.target.id);
   };
   return (
     <Stack gap="10px">
-      <FormLabel sx={{ fontWeight: '700', color: 'text.grey.800' }}>
+      <FormLabel
+        sx={{ fontWeight: '700', color: 'text.grey.800' }}
+        error={!!error}
+      >
         {label}
         {required && (
           <Typography component="span" color="#CB2B11" fontSize="20px">
@@ -37,16 +44,17 @@ const DpdInput = (props) => {
       </FormLabel>
       <TextField
         type={type ?? 'text'}
-        error={error}
+        error={!!error}
         required={true}
         multiline={multiline ? true : false}
         rows={multiline ? 4 : 0}
         name={name}
-        onChange={changeHandler}
+        onChange={onChange ?? changeHandler}
         id={id}
-        onBlur={blurHandler}
+        onBlur={onBlur ?? blurHandler}
+        value={value}
       />
-      {errorMessage && <Typography color="#f00">{errorMessage}</Typography>}
+      {error && <Typography color="#f00">{error}</Typography>}
     </Stack>
   );
 };
