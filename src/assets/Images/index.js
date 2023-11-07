@@ -78,4 +78,5 @@ export { default as editIcon } from './edit-icon.png';
 export { default as link } from './link.png';
 export { default as error } from './error.webp';
 export { default as TBD } from './TBD-Logo.png';
+export { default as deleteIcon } from './trash.png';
 // export { ReactComponent as Dollar } from './dollar-circle.svg';

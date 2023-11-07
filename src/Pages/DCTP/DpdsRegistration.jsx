@@ -17,8 +17,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { DpdInput, DpdRadio, SuccessModal } from '../../components';
 import { STATES } from '../../talents';
-const GENDER_OPTIONS = ['Female', 'Male', 'Prefer not to say'];
-const SKILL_LEVEL = ['Beginner', 'Intermediate', 'Advanced'];
+export const GENDER_OPTIONS = ['Female', 'Male', 'Prefer not to say'];
+export const SKILL_LEVEL = ['Beginner', 'Intermediate', 'Advanced'];
 const PROGRAM = [
   'Software Development',
   'Product Management',
@@ -32,7 +32,7 @@ const DpdsRegistration = () => {
     window.scrollTo({ top: 0 });
   }, [pathname]);
 
-  return false ? (
+  return true ? (
     <Box component="section" className="container" py="32px">
       <Button
         sx={{

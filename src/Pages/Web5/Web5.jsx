@@ -3,6 +3,7 @@ import { TitleBanner } from '../../components';
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import { TBD, timer } from '../../assets/Images';
 import { Image } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
 
 const Web5 = () => {
   return (
@@ -38,7 +39,7 @@ const AboutProgram = () => {
     },
     {
       week: 'Three',
-      info: `Participants need to create teams of up to four members, including at least one female member. They'll receive Web 5 technology topics to write well-researched, informative articles demonstrating their understanding of Week 1's content. These articles are due by the end of Day 14 and will be judged for quality, originality, and clarity by a panel of experts.`,
+      info: `Teams will be presented with the main challenge of the hackathon, involving the creation of inventive solutions using Web 5 technologies. Participants can opt to develop web applications, dApps, or any imaginative projects that highlight the capabilities of Web 5.`,
     },
     {
       week: 'Four',
@@ -94,6 +95,7 @@ const AboutProgram = () => {
         <Stack component="ul" pl="20px">
           {STEPS.map((step, i) => (
             <Typography
+              key={i}
               component="li"
               color="grey.700"
               fontSize={{ xs: '16px', md: '20px' }}
@@ -190,13 +192,14 @@ const AboutProgram = () => {
         color="text.black.100"
         fontWeight="700"
       >
-        Application deadline: December 8th, 2023.
+        Application deadline: November 18th, 2023.
       </Typography>
     </Stack>
   );
 };
 
 const Sponsor = () => {
+  const navigate = useNavigate();
   return (
     <Stack
       className="container"
@@ -213,6 +216,7 @@ const Sponsor = () => {
           fontWeight: '700',
         }}
         variant="contained"
+        onClick={() => navigate('registration')}
       >
         Proceed with Application
       </Button>
