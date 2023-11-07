@@ -43,7 +43,7 @@ const AboutProgram = () => {
     },
     {
       week: 'Four',
-      info: `Participants will engage in a comprehensive learning experience about Web 5 technologies. The week will include webinars, workshops, and presentations by industry experts and speakers.`,
+      info: `Participants will submit their projects, which will be reviewed by experts to evaluate their quality and adherence to criteria. The week will culminate in a prize-giving ceremony to recognize and reward outstanding contributions to the event.`,
     },
   ];
   const PRIZES = [

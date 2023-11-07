@@ -11,7 +11,7 @@ import {
 import React, { useEffect, useMemo, useReducer, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DpdInput, DpdRadio } from '../../components';
-import { useFormik, useFormikContext } from 'formik';
+import { useFormik } from 'formik';
 import { GENDER_OPTIONS, SKILL_LEVEL } from '../DCTP/DpdsRegistration';
 import countryList from 'react-select-country-list';
 import { AddButton } from '../Profile/EditProfile/WorkExperience';
@@ -27,6 +27,18 @@ const REQUIREMENTS = [
   'Each team member must possess a specific skill set related to design, engineering, or blockchain technology.',
   'Participants can join as individuals and form teams during Week 2',
 ];
+const FOCUS = [
+  'Decentralized Finance (DeFi)',
+  'Metaverse Applications',
+  'Blockchain Games',
+  'Travel Applications',
+  'Music Applications',
+  'Identity Wallets',
+  'Privacy & digital infrastructure',
+  'Creator economy',
+  'Others',
+];
+
 const Web5Registration = () => {
   const navigate = useNavigate();
   const { pathname } = useLocation();
@@ -134,6 +146,7 @@ const Web5Form = () => {
     member: '',
     github: '',
     feedback: '',
+    others: '',
   };
   const validate = (values) => {
     const emailRegex = /^\s*([^\s@]+)@([^\s@]+\.[^\s@]+)\s*$/;
@@ -168,6 +181,10 @@ const Web5Form = () => {
     if (!values.member) {
       errors.member = 'Please select an option';
     }
+    if (values.focus === 'Others' && !values.others) {
+      console.log('There is error');
+      errors.others = 'Please input something';
+    }
     return errors;
   };
   const {
@@ -192,6 +209,7 @@ const Web5Form = () => {
         });
         return TEAM_CONCAT;
       };
+
       const DATA = new FormData();
       DATA.append('entry.1780295808', values.firstName);
       DATA.append('entry.932451859', values.lastName);
@@ -201,6 +219,7 @@ const Web5Form = () => {
       DATA.append('entry.81318272', values.skillLevel);
       DATA.append('entry.933939755', values.country);
       DATA.append('entry.467641655', values.focus);
+      DATA.append('entry.1585515473', values.others);
       DATA.append('entry.71336846', values.plan);
       DATA.append('entry.253632849', values.member);
       DATA.append('entry.340422998', values.github);
@@ -236,7 +255,23 @@ const Web5Form = () => {
       });
     },
   });
-
+  const formSubmitHandler = () => {
+    console.log('Heyyy');
+    if (isValid) {
+      handleSubmit();
+    } else {
+      toast.error('Please fill all inputs correctly..', {
+        position: 'top-right',
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: 'light',
+      });
+    }
+  };
   return (
     <Stack gap={{ xs: '20px', md: '32px' }} mt="32px">
       <DpdInput
@@ -330,16 +365,27 @@ const Web5Form = () => {
           onBlur={handleBlur}
           value={values.focus}
         >
-          {['Backend', 'Frontend', 'Cloud'].map((focus, i) => (
+          {FOCUS.map((focus, i) => (
             <MenuItem key={i} value={focus}>
               {focus}
             </MenuItem>
           ))}
         </Select>
       </FormControl>
-      <DpdInput
+      {values.focus === 'Others' && (
+        <DpdInput
+          name="others"
+          id="others"
+          onChange={handleChange}
+          onBlur={handleBlur}
+          error={errors.others && touched.others ? errors.others : ''}
+        />
+      )}
+      <DpdRadio
         label="Do you plan to continue working on this after the Hackathon?"
+        options={['Yes', 'No']}
         required={true}
+        titleColor="text.black.100"
         name="plan"
         id="experience"
         onChange={handleChange}

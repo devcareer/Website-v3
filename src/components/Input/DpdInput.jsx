@@ -36,11 +36,11 @@ const DpdInput = (props) => {
             *
           </Typography>
         )}
-        {!required && (
+        {/* {!required && (
           <Typography component="span" ml="5px">
             (Optional)
           </Typography>
-        )}
+        )} */}
       </FormLabel>
       <TextField
         type={type ?? 'text'}
