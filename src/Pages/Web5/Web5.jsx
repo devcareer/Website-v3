@@ -58,7 +58,7 @@ const AboutProgram = () => {
   const TIMELINE = [
     {
       week: 'One',
-      info: 'Participants will engage in a comprehensive learning experience about Web 5 technologies. The week will include webinars, workshops, and presentations by industry experts and speakers.',
+      info: 'Participants will engage in a comprehensive learning experience about Web 5 technologies. The week will include webinars, and presentations by industry experts and speakers.',
     },
     {
       week: 'Two',
@@ -104,10 +104,17 @@ const AboutProgram = () => {
           The Devcareer Web5 Hackathon is a four-weeks Web 5 in combination with
           blockchain technology and cryptocurrencies event that aims to
           encourage participants to interact, learn, and build using Web 5
-          Technologies. The hackathon will be divided into three phases:
-          Learning, Writing, and Building. Each phase will focus on specific
-          activities that will lead participants towards developing innovative
-          solutions using Web 5 technologies.
+          Technologies. The hackathon will be divided into three phases:{' '}
+          <Typography
+            fontWeight="700"
+            component="span"
+            fontSize={{ xs: '16px', md: '20px' }}
+          >
+            Learning, Writing, and Building.{' '}
+          </Typography>
+          Each phase will focus on specific activities that will lead
+          participants towards developing innovative solutions using Web 5
+          technologies.
         </Typography>
       </Stack>
       <Stack>
@@ -116,6 +123,8 @@ const AboutProgram = () => {
           fontSize={{ xs: '20px', md: '24px' }}
           color="text.black.100"
           fontWeight="700"
+          textAlign={{ xs: 'center', md: 'start' }}
+          mb="12px"
         >
           HACKATHON BREAKDOWN
         </Typography>
@@ -123,10 +132,17 @@ const AboutProgram = () => {
           component="ul"
           pl="20px"
           direction={{ md: 'row' }}
-          gap={{ xs: '24px', md: '0' }}
+          gap={{ xs: '24px', md: '10px' }}
+          alignItems="center"
+          flexWrap="wrap"
         >
           {STEPS.map((step, i) => (
-            <Box component="img" src={step} key={i}></Box>
+            <Box
+              component="img"
+              src={step}
+              key={i}
+              width={{ xs: '300px', md: 'auto' }}
+            ></Box>
             // <Typography
             //   key={i}
             //   component="li"
@@ -218,7 +234,11 @@ const AboutProgram = () => {
         </Typography>
         <Stack component="ul" pl="20px">
           {PRIZES.map((prize, i) => (
-            <Typography component="li" fontSize={{ xs: '16px', md: '20px' }}>
+            <Typography
+              key={i}
+              component="li"
+              fontSize={{ xs: '16px', md: '20px' }}
+            >
               {prize}
             </Typography>
           ))}
