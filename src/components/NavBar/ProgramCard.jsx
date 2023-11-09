@@ -7,7 +7,7 @@ const ProgramCard = () => {
   };
   return (
     <Stack
-      gap={2}
+      gap={1}
       sx={{
         p: '0.4rem',
         borderRadius: '8px',
@@ -29,6 +29,20 @@ const ProgramCard = () => {
         >
           {' '}
           Laptop4Developers{' '}
+        </Box>
+      </Link>
+      <Link style={menuStyle} to="/programs/web5">
+        <Box
+          sx={{
+            borderRadius: '8px',
+            p: '0.7rem',
+            ':hover': {
+              backgroundColor: '#E8E8E8',
+            },
+          }}
+        >
+          {' '}
+          Web5 Hackathon{' '}
         </Box>
       </Link>
     </Stack>

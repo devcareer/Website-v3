@@ -9,7 +9,7 @@ import Education from './Education';
 import WorkExperience, { ActionButtons } from './WorkExperience';
 import { useNavigate } from 'react-router-dom';
 const EditProfile = () => {
-  const navigate=useNavigate()
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const state = useSelector((state) => state.personal);
   const profileData = useSelector((state) => state);
@@ -27,7 +27,7 @@ const EditProfile = () => {
         }
       } catch (err) {
         toast.error('Oops, Token expired! Please try signing in again ');
-        navigate('/auth/?mode=signin')
+        navigate('/auth/?mode=signin');
         console.log(err);
       }
     };
@@ -44,11 +44,10 @@ const EditProfile = () => {
   const submitProfile = async () => {
     setIsSubmitting(true);
     try {
-      console.log(profileData)
+      console.log(profileData);
       const res = await createProfile(profileData);
       toast.success('Profile Updated Successfully');
       setIsSubmitting(false);
-      
     } catch (err) {
       toast.error(err.response.data.message || err.response.data.error);
       setIsSubmitting(false);

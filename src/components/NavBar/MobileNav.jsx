@@ -1,7 +1,7 @@
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import CloseIcon from '@mui/icons-material/Close';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-import { Box, Stack, Typography,Button } from '@mui/material';
+import { Box, Stack, Typography, Button } from '@mui/material';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ukflag } from '../../assets/Images';
@@ -12,9 +12,8 @@ const navStyle = {
 };
 const MobileNav = ({ menu }) => {
   const [program, setProgram] = useState(false);
-  const [government,setGovernment] =useState(false)
+  const [government, setGovernment] = useState(false);
   const [community, setCommunity] = useState(false);
-
 
   return (
     <Stack
@@ -67,6 +66,9 @@ const MobileNav = ({ menu }) => {
             <Link style={navStyle} to="programs/l4d">
               Laptop4developers
             </Link>
+            <Link style={navStyle} to="programs/web5">
+              Web5 Hackathon
+            </Link>
           </Stack>
         )}
       </Box>
@@ -95,20 +97,20 @@ const MobileNav = ({ menu }) => {
               menu(false);
             }}
           >
-          
             <Link style={navStyle} to="/government/dctp">
-              <Box display='flex' gap='8px'>
-              <Typography variant="body1" color="initial">UK-Nigeria Tech Hub</Typography>  <Box component='img' src={ukflag} width={30}></Box>
-
+              <Box display="flex" gap="8px">
+                <Typography variant="body1" color="initial">
+                  UK-Nigeria Tech Hub
+                </Typography>{' '}
+                <Box component="img" src={ukflag} width={30}></Box>
               </Box>
-             
             </Link>
           </Stack>
         )}
       </Box>
       <Box borderBottom="1px solid #E8E8E8" pb="10px">
         <Link
-        to='/about'
+          to="/about"
           style={navStyle}
           onClick={() => {
             menu(false);
@@ -164,12 +166,14 @@ const MobileNav = ({ menu }) => {
           Contact Us
         </Link>
       </Box> */}
-       <Link to="/support" style={{textDecoration:"none"}}  onClick={() => menu(false)}>
-       <Button
+      <Link
+        to="/support"
+        style={{ textDecoration: 'none' }}
+        onClick={() => menu(false)}
+      >
+        <Button
           disableElevation
           variant="contained"
-
-          
           sx={{
             color: '#FEFEFE',
             paddingInline: '32px',
@@ -180,7 +184,7 @@ const MobileNav = ({ menu }) => {
         >
           Support Us
         </Button>
-        </Link>
+      </Link>
     </Stack>
   );
 };

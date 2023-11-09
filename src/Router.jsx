@@ -14,7 +14,9 @@ import {
   Support,
   Talents,
   Error,
-  PageNotFound
+  PageNotFound,
+  Web5,
+  Web5Registration,
 } from './Pages';
 
 export const router = createBrowserRouter([
@@ -32,6 +34,10 @@ export const router = createBrowserRouter([
           {
             path: 'l4d',
             element: <LaptopForDevelopers />,
+          },
+          {
+            path: 'web5',
+            element: <Web5 />,
           },
         ],
       },
@@ -83,8 +89,11 @@ export const router = createBrowserRouter([
   },
 
   { path: 'programs/dpds/registration', element: <DpdsRegistration /> },
+  {
+    path: '/programs/web5/registration',
+    element: <Web5Registration />,
+  },
   { path: '/p/:id', element: <FreeProfile /> },
   { path: '/error', element: <Error /> },
   { path: '*', element: <PageNotFound /> },
-
 ]);

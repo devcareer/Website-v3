@@ -77,5 +77,15 @@ export { default as signOut } from './SignOut.png';
 export { default as editIcon } from './edit-icon.png';
 export { default as link } from './link.png';
 export { default as error } from './error.webp';
-
+export { default as TBD } from './TBD-Logo.png';
+export { default as deleteIcon } from './trash.png';
+export { default as timeline } from './timeline.png';
+export { default as tbdLines } from './tbdLines.png';
+export { default as tbdBlack } from './tbdBlack.png';
+export { default as yellowTimer } from './yellowTimer.png';
+export { default as tbdYellow } from './tbdYellow.png';
+export { default as StepOne } from './Step-1.png';
+export { default as StepTwo } from './Step-2.png';
+export { default as StepThree } from './Step-3.png';
+export { default as StepFour } from './Step-4.png';
 // export { ReactComponent as Dollar } from './dollar-circle.svg';

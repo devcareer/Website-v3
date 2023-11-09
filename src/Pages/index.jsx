@@ -11,8 +11,8 @@ export { default as AccountSettings } from './Profile/AccountSettings/AccountSet
 export { default as EditProfile } from './Profile/EditProfile/EditProfile';
 export { default as ProfileRoot } from './Profile/ProfileRoot/ProfileRoot';
 export { default as Overview } from './Profile/Overview/Overview';
-export { default as FreeProfile } from './FreeProfile/Freeprofile'
-export {default as Error} from './Error/Error';
-export {default as PageNotFound} from './PageNotFound/PageNotFound';
-
-
+export { default as FreeProfile } from './FreeProfile/Freeprofile';
+export { default as Error } from './Error/Error';
+export { default as PageNotFound } from './PageNotFound/PageNotFound';
+export { default as Web5 } from './Web5/Web5';
+export { default as Web5Registration } from './Web5/Web5Registration';
