@@ -150,6 +150,7 @@ export const AddButton = ({ title, src, openModal, color }) => {
 };
 
 export const ActionButtons = ({
+  buttonFor,
   text,
   closeModal,
   handleSubmit,
@@ -172,6 +173,7 @@ export const ActionButtons = ({
         Cancel
       </Button>
       <LoadingButton
+        id={buttonFor ?? ''}
         loading={!!isSubmitting}
         disabled={!isActive}
         onClick={handleSubmit}
