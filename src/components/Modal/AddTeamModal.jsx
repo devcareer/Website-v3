@@ -106,6 +106,7 @@ const AddTeamModal = ({ closeModal, dispatchFn, team: TEAM }) => {
           />
         </Stack>
         <ActionButtons
+          buttonFor="web5ActionButton"
           text="Add Team Member"
           closeModal={handleModalClose}
           handleSubmit={handleSubmit}

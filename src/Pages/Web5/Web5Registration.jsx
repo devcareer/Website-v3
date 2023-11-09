@@ -48,7 +48,7 @@ const Web5Registration = () => {
   return (
     <Box
       component="section"
-      className="container"
+      className="container web5"
       py="32px"
       color="text.grey.800"
     >
@@ -449,12 +449,15 @@ const Web5Form = () => {
         )}
       </Stack>
       <LoadingButton
+        id="web5ActionButton"
         loading={isSubmitting}
         onClick={handleSubmit}
         fontWeight="500"
         fontSize="20px"
         variant="outlined"
         sx={{
+          textTransform: 'capitalize',
+          opacity: isSubmitting ? '0.7' : '1',
           py: '20px',
           borderRadius: '8px',
           color: '#FEFEFE',
@@ -469,7 +472,7 @@ const Web5Form = () => {
           },
         }}
       >
-        Enroll into Program
+        {isSubmitting ? 'Submitting...' : 'Enroll into Program'}
       </LoadingButton>
       {showModal && (
         <AddTeamModal

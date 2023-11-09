@@ -1,7 +1,30 @@
+/* @import url('https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600;700&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&display=swap');
 * {
   padding: 0;
   margin: 0;
   box-sizing: border-box;
+}
+/* Writing CSS like these was just a hard fix to the problem of MaterialUI not inheriting styles and I need everything on web5 page to have a font-family */
+.web5 p,
+.web5 button,
+.web5 h2,
+.web5 input,
+.web5 li,
+.web5 label,
+.web5 span {
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+#web5ActionButton {
+  color: #181818;
+  background-color: #ffec19;
+  border-bottom: 4px solid #000;
+  border-right: 4px solid #000;
+  border-top: 2px solid #000;
+  border-left: 2px solid #000;
+  border-radius: 0;
+  box-shadow: none;
 }
 .container {
   width: 85%;

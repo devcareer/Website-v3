@@ -41,6 +41,10 @@ export const theme = createTheme({
     misc: {
       100: '#131313',
     },
+    yellow: {
+      100: '#FAED5B',
+      200: '#FFEC19',
+    },
   },
   components: {
     MuiCssBaseline: {
