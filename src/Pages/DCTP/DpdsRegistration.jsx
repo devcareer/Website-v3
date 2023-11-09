@@ -32,7 +32,7 @@ const DpdsRegistration = () => {
     window.scrollTo({ top: 0 });
   }, [pathname]);
 
-  return true ? (
+  return false ? (
     <Box component="section" className="container" py="32px">
       <Button
         sx={{
