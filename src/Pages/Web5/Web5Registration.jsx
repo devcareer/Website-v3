@@ -237,41 +237,40 @@ const Web5Form = () => {
           mode: 'no-cors',
           body: DATA,
         }
-      ).then((res) => {
-        setIsSubmitting(false);
-        toast.success('Application Successful!!!', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: 'light',
+      )
+        .then((res) => {
+          toast.success('Application Successful!!!', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+          });
+          setTimeout(() => {
+            navigate('/programs/web5');
+          }, 3000);
+        })
+        .catch((err) => {
+          toast.error('Network Error! Please retry...', {
+            position: 'top-right',
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: 'light',
+          });
+        })
+        .finally(() => {
+          setIsSubmitting(false);
         });
-        setTimeout(() => {
-          navigate('/programs/web5');
-        }, 3000);
-      });
     },
   });
-  const formSubmitHandler = () => {
-    console.log('Heyyy');
-    if (isValid) {
-      handleSubmit();
-    } else {
-      toast.error('Please fill all inputs correctly..', {
-        position: 'top-right',
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: 'light',
-      });
-    }
-  };
+
   return (
     <Stack gap={{ xs: '20px', md: '32px' }} mt="32px">
       <DpdInput
@@ -469,6 +468,9 @@ const Web5Form = () => {
           },
           '&:disabled': {
             backgroundColor: '#e0e0e0',
+          },
+          ':hover': {
+            transform: 'scale(0.9)',
           },
         }}
       >
