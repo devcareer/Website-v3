@@ -12,7 +12,7 @@ import React, { useEffect, useMemo, useReducer, useState } from 'react';
 import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { DpdInput, DpdRadio } from '../../components';
 import { useFormik } from 'formik';
-import { GENDER_OPTIONS, SKILL_LEVEL } from '../DCTP/DpdsRegistration';
+import { SKILL_LEVEL } from '../DCTP/DpdsRegistration';
 import countryList from 'react-select-country-list';
 import { AddButton } from '../Profile/EditProfile/WorkExperience';
 import AddTeamModal from '../../components/Modal/AddTeamModal';
@@ -313,7 +313,7 @@ const Web5Form = () => {
       />
       <DpdRadio
         label="GENDER"
-        options={GENDER_OPTIONS}
+        options={['Female', 'Male', 'Others']}
         required={true}
         titleColor="#888"
         name="gender"
