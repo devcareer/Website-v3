@@ -58,7 +58,7 @@ const AboutProgram = () => {
   const TIMELINE = [
     {
       week: 'One',
-      info: 'Participants will engage in a comprehensive learning experience about Web 5 technologies. The week will include webinars, and presentations by industry experts and speakers.',
+      info: 'Participants will engage in a comprehensive learning experience about Web 5 technologies. The week will include a webinar by a member of the TBD team.',
     },
     {
       week: 'Two',
@@ -66,7 +66,7 @@ const AboutProgram = () => {
     },
     {
       week: 'Three',
-      info: `Teams will be presented with the main challenge of the hackathon, involving the creation of inventive solutions using Web 5 technologies. Participants can opt to develop web applications, dApps, or any imaginative projects that highlight the capabilities of Web 5.`,
+      info: `Teams will be presented with the main challenge of the hackathon, involving the creation of inventive solutions using Web 5 and decentralized technologies. Participants can opt to develop web applications, dApps, or any creative projects that highlight the capabilities of Web 5.`,
     },
     {
       week: 'Four',
@@ -102,7 +102,7 @@ const AboutProgram = () => {
         </Typography>
         <Typography fontSize={{ xs: '16px', md: '20px' }}>
           The Devcareer Web5 Hackathon is a four-weeks Web 5 in combination with
-          blockchain technology and cryptocurrencies event that aims to
+          decentralized technology and cryptocurrencies event that aims to
           encourage participants to interact, learn, and build using Web 5
           Technologies. The hackathon will be divided into three phases:{' '}
           <Typography
