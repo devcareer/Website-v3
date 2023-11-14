@@ -112,6 +112,9 @@ const FaqBlock = (props) => {
   };
   return (
     <Box
+      sx={{
+        cursor: 'pointer',
+      }}
       py={{ xs: '16px', md: '32px' }}
       borderBottom={index === last ? '' : '1px solid #FFEC19'}
     >
@@ -133,9 +136,9 @@ const FaqBlock = (props) => {
           {question}
         </Typography>
         <Stack
-          border="1px solid #FFEC19"
+          // border="1px solid #000"
           borderRadius="50px"
-          color="yellow.200"
+          color="#000"
           fontSize="36px"
           fontWeight="700"
           height="36px"
