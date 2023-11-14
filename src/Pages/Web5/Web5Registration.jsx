@@ -220,7 +220,7 @@ const Web5Form = () => {
       DATA.append('entry.1780295808', values.firstName);
       DATA.append('entry.932451859', values.lastName);
       DATA.append('entry.1664470478', values.email);
-      DATA.append('entry.1316307388', values.experience);
+      DATA.append('entry.1316307388', values.experience); // entry.1316307388"
       DATA.append('entry.1064466476', values.gender);
       DATA.append('entry.81318272', values.skillLevel);
       DATA.append('entry.933939755', values.country);
@@ -313,14 +313,17 @@ const Web5Form = () => {
         onChange={handleChange}
         onBlur={handleBlur}
       />
-      <DpdInput
-        label="Hackathon Experience"
+
+      <DpdRadio
+        label="Do you have any previous Hackathon Experience (Yes or No)"
+        options={['Yes', 'No']}
         required={true}
+        titleColor="text.black.100"
         name="experience"
-        error={touched.experience && errors.experience ? errors.experience : ''}
         id="experience"
         onChange={handleChange}
         onBlur={handleBlur}
+        error={errors.experience && touched.experience ? errors.experience : ''}
       />
       <DpdRadio
         label="GENDER"
