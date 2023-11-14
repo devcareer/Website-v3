@@ -147,6 +147,7 @@ const Web5Form = () => {
     github: '',
     feedback: '',
     others: '',
+    role: 'Individual',
   };
   const validate = (values) => {
     const emailRegex = /^\s*([^\s@]+)@([^\s@]+\.[^\s@]+)\s*$/;
@@ -184,6 +185,9 @@ const Web5Form = () => {
     if (values.focus === 'Others' && !values.others) {
       console.log('There is error');
       errors.others = 'Please input something';
+    }
+    if (!values.role) {
+      errors.role = 'Please select...';
     }
     return errors;
   };
@@ -224,6 +228,7 @@ const Web5Form = () => {
       DATA.append('entry.253632849', values.member);
       DATA.append('entry.340422998', values.github);
       DATA.append('entry.1738249386', values.feedback);
+      DATA.append('entry.372668222', values.role);
       DATA.append('entry.1177983450', transfromTeamArrayIntoString());
 
       setIsSubmitting(true);
@@ -363,6 +368,7 @@ const Web5Form = () => {
           onChange={handleChange}
           onBlur={handleBlur}
           value={values.focus}
+          defaultValue={values.focus}
         >
           {FOCUS.map((focus, i) => (
             <MenuItem key={i} value={focus}>
@@ -415,22 +421,37 @@ const Web5Form = () => {
         onChange={handleChange}
         onBlur={handleBlur}
       />
+      <FormControl error={errors.role && touched.role}>
+        <Select
+          name="role"
+          onChange={handleChange}
+          onBlur={handleBlur}
+          value={values.role}
+        >
+          <MenuItem value="Team"> Apply as a Team</MenuItem>
+          <MenuItem value="Individual"> Apply as an Individual</MenuItem>
+        </Select>
+      </FormControl>
       <Stack>
-        <Typography
-          fontWeight="700"
-          fontSize={{ xs: '16px', md: '20px' }}
-          color="text.black.100"
-        >
-          Add Teammates
-        </Typography>
-        <Typography
-          fontWeight="500"
-          fontSize={{ xs: '16px', md: '20px' }}
-          color="text.grey.800"
-          mb="8px"
-        >
-          Add up to 3 team members
-        </Typography>
+        {values.role === 'Team' && (
+          <Typography
+            fontWeight="700"
+            fontSize={{ xs: '16px', md: '20px' }}
+            color="text.black.100"
+          >
+            Add Teammates
+          </Typography>
+        )}
+        {values.role === 'Team' && (
+          <Typography
+            fontWeight="500"
+            fontSize={{ xs: '16px', md: '20px' }}
+            color="text.grey.800"
+            mb="8px"
+          >
+            Add up to 3 team members
+          </Typography>
+        )}
         <Stack gap={{ xs: '10px', md: '16px' }}>
           {TEAM.map((member, i) => (
             <Member
@@ -443,7 +464,7 @@ const Web5Form = () => {
             />
           ))}
         </Stack>
-        {TEAM.length < 3 && (
+        {TEAM.length < 3 && values.role === 'Team' && (
           <AddButton title="Add Team Member" openModal={handleModalOpen} />
         )}
       </Stack>

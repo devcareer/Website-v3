@@ -1,5 +1,5 @@
 import React from 'react';
-import { TitleBanner } from '../../components';
+import { FAQ, TitleBanner } from '../../components';
 import { Box, Button, Grid, Stack, Typography } from '@mui/material';
 import {
   TBD,
@@ -31,6 +31,7 @@ const Web5 = () => {
       <TbdTitleBanner />
       <AboutProgram />
       <Sponsor />
+      <FAQ />
       <Box
         component="img"
         src={tbdBlack}
@@ -43,7 +44,7 @@ const Web5 = () => {
         component="img"
         src={tbdYellow}
         position="absolute"
-        bottom="4%"
+        bottom="41%"
         left="0"
         zIndex="-2"
       ></Box>
