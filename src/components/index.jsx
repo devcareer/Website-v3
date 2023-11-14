@@ -28,3 +28,4 @@ export { default as GovernmentCard } from './NavBar/GovernmentCard';
 export { default as TopNav } from './TopNav/TopNav';
 export { default as AddExperienceModal } from './Modal/AddExperienceModal';
 export { default as AddEducationModal } from './Modal/AddEducationModal';
+export { default as FAQ } from './TbdFaq/TbdFaq';
