@@ -118,6 +118,9 @@ const ReducerFn = (state, action) => {
     console.log(memberToEdit, state);
     return state;
   }
+  if (type === 'CLEAR_MEMBERS') {
+    return [];
+  }
   return state;
 };
 const Web5Form = () => {
@@ -132,7 +135,6 @@ const Web5Form = () => {
   const handleModalClose = () => {
     setShowModal(false);
   };
-
   const initialValues = {
     firstName: '',
     lastName: '',
@@ -275,7 +277,11 @@ const Web5Form = () => {
         });
     },
   });
-
+  useEffect(() => {
+    if (values.role === 'Individual') {
+      teamDispatchFn({ type: 'CLEAR_MEMBERS' });
+    }
+  }, [values.role]);
   return (
     <Stack gap={{ xs: '20px', md: '32px' }} mt="32px">
       <DpdInput
