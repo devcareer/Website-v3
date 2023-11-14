@@ -315,7 +315,7 @@ const Web5Form = () => {
       />
 
       <DpdRadio
-        label="Do you have any previous Hackathon Experience (Yes or No)"
+        label="Do you have any previous Hackathon Experience"
         options={['Yes', 'No']}
         required={true}
         titleColor="text.black.100"
