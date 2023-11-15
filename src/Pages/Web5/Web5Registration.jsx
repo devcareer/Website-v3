@@ -432,6 +432,11 @@ const Web5Form = () => {
         onBlur={handleBlur}
       />
       <FormControl error={errors.role && touched.role}>
+        <Typography fontWeight="700" mb="10px">
+          Everyone should individually register, including the team lead, and
+          then the team lead should return to register the entire team, ensuring
+          all members are included.
+        </Typography>
         <Select
           name="role"
           onChange={handleChange}
