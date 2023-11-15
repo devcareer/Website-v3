@@ -25,7 +25,7 @@ const Web5 = () => {
       sx={{
         backgroundImage: `url(${timeline})`,
         backgroundRepeat: 'no-repeat',
-        backgroundPosition: '100% 60%',
+        backgroundPosition: '100% 33%',
       }}
     >
       <TbdTitleBanner />
