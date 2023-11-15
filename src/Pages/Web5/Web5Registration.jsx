@@ -437,6 +437,13 @@ const Web5Form = () => {
           onBlur={handleBlur}
           value={values.role}
         >
+        <DpdInput
+        label="Everyone would apply as an individual at first, then after you form a team, your team leads needs to come back and register as a team and add everyone. It's compulsory that every team members registers individually at first"
+        name=""
+        id=""
+        onChange={handleChange}
+        onBlur={handleBlur}
+      />
           <MenuItem value="Team"> Apply as a Team</MenuItem>
           <MenuItem value="Individual"> Apply as an Individual</MenuItem>
         </Select>
