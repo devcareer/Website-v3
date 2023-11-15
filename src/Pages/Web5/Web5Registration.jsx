@@ -26,7 +26,7 @@ const REQUIREMENTS = [
   'Each Participant must only be in one team, if found otherwise, the entire team will be disqualified.',
   'Each team member must possess a specific skill set related to design, engineering, or blockchain technology.',
   'Participants can join as individuals and form teams during Week 2',
-  'Everyone needs to first register as an individual, inclduing the team lead, after that your team lead needs to comenback and register as team again and include you all',
+//  'Everyone needs to first register as an individual, inclduing the team lead, after that your team lead needs to comenback and register as team again and include you all',
 ];
 const FOCUS = [
   'Decentralized Finance (DeFi)',
