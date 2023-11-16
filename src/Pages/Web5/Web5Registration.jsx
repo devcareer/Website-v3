@@ -24,7 +24,7 @@ const REQUIREMENTS = [
   'Each team must consist of a maximum of four members.',
   'At least one female member must be present in each team.',
   'Each Participant must only be in one team, if found otherwise, the entire team will be disqualified.',
-  'Each team member must possess a specific skill set related to design, engineering, or blockchain technology.',
+  'Each team member must possess a specific skill set related to design, engineering, or management.',
   'Participants can join as individuals and form teams during Week 2',
   'Everyone needs to first register as an individual, inclduing the team lead. After that, your teamlead needs to come back and register as team again and include you all.',
 ];
