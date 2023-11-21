@@ -45,7 +45,11 @@ const Web5Registration = () => {
   useEffect(() => {
     window.scrollTo({ top: 0 });
   }, [pathname]);
-  return (
+  return true ? (
+    <Typography fontSize={{ xs: '30px', md: '50px' }} textAlign="center">
+      Application for the Hackathon has closed!!!
+    </Typography>
+  ) : (
     <Box
       component="section"
       className="container web5"
