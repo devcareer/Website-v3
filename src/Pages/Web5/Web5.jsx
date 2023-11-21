@@ -262,6 +262,7 @@ const Sponsor = () => {
   return (
     <Stack alignItems="center" mt={{ xs: '70px', md: '155px' }}>
       <Button
+        disabled
         sx={{
           color: 'text.primary',
           bgcolor: 'yellow.200',
