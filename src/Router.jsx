@@ -6,6 +6,7 @@ import {
   ContactUs,
   Dctp,
   DpdsRegistration,
+  Dnh,
   FreeProfile,
   Home,
   LaptopForDevelopers,
@@ -47,6 +48,10 @@ export const router = createBrowserRouter([
           {
             path: 'dctp',
             element: <Dctp />,
+          },
+          {
+            path: 'dnh',
+            element: <Dnh />,
           },
         ],
       },

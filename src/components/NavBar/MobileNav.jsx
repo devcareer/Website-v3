@@ -105,6 +105,11 @@ const MobileNav = ({ menu }) => {
                 <Box component="img" src={ukflag} width={30}></Box>
               </Box>
             </Link>
+            <Link style={navStyle} to="/government/dnh">
+              <Typography variant="body1" color="initial">
+                Digital Nigeria Hackathon
+              </Typography>
+            </Link>
           </Stack>
         )}
       </Box>

@@ -16,3 +16,4 @@ export { default as Error } from './Error/Error';
 export { default as PageNotFound } from './PageNotFound/PageNotFound';
 export { default as Web5 } from './Web5/Web5';
 export { default as Web5Registration } from './Web5/Web5Registration';
+export { default as Dnh } from './DNH/Dnh';

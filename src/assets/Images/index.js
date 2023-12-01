@@ -88,4 +88,6 @@ export { default as StepOne } from './Step-1.png';
 export { default as StepTwo } from './Step-2.png';
 export { default as StepThree } from './Step-3.png';
 export { default as StepFour } from './Step-4.png';
+export { default as DnhBannerImage } from './bannerImage.png';
+export { default as bannerImageLines } from './bannerImageLines.png';
 // export { ReactComponent as Dollar } from './dollar-circle.svg';
