@@ -5,7 +5,11 @@ export const Dnh = ({ heading, text }) => {
   return (
     <Box>
       <BannerTitleImage />
-      <Box paddingLeft="40px" paddingRight="40px" maxWidth="1041px">
+      <Box
+        paddingLeft={{ xs: '30px', sm: '50px', md: '60px', lg: '90px' }}
+        paddingRight="40px"
+        maxWidth="1041px"
+      >
         <Text
           heading="Introduction"
           text="DevCareer, a non-profit organization, recently organized a hackathon centered around themes such as Digital Literacy & Inclusion, Creative Media Technology, Government Services, Subsidy Removal/Mobility, and Financial Inclusion Technology. 
