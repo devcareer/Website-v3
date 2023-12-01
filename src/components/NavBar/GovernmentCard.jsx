@@ -20,10 +20,9 @@ const GovernmentCard = () => {
     >
       <Link to="/government/dctp" style={menuStyle}>
         <Box
-          
           sx={{
-            display:'flex',
-            gap:'1.5rem',
+            display: 'flex',
+            gap: '1.5rem',
             borderRadius: '8px',
             p: '0.7rem',
             ':hover': {
@@ -32,7 +31,28 @@ const GovernmentCard = () => {
           }}
         >
           {' '}
-           <Typography variant="body1" color="initial">UK-Nigeria Tech Hub</Typography>  <Box component='img' src={ukflag} width={30}></Box>
+          <Typography variant="body1" color="initial">
+            UK-Nigeria Tech Hub
+          </Typography>{' '}
+          <Box component="img" src={ukflag} width={30}></Box>
+        </Box>
+      </Link>
+      <Link to="/government/dnh" style={menuStyle}>
+        <Box
+          sx={{
+            display: 'flex',
+            gap: '1.5rem',
+            borderRadius: '8px',
+            p: '0.7rem',
+            ':hover': {
+              backgroundColor: '#E8E8E8',
+            },
+          }}
+        >
+          {' '}
+          <Typography variant="body1" color="initial">
+            Digital Nigeria Hackathon
+          </Typography>{' '}
         </Box>
       </Link>
     </Stack>

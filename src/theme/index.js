@@ -37,6 +37,7 @@ export const theme = createTheme({
     background: {
       offwhite: '#FEFEFE',
       whitesmoke: '#F4F4F4',
+      lightgreen: '#E6F9F5',
     },
     misc: {
       100: '#131313',
@@ -44,6 +45,10 @@ export const theme = createTheme({
     yellow: {
       100: '#FAED5B',
       200: '#FFEC19',
+    },
+    green: {
+      700: '#025C49',
+      800: '#023E31',
     },
   },
   components: {
