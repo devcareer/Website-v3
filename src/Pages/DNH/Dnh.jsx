@@ -6,9 +6,11 @@ export const Dnh = ({ heading, text }) => {
     <Box>
       <BannerTitleImage />
       <Box
-        paddingLeft={{ xs: '30px', sm: '50px', md: '60px', lg: '90px' }}
-        paddingRight="40px"
-        maxWidth="1041px"
+        // paddingLeft={{ xs: '30px', sm: '50px', md: '60px', lg: '90px' }}
+        // paddingRight="40px"
+        width={{ xs: '90%', sm: '85%' }}
+        maxWidth={{ xl: '1200px' }}
+        mx="auto"
       >
         <Text
           heading="Introduction"
@@ -175,10 +177,11 @@ const BannerTitleImage = () => {
       marginBottom="56px"
     >
       <Stack
-        width="85%"
-        mx="auto"
         direction="row"
         justifyContent="space-between"
+        width={{ xs: '90%', sm: '85%' }}
+        maxWidth={{ xl: '1200px' }}
+        mx="auto"
       >
         <Box>
           <Typography
