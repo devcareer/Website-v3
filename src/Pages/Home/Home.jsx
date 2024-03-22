@@ -1,6 +1,6 @@
 import React from 'react';
 import { Header, Press, Process, Testimonials } from '../../components';
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Link, Stack, Typography } from '@mui/material';
 import { partners } from '../../sponsors';
 import { missionTwo, teacher, profile, jobPack } from '../../assets/Images';
 
@@ -62,8 +62,20 @@ const Sponsors = () => {
         columnGap={{ xs: '42px', lg: '108px' }}
         rowGap="35px"
       >
+        {/* Ventures pack logo was causing a bug if you map out a link for all the images regardless if they had a href or not */}
         {partners.map((item) => {
-          return (
+          return item.href ? (
+            <Link
+              href={item.href}
+              rel="noopener"
+              target="_blank"
+              sx={{
+                maxWidth: item.maxWidth ? item.maxWidth : '100%',
+              }}
+            >
+              <Box component="img" src={item.src} alt={item.alt}></Box>
+            </Link>
+          ) : (
             <Box
               component="img"
               src={item.src}
