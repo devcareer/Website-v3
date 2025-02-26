@@ -9,7 +9,7 @@ import EuclidSemiBold from '../fonts/Euclid/Euclid-Circular-A-SemiBold.ttf';
 export const theme = createTheme({
   palette: {
     primary: {
-      main: '#05B993',
+      main: '#197a32',
     },
     secondary: {
       main: '#34A0A4',

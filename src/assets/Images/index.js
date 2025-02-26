@@ -1,4 +1,4 @@
-export { default as Logo } from './Logo.svg';
+export { default as Logo } from './NewLogo.svg';
 export { default as hero } from './hero-section.png';
 export { default as favour } from './favour.png';
 export { default as joshua } from './joshua.png';

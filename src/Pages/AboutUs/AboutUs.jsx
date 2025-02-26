@@ -77,17 +77,10 @@ const AboutUs = () => {
           rowGap="16px"
           justifyItems="center"
         >
-          <Card image={joyce} name="Joyce Nwanochi" position="Programs" />
-          <Card
-            image={Ibukun}
-            name="Ibukunoluwa Samuel"
-            position="Operations"
-          />
+          {/* <Card image={joyce} name="Joyce Nwanochi" position="Programs" /> */}
           <Card image={favour} name="Favour Chibueze" position="Community" />
           <Card image={joshua} name="Miebaka Joshua" position="Branding" />
-          <Card image={soji} name="Olakunle Soji-Oke" position="Operations" />
           <Card image={tobi} name="Olagoke Tobi" position="Operations" />
-          <Card image={doyin} name="Adedoyin" position="Grants" />
           <Card image={chidi} name="Chidi Okoye" position="Programs" />
         </Box>
       </Container>
@@ -188,8 +181,8 @@ const AboutUs = () => {
             Join Hands with us as we make a change in the Tech World
           </Typography>
           <Button
-            component={Link}
-            to="/contact"
+            component="a"
+            href="mailto:favour@devcareer.io"
             variant="contained"
             sx={{
               bgcolor: '#FEFEFE',

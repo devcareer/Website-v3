@@ -183,7 +183,7 @@ const Footer = () => {
                 window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
               }
             >
-              <img src={Logo} alt="devcareers Logo" />
+              <img src={Logo} alt="devcareers Logo" width="50%" />
             </Link>
           </Box>
         </Stack>

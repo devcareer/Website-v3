@@ -30,7 +30,7 @@ const CommunityCard = () => {
           Talents
         </Box>
       </Link>
-      <Link to="community/slack" style={menuStyle}>
+      <Link to="https://docs.google.com/forms/d/e/1FAIpQLSfdp21O60omVRDUGReslAAbwQeAXLeRasvL3G6S-VN8qbt2gg/viewform" style={menuStyle}>
         <Box
           sx={{
             borderRadius: '8px',
