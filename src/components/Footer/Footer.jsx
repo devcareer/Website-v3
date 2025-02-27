@@ -175,8 +175,7 @@ const Footer = () => {
                 link={[{ link: '', name: 'Come Work with Us' }]}
               />
             </Grid>
-          </Grid>
-          <Box sx={{ mt: { xs: '1.2rem', sm: '0' } }}>
+            <Box sx={{ mt: { xs: '1.2rem', sm: '0' }, width: { xs: '14%', lg: '14%' } }} >
             <Link
               to="/"
               onClick={() =>
@@ -186,6 +185,7 @@ const Footer = () => {
               <img src={Logo} alt="devcareers Logo" />
             </Link>
           </Box>
+          </Grid>
         </Stack>
         <Stack
           mt={8}
