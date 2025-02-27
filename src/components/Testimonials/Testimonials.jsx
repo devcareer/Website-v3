@@ -57,7 +57,7 @@ const Testimonials = () => {
       <Stack
         pt="25px"
         sx={{
-          backgroundImage: 'linear-gradient(to bottom, #B5E48C 80%, #fff 30% )',
+          backgroundImage: 'linear-gradient(to bottom, #6ecf87 80%, #fff 30% )',
         }}
       >
         <Box
