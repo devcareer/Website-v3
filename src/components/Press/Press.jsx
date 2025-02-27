@@ -9,7 +9,7 @@ import {
 import { Link } from 'react-router-dom';
 const Press = () => {
   return (
-    <Box component="section" bgcolor="#F1FAD1" py="100px">
+    <Box component="section" bgcolor="#d3f1db" py="100px">
       <Stack gap="70px" className="container">
         <Typography
           fontWeight="700"

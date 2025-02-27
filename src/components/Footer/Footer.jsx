@@ -175,17 +175,17 @@ const Footer = () => {
                 link={[{ link: '', name: 'Come Work with Us' }]}
               />
             </Grid>
-          </Grid>
-          <Box sx={{ mt: { xs: '1.2rem', sm: '0' } }}>
+            <Box sx={{ mt: { xs: '1.2rem', sm: '0' }, width: { xs: '14%', lg: '14%' } }} >
             <Link
               to="/"
               onClick={() =>
                 window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
               }
             >
-              <img src={Logo} alt="devcareers Logo" width="50%" />
+              <img src={Logo} alt="devcareers Logo" />
             </Link>
           </Box>
+          </Grid>
         </Stack>
         <Stack
           mt={8}

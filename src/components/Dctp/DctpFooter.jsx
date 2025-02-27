@@ -8,8 +8,8 @@ import {
 } from '../index';
 
 const DctpFooter = () => {
-  return (
-    <Box sx={{ width: { xs: '90%', lg: '85%' },maxWidth:{xl:"1200px"}, mx: 'auto' }}>
+  return (<Box
+     sx={{ width: { xs: '90%', lg: '85%' },maxWidth:{xl:"1200px"}, mx: 'auto' }}>
       <Typography
         variant="body1"
         color="initial"
