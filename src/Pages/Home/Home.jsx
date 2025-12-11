@@ -101,19 +101,19 @@ const Mission = () => {
   ];
   const stats = [
     {
-      figure: '18k+',
+      figure: '41k+',
       text: 'Community Members',
     },
     {
-      figure: '150+',
+      figure: '9k+',
       text: 'Trained Talents',
     },
     {
-      figure: '20+',
+      figure: '60+',
       text: 'Mentors',
     },
     {
-      figure: '15+',
+      figure: '35+',
       text: 'Partners & Sponsors',
     },
     {
