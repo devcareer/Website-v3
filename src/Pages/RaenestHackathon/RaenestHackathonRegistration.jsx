@@ -33,10 +33,16 @@ const EXPERIENCE_LEVELS = [
 const RaenestHackathonRegistration = () => {
     const navigate = useNavigate();
     const { pathname } = useLocation();
+    const [isSubmitted, setIsSubmitted] = useState(false);
+    const [submittedName, setSubmittedName] = useState('');
 
     useEffect(() => {
         window.scrollTo({ top: 0 });
     }, [pathname]);
+
+    if (isSubmitted) {
+        return <SuccessScreen name={submittedName} navigate={navigate} />;
+    }
 
     return (
         <Box className="rn-reg">
@@ -57,7 +63,13 @@ const RaenestHackathonRegistration = () => {
                 </Box>
             </Box>
             <Box className="rn-reg__form-wrapper">
-                <RegistrationForm navigate={navigate} />
+                <RegistrationForm
+                    navigate={navigate}
+                    onSuccess={(name) => {
+                        setSubmittedName(name);
+                        setIsSubmitted(true);
+                    }}
+                />
             </Box>
         </Box>
     );
@@ -65,7 +77,7 @@ const RaenestHackathonRegistration = () => {
 
 export default RaenestHackathonRegistration;
 
-const RegistrationForm = ({ navigate }) => {
+const RegistrationForm = ({ navigate, onSuccess }) => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const COUNTRY_ARRAY = useMemo(() => countryList().getData(), []);
 
@@ -107,9 +119,6 @@ const RegistrationForm = ({ navigate }) => {
         if (!values.experienceLevel) {
             errors.experienceLevel = 'Please select your experience level';
         }
-        if (!values.upworkProfile.trim()) {
-            errors.upworkProfile = 'Upwork profile URL is required';
-        }
         if (!values.raenestAccount.trim()) {
             errors.raenestAccount = 'Raenest username or email is required';
         }
@@ -129,40 +138,26 @@ const RegistrationForm = ({ navigate }) => {
         onSubmit: async (values) => {
             setIsSubmitting(true);
 
-            // Submit to Google Forms (replace with actual form URL when ready)
             const DATA = new FormData();
-            DATA.append('entry.firstName', values.firstName);
-            DATA.append('entry.lastName', values.lastName);
-            DATA.append('entry.email', values.email);
-            DATA.append('entry.phone', values.phone);
-            DATA.append('entry.country', values.country);
-            DATA.append('entry.track', values.track);
-            DATA.append('entry.experienceLevel', values.experienceLevel);
-            DATA.append('entry.upworkProfile', values.upworkProfile);
-            DATA.append('entry.raenestAccount', values.raenestAccount);
-            DATA.append('entry.portfolioLink', values.portfolioLink);
+            DATA.append('firstName', values.firstName);
+            DATA.append('lastName', values.lastName);
+            DATA.append('email', values.email);
+            DATA.append('phone', values.phone);
+            DATA.append('country', values.country);
+            DATA.append('track', values.track);
+            DATA.append('experienceLevel', values.experienceLevel);
+            DATA.append('upworkProfile', values.upworkProfile);
+            DATA.append('raenestAccount', values.raenestAccount);
+            DATA.append('portfolioLink', values.portfolioLink);
 
             try {
-                // TODO: Replace with actual Google Forms URL
-                // await fetch('GOOGLE_FORM_URL', {
-                //   method: 'POST',
-                //   mode: 'no-cors',
-                //   body: DATA,
-                // });
-
-                toast.success('🎉 Registration successful! Welcome to the hackathon.', {
-                    position: 'top-right',
-                    autoClose: 5000,
-                    hideProgressBar: false,
-                    closeOnClick: true,
-                    pauseOnHover: true,
-                    draggable: true,
-                    theme: 'light',
+                await fetch('https://script.google.com/macros/s/AKfycbx70l90dyjLM4yLYE-NRWk5RXyBfItSFtBZOTR91_8OMEAG8G9NxAk-pNomTDHrgh9u/exec', {
+                    method: 'POST',
+                    body: DATA,
                 });
 
-                setTimeout(() => {
-                    navigate('/programs/raenest-hackathon');
-                }, 3000);
+                window.scrollTo({ top: 0 });
+                onSuccess(values.firstName);
             } catch (err) {
                 toast.error('Network error. Please try again.', {
                     position: 'top-right',
@@ -333,16 +328,13 @@ const RegistrationForm = ({ navigate }) => {
             </Typography>
 
             <TextField
-                label="Upwork Profile URL"
+                label="Upwork Profile URL (Optional)"
                 name="upworkProfile"
-                required
                 fullWidth
                 placeholder="https://www.upwork.com/freelancers/~your-profile"
                 value={values.upworkProfile}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                error={touched.upworkProfile && Boolean(errors.upworkProfile)}
-                helperText={touched.upworkProfile && errors.upworkProfile}
                 sx={fieldStyle}
             />
 
@@ -381,6 +373,66 @@ const RegistrationForm = ({ navigate }) => {
             >
                 {isSubmitting ? 'Submitting...' : 'Register for Hackathon'}
             </LoadingButton>
+        </Box>
+    );
+};
+
+const SuccessScreen = ({ name, navigate }) => {
+    return (
+        <Box className="rn-success">
+            <Box className="rn-success__glow" />
+            <Box className="rn-success__content">
+                <Box className="rn-success__icon">
+                    🎉
+                </Box>
+                <Typography className="rn-success__title" component="h1">
+                    You're In{name ? `, ${name}` : ''}!
+                </Typography>
+                <Typography className="rn-success__subtitle">
+                    Your registration for the Raenest Hackathon has been received successfully.
+                </Typography>
+
+                <Box className="rn-success__info-card">
+                    <Box className="rn-success__info-item">
+                        <Box className="rn-success__info-icon">📧</Box>
+                        <Box>
+                            <Typography className="rn-success__info-label">
+                                Confirmation Email
+                            </Typography>
+                            <Typography className="rn-success__info-text">
+                                You will receive an email with further details by <strong>March 5th, 2026</strong>. Keep an eye on your inbox!
+                            </Typography>
+                        </Box>
+                    </Box>
+                    <Box className="rn-success__divider" />
+                    <Box className="rn-success__info-item">
+                        <Box className="rn-success__info-icon">🐦</Box>
+                        <Box>
+                            <Typography className="rn-success__info-label">
+                                Stay Updated
+                            </Typography>
+                            <Typography className="rn-success__info-text">
+                                Follow Raenest on Twitter for the latest hackathon updates, announcements, and tips.
+                            </Typography>
+                            <Button
+                                className="rn-success__twitter-btn"
+                                href="https://x.com/RaenestApp"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Follow @RaenestApp on X
+                            </Button>
+                        </Box>
+                    </Box>
+                </Box>
+
+                <Button
+                    className="rn-success__back-btn"
+                    onClick={() => navigate('/programs/raenest-hackathon')}
+                >
+                    ← Back to Hackathon Page
+                </Button>
+            </Box>
         </Box>
     );
 };
