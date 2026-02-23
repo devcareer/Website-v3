@@ -21,7 +21,7 @@ const TRACKS = [
     icon: '🎨',
     iconClass: 'rn-track-card__icon--design',
     description:
-      'Bring ideas to life with stunning visuals. Create UI/UX designs, brand assets, and marketing materials — with AI tools to supercharge your workflow.',
+      'Bring ideas to life with stunning visuals. Create UI/UX designs, brand assets, and marketing materials with AI tools to supercharge your workflow.',
     tasks: 'UI mockups, branding kits, social media assets, presentation designs',
   },
   {
@@ -29,7 +29,7 @@ const TRACKS = [
     icon: '✍️',
     iconClass: 'rn-track-card__icon--writing',
     description:
-      'Craft compelling content that connects. Write articles, copy, scripts, and documentation — leverage AI to research faster and write better.',
+      'Craft compelling content that connects. Write articles, copy, scripts, and documentation leverage AI to research faster and write better.',
     tasks: 'Blog posts, copywriting, technical docs, content strategy',
   },
   {
@@ -53,7 +53,7 @@ const STEPS = [
     number: 2,
     title: 'Connect Upwork to Raenest',
     description:
-      'Link your Upwork account to Raenest — Africa\'s largest Upwork partner — for instant, seamless withdrawals to your Nigerian bank account.',
+      'Link your Upwork account to Raenest — Africa\'s largest Upwork partner for instant, seamless withdrawals to your Nigerian bank account.',
   },
   {
     number: 3,
@@ -131,7 +131,7 @@ const HeroSection = () => (
       </Typography>
 
       <Typography className="rn-hero__subtitle">
-        Africa's biggest hackathon for Upwork freelancers. Design, write, or code — complete
+        Africa's biggest hackathon for Upwork freelancers. Design, write, or code. Complete
         real tasks, leverage AI, and get paid seamlessly through Raenest.
       </Typography>
 
@@ -187,7 +187,7 @@ const PartnershipSection = () => (
           <Typography className="rn-section__description" sx={{ maxWidth: '600px !important' }}>
             Raenest is the largest Upwork partner in Africa, enabling freelancers across the
             continent to withdraw their Upwork earnings seamlessly. With instant transfers
-            to Nigerian bank accounts, the best exchange rates, and zero hidden fees — your
+            to Nigerian bank accounts, the best exchange rates, and zero hidden fees. Your
             money gets to you faster.
           </Typography>
           <Box className="rn-partnership__stats">
@@ -253,7 +253,7 @@ const TracksSection = () => (
         Choose Your Track
       </Typography>
       <Typography className="rn-section__description">
-        Three tracks, endless possibilities. Every task is a real Upwork project — pick the one
+        Three tracks, endless possibilities. Every task is a real Upwork project, pick the one
         that matches your passion and start earning.
       </Typography>
 
@@ -268,7 +268,7 @@ const TracksSection = () => (
               {track.description}
             </Typography>
             <span className="rn-track-card__tag">
-              <span className="rn-ai-badge">✨ AI-Assisted</span>
+              <span className="rn-ai-badge">✨ AI Assisted</span>
             </span>
             <Typography
               sx={{
@@ -389,7 +389,7 @@ const HowItWorksSection = () => (
         Start Earning in 3 Easy Steps
       </Typography>
       <Typography className="rn-section__description">
-        From sign-up to payout — it's simple, transparent, and designed to reward
+        From sign-up to payout. it's simple, transparent, and designed to reward
         your skills through Upwork and Raenest.
       </Typography>
 
@@ -428,7 +428,7 @@ const LeaderboardSection = () => (
         className="rn-section__description"
         sx={{ color: 'rgba(255,255,255,0.6) !important' }}
       >
-        A live leaderboard will showcase the top performers across all tracks — displayed publicly
+        A live leaderboard will showcase the top performers across all tracks displayed publicly
         on both Raenest and DevCareer's websites.
       </Typography>
 
@@ -532,12 +532,12 @@ const EarnSection = () => (
             {
               icon: '🤖',
               title: 'AI-Powered Support',
-              desc: 'Use AI tools across all tracks. Whether it\'s generating design variations, drafting content, or pair-programming — AI is your teammate.',
+              desc: 'Use AI tools across all tracks. Whether it\'s generating design variations, drafting content, or pair-programming, AI is your teammate.',
             },
             {
               icon: '🚀',
               title: 'Seamless Withdrawals via Raenest',
-              desc: 'Raenest is Africa\'s largest Upwork partner. Withdraw your Upwork earnings instantly to your Nigerian bank account — best rates, zero stress.',
+              desc: 'Raenest is Africa\'s largest Upwork partner. Withdraw your Upwork earnings instantly to your Nigerian bank account, best rates, zero stress.',
             },
             {
               icon: '🌍',
