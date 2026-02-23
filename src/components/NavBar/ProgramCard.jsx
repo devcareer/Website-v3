@@ -45,6 +45,20 @@ const ProgramCard = () => {
           Web5 Hackathon{' '}
         </Box>
       </Link>
+      <Link style={menuStyle} to="/programs/raenest-hackathon">
+        <Box
+          sx={{
+            borderRadius: '8px',
+            p: '0.7rem',
+            ':hover': {
+              backgroundColor: '#E8E8E8',
+            },
+          }}
+        >
+          {' '}
+          Raenest Hackathon{' '}
+        </Box>
+      </Link>
     </Stack>
   );
 };

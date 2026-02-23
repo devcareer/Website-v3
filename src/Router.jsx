@@ -11,6 +11,8 @@ import {
   Home,
   LaptopForDevelopers,
   ProfileRoot,
+  RaenestHackathon,
+  RaenestHackathonRegistration,
   Root,
   Support,
   Talents,
@@ -39,6 +41,10 @@ export const router = createBrowserRouter([
           {
             path: 'web5',
             element: <Web5 />,
+          },
+          {
+            path: 'raenest-hackathon',
+            element: <RaenestHackathon />,
           },
         ],
       },
@@ -97,6 +103,10 @@ export const router = createBrowserRouter([
   {
     path: '/programs/web5/registration',
     element: <Web5Registration />,
+  },
+  {
+    path: '/programs/raenest-hackathon/register',
+    element: <RaenestHackathonRegistration />,
   },
   { path: '/p/:id', element: <FreeProfile /> },
   { path: '/error', element: <Error /> },

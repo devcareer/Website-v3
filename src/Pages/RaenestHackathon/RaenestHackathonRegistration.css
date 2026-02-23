@@ -1,0 +1,142 @@
+/* ──────────── Registration Page ──────────── */
+.rn-reg {
+    min-height: 100vh;
+    background: #f8f7ff;
+}
+
+/* Hero */
+.rn-reg__hero {
+    background: linear-gradient(135deg, #0a0a23 0%, #1a1a40 50%, #2d1b69 100%);
+    padding: 80px 24px 60px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.rn-reg__hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at 30% 80%, rgba(108, 92, 231, 0.3) 0%, transparent 60%),
+        radial-gradient(ellipse at 70% 20%, rgba(0, 206, 209, 0.2) 0%, transparent 50%);
+    pointer-events: none;
+}
+
+.rn-reg__hero-content {
+    position: relative;
+    z-index: 1;
+    max-width: 680px;
+    margin: 0 auto;
+}
+
+.rn-reg__back-btn {
+    color: rgba(255, 255, 255, 0.7) !important;
+    text-transform: none !important;
+    font-size: 0.9rem !important;
+    margin-bottom: 24px !important;
+    padding: 6px 16px !important;
+    border-radius: 8px !important;
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    transition: all 0.3s ease !important;
+}
+
+.rn-reg__back-btn:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #fff !important;
+}
+
+.rn-reg__hero-title {
+    font-size: 2.5rem !important;
+    font-weight: 800 !important;
+    color: #fff !important;
+    margin-bottom: 12px !important;
+    letter-spacing: -0.5px;
+}
+
+.rn-reg__hero-subtitle {
+    font-size: 1.1rem !important;
+    color: rgba(255, 255, 255, 0.75) !important;
+    line-height: 1.6 !important;
+}
+
+/* Form Wrapper */
+.rn-reg__form-wrapper {
+    max-width: 720px;
+    margin: -40px auto 80px;
+    padding: 0 24px;
+    position: relative;
+    z-index: 2;
+}
+
+.rn-reg__form {
+    background: #fff;
+    border-radius: 20px;
+    padding: 48px 40px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.08),
+        0 1px 3px rgba(0, 0, 0, 0.04);
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.rn-reg__form-section-title {
+    font-size: 1.15rem !important;
+    font-weight: 700 !important;
+    color: #1a1a2e !important;
+    padding-bottom: 8px;
+    border-bottom: 2px solid #f0eeff;
+    margin-top: 8px;
+}
+
+/* Submit Button */
+.rn-reg__submit-btn {
+    margin-top: 16px !important;
+    padding: 16px 32px !important;
+    border-radius: 14px !important;
+    font-size: 1.05rem !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    background: linear-gradient(135deg, #6c5ce7 0%, #a855f7 100%) !important;
+    color: #fff !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 20px rgba(108, 92, 231, 0.35) !important;
+}
+
+.rn-reg__submit-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 28px rgba(108, 92, 231, 0.45) !important;
+}
+
+.rn-reg__submit-btn:active {
+    transform: translateY(0) !important;
+}
+
+.rn-reg__submit-btn.Mui-disabled {
+    background: #e0e0e0 !important;
+    box-shadow: none !important;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+    .rn-reg__hero {
+        padding: 64px 16px 48px;
+    }
+
+    .rn-reg__hero-title {
+        font-size: 1.75rem !important;
+    }
+
+    .rn-reg__hero-subtitle {
+        font-size: 0.95rem !important;
+    }
+
+    .rn-reg__form-wrapper {
+        margin-top: -30px;
+        padding: 0 12px;
+    }
+
+    .rn-reg__form {
+        padding: 28px 20px;
+        border-radius: 16px;
+    }
+}

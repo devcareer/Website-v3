@@ -69,6 +69,9 @@ const MobileNav = ({ menu }) => {
             <Link style={navStyle} to="programs/web5">
               Web5 Hackathon
             </Link>
+            <Link style={navStyle} to="programs/raenest-hackathon">
+              Raenest Hackathon
+            </Link>
           </Stack>
         )}
       </Box>
