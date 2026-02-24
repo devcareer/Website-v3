@@ -306,6 +306,26 @@
     box-shadow: 0 6px 24px rgba(29, 155, 240, 0.5) !important;
 }
 
+.rn-success__raenest-btn {
+    margin-top: 12px !important;
+    padding: 10px 24px !important;
+    border-radius: 12px !important;
+    font-size: 0.9rem !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    background: linear-gradient(135deg, #00b894 0%, #00a381 100%) !important;
+    color: #fff !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 4px 16px rgba(0, 184, 148, 0.35) !important;
+    display: inline-flex !important;
+    text-decoration: none !important;
+}
+
+.rn-success__raenest-btn:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 6px 24px rgba(0, 184, 148, 0.5) !important;
+}
+
 .rn-success__back-btn {
     color: rgba(255, 255, 255, 0.6) !important;
     text-transform: none !important;

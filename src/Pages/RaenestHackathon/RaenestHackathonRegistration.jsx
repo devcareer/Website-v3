@@ -119,9 +119,7 @@ const RegistrationForm = ({ navigate, onSuccess }) => {
         if (!values.experienceLevel) {
             errors.experienceLevel = 'Please select your experience level';
         }
-        if (!values.raenestAccount.trim()) {
-            errors.raenestAccount = 'Raenest username or email is required';
-        }
+
         return errors;
     };
 
@@ -339,16 +337,13 @@ const RegistrationForm = ({ navigate, onSuccess }) => {
             />
 
             <TextField
-                label="Raenest Username / Email"
+                label="Raenest Username / Email (Optional)"
                 name="raenestAccount"
-                required
                 fullWidth
                 placeholder="Your Raenest account email"
                 value={values.raenestAccount}
                 onChange={handleChange}
                 onBlur={handleBlur}
-                error={touched.raenestAccount && Boolean(errors.raenestAccount)}
-                helperText={touched.raenestAccount && errors.raenestAccount}
                 sx={fieldStyle}
             />
 
@@ -421,6 +416,26 @@ const SuccessScreen = ({ name, navigate }) => {
                                 rel="noopener noreferrer"
                             >
                                 Follow @RaenestApp on X
+                            </Button>
+                        </Box>
+                    </Box>
+                    <Box className="rn-success__divider" />
+                    <Box className="rn-success__info-item">
+                        <Box className="rn-success__info-icon">💳</Box>
+                        <Box>
+                            <Typography className="rn-success__info-label">
+                                Don't Have a Raenest Account?
+                            </Typography>
+                            <Typography className="rn-success__info-text">
+                                Create a free Raenest account to easily receive payments and withdrawals during the hackathon.
+                            </Typography>
+                            <Button
+                                className="rn-success__raenest-btn"
+                                href="https://www.raenest.com"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                            >
+                                Create your Raenest Account
                             </Button>
                         </Box>
                     </Box>
