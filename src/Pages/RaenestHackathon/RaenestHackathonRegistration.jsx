@@ -395,7 +395,7 @@ const SuccessScreen = ({ name, navigate }) => {
                                 Confirmation Email
                             </Typography>
                             <Typography className="rn-success__info-text">
-                                You will receive an email with further details by <strong>March 5th, 2026</strong>. Keep an eye on your inbox!
+                                You will receive an email with further details by <strong>March 20th, 2026</strong>. Keep an eye on your inbox!
                             </Typography>
                         </Box>
                     </Box>
