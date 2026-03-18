@@ -155,12 +155,16 @@ const HeroSection = () => (
       </Box>
 
       <Box className="rn-hero__cta-row">
-        <Link to="/programs/raenest-hackathon/register" style={{ textDecoration: 'none' }}>
-          <Button className="rn-btn-primary" disableElevation>
-            Join the Hackathon
-          </Button>
-        </Link>
-        <Button className="rn-btn-outline">Learn More ↓</Button>
+        <Button
+          className="rn-btn-primary"
+          disableElevation
+          component="a"
+          href="https://docs.google.com/forms/d/e/1FAIpQLSeL35K6r4WFglJKz-thyI0k2MAciq7JkwqGQnjDth1fc54jvQ/viewform"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          Submit now
+        </Button>
       </Box>
     </Box>
   </Box>
