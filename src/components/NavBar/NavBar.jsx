@@ -74,7 +74,7 @@ const NavBar = () => {
         <Box
           position="relative"
           sx={{
-            ':hover .dropdown': {
+            ':hover .hackathons-dropdown': {
               display: 'block',
             },
           }}
@@ -84,12 +84,18 @@ const NavBar = () => {
             to="/programs"
             style={({ isActive }) => (isActive ? activeStyle : navStyle)}
           >
-            Programs
+            Hackathons
           </NavLink>
           <Box
             position="absolute"
-            sx={{ width: '288px', display: 'none', zIndex: '900' }}
-            className="dropdown"
+            sx={{
+              width: 'min(760px, calc(100vw - 64px))',
+              display: 'none',
+              zIndex: '900',
+              left: 0,
+              pt: '10px',
+            }}
+            className="hackathons-dropdown"
           >
             <ProgramCard />
           </Box>

@@ -19,3 +19,6 @@ export { default as Web5Registration } from './Web5/Web5Registration';
 export { default as Dnh } from './DNH/Dnh';
 export { default as RaenestHackathon } from './RaenestHackathon/RaenestHackathon';
 export { default as RaenestHackathonRegistration } from './RaenestHackathon/RaenestHackathonRegistration';
+export { default as NombaHackathon } from './NombaHackathon/NombaHackathon';
+export { default as NombaHackathonRegistration } from './NombaHackathon/NombaHackathonRegistration';
+export { default as NombaForwardTraining } from './NombaHackathon/NombaForwardTraining';

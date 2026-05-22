@@ -125,7 +125,7 @@ const Footer = () => {
                     active: true,
                   },
                   { link: '/government/dctp', name: 'DCTP', active: true },
-                  { name: 'Hackathons(Coming soon)' },
+                  { link: '/programs/nomba-hackathon', name: 'Nomba Hackathon', active: true },
                 ]}
               />
             </Grid>

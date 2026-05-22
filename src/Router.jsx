@@ -10,6 +10,9 @@ import {
   FreeProfile,
   Home,
   LaptopForDevelopers,
+  NombaHackathon,
+  NombaForwardTraining,
+  NombaHackathonRegistration,
   ProfileRoot,
   RaenestHackathon,
   RaenestHackathonRegistration,
@@ -45,6 +48,14 @@ export const router = createBrowserRouter([
           {
             path: 'raenest-hackathon',
             element: <RaenestHackathon />,
+          },
+          {
+            path: 'nomba-hackathon',
+            element: <NombaHackathon />,
+          },
+          {
+            path: 'nomba-forward-training',
+            element: <NombaForwardTraining />,
           },
         ],
       },
@@ -107,6 +118,10 @@ export const router = createBrowserRouter([
   {
     path: '/programs/raenest-hackathon/register',
     element: <RaenestHackathonRegistration />,
+  },
+  {
+    path: '/programs/nomba-hackathon/register',
+    element: <NombaHackathonRegistration />,
   },
   { path: '/p/:id', element: <FreeProfile /> },
   { path: '/error', element: <Error /> },

@@ -47,7 +47,7 @@ const MobileNav = ({ menu }) => {
         >
           <Typography variant="body1" color="initial" style={navStyle}>
             {' '}
-            Programs
+            Hackathons
           </Typography>
           {program ? (
             <KeyboardArrowDownIcon fontSize="large" />
@@ -63,14 +63,27 @@ const MobileNav = ({ menu }) => {
               menu(false);
             }}
           >
-            <Link style={navStyle} to="programs/l4d">
-              Laptop4developers
+            <Typography
+              variant="body2"
+              sx={{ fontSize: '13px', fontWeight: 700, color: '#8A6F00', mt: 0.5 }}
+            >
+              ACTIVE
+            </Typography>
+            <Link style={navStyle} to="programs/nomba-hackathon">
+              Nomba Hackathon - Prize Pool: USD $6,500
+            </Link>
+
+            <Typography
+              variant="body2"
+              sx={{ fontSize: '13px', fontWeight: 700, color: '#707078', mt: 1.2 }}
+            >
+              PAST
+            </Typography>
+            <Link style={navStyle} to="programs/raenest-hackathon">
+              Raenest Hackathon - Performance-based earnings
             </Link>
             <Link style={navStyle} to="programs/web5">
-              Web5 Hackathon
-            </Link>
-            <Link style={navStyle} to="programs/raenest-hackathon">
-              Raenest Hackathon
+              Web5 Hackathon - Over $30,000 + scholarships
             </Link>
           </Stack>
         )}
