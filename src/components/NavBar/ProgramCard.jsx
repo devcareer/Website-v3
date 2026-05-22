@@ -2,7 +2,6 @@ import { Box, Stack, Typography } from '@mui/material';
 import { Link } from 'react-router-dom';
 import nombaMark from '../../assets/Images/nomba-hackathon/nomba-mark.png';
 import raenestLogo from '../../assets/Images/Raenest_Cobalt_.png';
-import upworkLogo from '../../assets/Images/upwork-logo.svg';
 import tbdLogo from '../../assets/Images/TBD-Logo.png';
 
 const ACTIVE_HACKATHONS = [
@@ -22,7 +21,6 @@ const PAST_HACKATHONS = [
     link: '/programs/raenest-hackathon',
     sponsor: 'Raenest',
     sponsorLogo: raenestLogo,
-    coSponsorLogo: upworkLogo,
     prizePool: 'Performance-based earnings',
     note: 'Task completion challenge for African freelancers.',
   },

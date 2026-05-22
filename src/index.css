@@ -42,8 +42,15 @@ img {
   height: auto;
   object-fit: contain;
 }
-body,
-html {
+html,
+body {
+  min-height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+#root {
+  min-height: 100%;
   overflow-x: hidden;
 }
 input[type='number']::-webkit-inner-spin-button,

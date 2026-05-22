@@ -118,90 +118,118 @@ const NombaForwardTraining = () => {
       mm.add(
         {
           desktop: '(min-width: 1024px)',
+          mobile: '(max-width: 1023px)',
           reduceMotion: '(prefers-reduced-motion: reduce)',
         },
         (context) => {
-          const { desktop, reduceMotion } = context.conditions;
+          const { desktop, mobile, reduceMotion } = context.conditions;
 
           if (reduceMotion) {
             gsap.set('.nft-reveal', { autoAlpha: 1, y: 0 });
             return;
           }
 
-          gsap.set('.nft-reveal', { autoAlpha: 0, y: 20 });
+          gsap.set('.nft-reveal', { autoAlpha: 0, y: mobile ? 12 : 20 });
 
           ScrollTrigger.batch('.nft-reveal', {
-            start: 'top 86%',
+            start: mobile ? 'top 92%' : 'top 86%',
+            once: mobile,
             onEnter: (batch) =>
               gsap.to(batch, {
                 autoAlpha: 1,
                 y: 0,
-                duration: 0.65,
-                stagger: 0.07,
+                duration: mobile ? 0.5 : 0.65,
+                stagger: mobile ? 0.05 : 0.07,
                 ease: 'power2.out',
                 overwrite: true,
               }),
           });
 
-          const splitTitle = SplitText.create('.nft-hero__title', {
-            type: 'words,chars',
-            charsClass: 'nft-char',
-          });
-          const splitSubtitle = SplitText.create('.nft-hero__subtitle', {
-            type: 'lines',
-            linesClass: 'nft-line',
-          });
+          let splitTitle;
+          let splitSubtitle;
 
-          gsap
-            .timeline({ defaults: { ease: 'power3.out' } })
-            .from('.nft-hero__logo-row .nft-logo-chip, .nft-hero__logo-row .nft-logo-divider', {
-              autoAlpha: 0,
-              y: 16,
-              duration: 0.5,
-              stagger: 0.1,
-            })
-            .from(
-              splitTitle.chars,
-              {
-                autoAlpha: 0,
-                yPercent: 120,
-                duration: 0.72,
-                stagger: 0.014,
-              },
-              '-=0.25'
-            )
-            .from(
-              splitSubtitle.lines,
-              {
-                autoAlpha: 0,
-                y: 18,
-                duration: 0.5,
-                stagger: 0.06,
-              },
-              '-=0.28'
-            )
-            .from(
-              '.nft-hero__cta .nft-btn, .nft-hero__meta .nft-meta-card',
-              {
+          const heroTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+
+          if (desktop) {
+            splitTitle = SplitText.create('.nft-hero__title', {
+              type: 'words,chars',
+              charsClass: 'nft-char',
+            });
+            splitSubtitle = SplitText.create('.nft-hero__subtitle', {
+              type: 'lines',
+              linesClass: 'nft-line',
+            });
+
+            heroTimeline
+              .from('.nft-hero__logo-row .nft-logo-chip, .nft-hero__logo-row .nft-logo-divider', {
                 autoAlpha: 0,
                 y: 16,
                 duration: 0.5,
                 stagger: 0.1,
-              },
-              '-=0.2'
-            );
+              })
+              .from(
+                splitTitle.chars,
+                {
+                  autoAlpha: 0,
+                  yPercent: 120,
+                  duration: 0.72,
+                  stagger: 0.014,
+                },
+                '-=0.25'
+              )
+              .from(
+                splitSubtitle.lines,
+                {
+                  autoAlpha: 0,
+                  y: 18,
+                  duration: 0.5,
+                  stagger: 0.06,
+                },
+                '-=0.28'
+              )
+              .from(
+                '.nft-hero__cta .nft-btn, .nft-hero__meta .nft-meta-card',
+                {
+                  autoAlpha: 0,
+                  y: 16,
+                  duration: 0.5,
+                  stagger: 0.1,
+                },
+                '-=0.2'
+              );
+          } else {
+            heroTimeline
+              .from('.nft-hero__logo-row .nft-logo-chip, .nft-hero__logo-row .nft-logo-divider', {
+                autoAlpha: 0,
+                y: 12,
+                duration: 0.42,
+                stagger: 0.08,
+              })
+              .from(
+                '.nft-hero__title, .nft-hero__subtitle',
+                {
+                  autoAlpha: 0,
+                  y: 16,
+                  duration: 0.46,
+                  stagger: 0.08,
+                },
+                '-=0.2'
+              )
+              .from(
+                '.nft-hero__cta .nft-btn, .nft-hero__meta .nft-meta-card',
+                {
+                  autoAlpha: 0,
+                  y: 12,
+                  duration: 0.4,
+                  stagger: 0.06,
+                },
+                '-=0.18'
+              );
+          }
 
           if (desktop) {
             const moduleCards = gsap.utils.toArray('.nft-module-card');
             gsap.set('.nft-module-card', { autoAlpha: 0.58, y: 16 });
-
-            ScrollTrigger.create({
-              trigger: '.nft-curriculum__grid',
-              start: 'top top+=90',
-              end: 'bottom bottom-=120',
-              pin: '.nft-curriculum__intro',
-              scrub: 0.6,
-            });
 
             moduleCards.forEach((card) => {
               ScrollTrigger.create({
@@ -236,20 +264,22 @@ const NombaForwardTraining = () => {
             );
           }
 
-          gsap.to('.nft-parallax', {
-            yPercent: 10,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: '.nft-parallax',
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true,
-            },
-          });
+          if (desktop) {
+            gsap.to('.nft-parallax', {
+              yPercent: 10,
+              ease: 'none',
+              scrollTrigger: {
+                trigger: '.nft-parallax',
+                start: 'top bottom',
+                end: 'bottom top',
+                scrub: true,
+              },
+            });
+          }
 
           return () => {
-            splitTitle.revert();
-            splitSubtitle.revert();
+            splitTitle?.revert();
+            splitSubtitle?.revert();
           };
         }
       );
