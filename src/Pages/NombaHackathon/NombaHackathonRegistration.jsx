@@ -21,18 +21,17 @@ import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import { toast } from 'react-toastify';
 import './NombaHackathonRegistration.css';
+import {
+  getFocusOptionsForTrack,
+  parseTrackPrefillFromSearch,
+  TRACK_CATEGORY_OPTIONS,
+} from './nombaTracksData';
 
 gsap.registerPlugin(useGSAP, SplitText);
 
 const FORM_ENDPOINT =
   import.meta.env.VITE_NOMBA_HACKATHON_FORM_URL ||
   'https://script.google.com/macros/s/AKfycbx70l90dyjLM4yLYE-NRWk5RXyBfItSFtBZOTR91_8OMEAG8G9NxAk-pNomTDHrgh9u/exec';
-
-const TRACK_OPTIONS = [
-  'Secure Checkout & Fraud Defense',
-  'Merchant Integration Accelerator',
-  'Cross-Border & Multi-Currency Flows',
-];
 
 const ROLE_OPTIONS = [
   'Frontend Engineer',
@@ -47,10 +46,11 @@ const EXPERIENCE_LEVELS = ['Beginner (0-1 years)', 'Intermediate (1-3 years)', '
 
 const NombaHackathonRegistration = () => {
   const navigate = useNavigate();
-  const { pathname } = useLocation();
+  const { pathname, search } = useLocation();
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [submittedName, setSubmittedName] = useState('');
   const rootRef = useRef(null);
+  const prefilledSelection = useMemo(() => parseTrackPrefillFromSearch(search), [search]);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -107,13 +107,15 @@ const NombaHackathonRegistration = () => {
           </Link>
           <Typography className="nmr-hero__title">Register For Nomba Forward Hackathon 2026</Typography>
           <Typography className="nmr-hero__subtitle nmr-reveal">
-            Registration closes on June 15, 2026. Complete this form to secure onboarding and training access.
+            Registration closes on June 15, 2026. Choose your primary track and focus area to secure
+            onboarding and training access.
           </Typography>
         </Box>
       </Box>
 
       <Box className="nmr-form-wrap nmr-reveal">
         <RegistrationForm
+          prefilledSelection={prefilledSelection}
           onSuccess={(name) => {
             setSubmittedName(name);
             setIsSubmitted(true);
@@ -124,29 +126,33 @@ const NombaHackathonRegistration = () => {
   );
 };
 
-const RegistrationForm = ({ onSuccess }) => {
+const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const COUNTRIES = useMemo(() => countryList().getData(), []);
-
-  const initialValues = {
-    firstName: '',
-    lastName: '',
-    email: '',
-    phone: '',
-    country: '',
-    participationMode: '',
-    teamName: '',
-    teamSize: '',
-    track: '',
-    role: '',
-    experienceLevel: '',
-    consentOriginality: false,
-    consentCommitment: false,
-  };
+  const initialValues = useMemo(
+    () => ({
+      firstName: '',
+      lastName: '',
+      email: '',
+      phone: '',
+      country: '',
+      participationMode: '',
+      teamName: '',
+      teamSize: '',
+      track: prefilledSelection?.track || '',
+      focusArea: prefilledSelection?.focusArea || '',
+      role: '',
+      experienceLevel: '',
+      consentOriginality: false,
+      consentCommitment: false,
+    }),
+    [prefilledSelection]
+  );
 
   const validate = (values) => {
     const errors = {};
     const emailRegex = /^\s*([^\s@]+)@([^\s@]+\.[^\s@]+)\s*$/;
+    const allowedFocusOptions = getFocusOptionsForTrack(values.track);
 
     if (!values.firstName.trim()) {
       errors.firstName = 'First name is required';
@@ -177,6 +183,11 @@ const RegistrationForm = ({ onSuccess }) => {
     if (!values.track) {
       errors.track = 'Please select a primary focus track';
     }
+    if (!values.focusArea) {
+      errors.focusArea = 'Please select a specific focus area';
+    } else if (values.track && !allowedFocusOptions.includes(values.focusArea)) {
+      errors.focusArea = 'Select a focus area that belongs to the selected track';
+    }
     if (!values.role) {
       errors.role = 'Please select your primary role';
     }
@@ -195,6 +206,7 @@ const RegistrationForm = ({ onSuccess }) => {
 
   const { values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue } = useFormik({
     initialValues,
+    enableReinitialize: true,
     validate,
     onSubmit: async (formValues) => {
       setIsSubmitting(true);
@@ -229,6 +241,19 @@ const RegistrationForm = ({ onSuccess }) => {
       }
     },
   });
+
+  const focusOptions = useMemo(() => getFocusOptionsForTrack(values.track), [values.track]);
+
+  const handleTrackChange = (event) => {
+    const selectedTrack = event.target.value;
+    const nextFocusOptions = getFocusOptionsForTrack(selectedTrack);
+
+    setFieldValue('track', selectedTrack);
+
+    if (!nextFocusOptions.includes(values.focusArea)) {
+      setFieldValue('focusArea', '');
+    }
+  };
 
   const fieldStyle = {
     '& .MuiOutlinedInput-root': {
@@ -374,9 +399,15 @@ const RegistrationForm = ({ onSuccess }) => {
 
       <Stack direction={{ xs: 'column', md: 'row' }} gap={2.2}>
         <FormControl fullWidth required sx={fieldStyle} error={touched.track && Boolean(errors.track)}>
-          <InputLabel>Primary Focus Track</InputLabel>
-          <Select name="track" label="Primary Focus Track" value={values.track} onChange={handleChange} onBlur={handleBlur}>
-            {TRACK_OPTIONS.map((track) => (
+          <InputLabel>Track Category</InputLabel>
+          <Select
+            name="track"
+            label="Track Category"
+            value={values.track}
+            onChange={handleTrackChange}
+            onBlur={handleBlur}
+          >
+            {TRACK_CATEGORY_OPTIONS.map((track) => (
               <MenuItem key={track} value={track}>
                 {track}
               </MenuItem>
@@ -385,6 +416,28 @@ const RegistrationForm = ({ onSuccess }) => {
           {touched.track && errors.track && <Typography className="nmr-error">{errors.track}</Typography>}
         </FormControl>
 
+        <FormControl fullWidth required sx={fieldStyle} error={touched.focusArea && Boolean(errors.focusArea)}>
+          <InputLabel>Focus Area</InputLabel>
+          <Select
+            name="focusArea"
+            label="Focus Area"
+            value={values.focusArea}
+            onChange={handleChange}
+            onBlur={handleBlur}
+            disabled={!values.track}
+          >
+            {focusOptions.map((focus) => (
+              <MenuItem key={focus} value={focus}>
+                {focus}
+              </MenuItem>
+            ))}
+          </Select>
+          {touched.focusArea && errors.focusArea && <Typography className="nmr-error">{errors.focusArea}</Typography>}
+          {!values.track && <Typography className="nmr-help">Select a track first to see its focus areas.</Typography>}
+        </FormControl>
+      </Stack>
+
+      <Stack direction={{ xs: 'column', md: 'row' }} gap={2.2}>
         <FormControl fullWidth required sx={fieldStyle} error={touched.role && Boolean(errors.role)}>
           <InputLabel>Primary Role</InputLabel>
           <Select name="role" label="Primary Role" value={values.role} onChange={handleChange} onBlur={handleBlur}>
@@ -396,25 +449,27 @@ const RegistrationForm = ({ onSuccess }) => {
           </Select>
           {touched.role && errors.role && <Typography className="nmr-error">{errors.role}</Typography>}
         </FormControl>
-      </Stack>
 
-      <FormControl fullWidth required sx={fieldStyle} error={touched.experienceLevel && Boolean(errors.experienceLevel)}>
-        <InputLabel>Experience Level</InputLabel>
-        <Select
-          name="experienceLevel"
-          label="Experience Level"
-          value={values.experienceLevel}
-          onChange={handleChange}
-          onBlur={handleBlur}
-        >
-          {EXPERIENCE_LEVELS.map((level) => (
-            <MenuItem key={level} value={level}>
-              {level}
-            </MenuItem>
-          ))}
-        </Select>
-        {touched.experienceLevel && errors.experienceLevel && <Typography className="nmr-error">{errors.experienceLevel}</Typography>}
-      </FormControl>
+        <FormControl fullWidth required sx={fieldStyle} error={touched.experienceLevel && Boolean(errors.experienceLevel)}>
+          <InputLabel>Experience Level</InputLabel>
+          <Select
+            name="experienceLevel"
+            label="Experience Level"
+            value={values.experienceLevel}
+            onChange={handleChange}
+            onBlur={handleBlur}
+          >
+            {EXPERIENCE_LEVELS.map((level) => (
+              <MenuItem key={level} value={level}>
+                {level}
+              </MenuItem>
+            ))}
+          </Select>
+          {touched.experienceLevel && errors.experienceLevel && (
+            <Typography className="nmr-error">{errors.experienceLevel}</Typography>
+          )}
+        </FormControl>
+      </Stack>
 
       <Box className="nmr-consent-box">
         <FormControlLabel

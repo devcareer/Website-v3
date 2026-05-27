@@ -69,6 +69,13 @@
   margin-left: 14px;
 }
 
+.nmr-help {
+  color: #6d6341;
+  font-size: 0.76rem;
+  margin-top: 6px;
+  margin-left: 14px;
+}
+
 .nmr-consent-box {
   border-radius: 14px;
   border: 1px solid #ece7ce;

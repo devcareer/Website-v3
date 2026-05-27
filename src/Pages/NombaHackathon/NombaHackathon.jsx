@@ -7,35 +7,26 @@ import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import * as THREE from 'three';
-import { Logo as devCareerLogo } from '../../assets/Images';
 import './NombaHackathon.css';
 import nombaMark from '../../assets/Images/nomba-hackathon/nomba-mark.png';
 import nombaSocial from '../../assets/Images/nomba-hackathon/nomba-social.jpg';
 import heroTeam from '../../assets/Images/nomba-hackathon/hero-team.jpg';
 import codingTeam from '../../assets/Images/nomba-hackathon/coding-team.jpg';
+import paymentTerminal from '../../assets/Images/nomba-hackathon/payment-terminal.jpg';
+import learningGraphic from '../../assets/Images/learning.png';
+import successGraphic from '../../assets/Images/success.png';
+import focusVirtualAccountsImg from '../../assets/Images/nomba-hackathon/focus/virtual-accounts-as-infrastructure.jpg';
+import focusWebhookImg from '../../assets/Images/nomba-hackathon/focus/webhook-native-applications.jpg';
+import focusIntegrationsImg from '../../assets/Images/nomba-hackathon/focus/integrations-and-plugins.jpg';
+import focusPayoutsImg from '../../assets/Images/nomba-hackathon/focus/payouts-and-disbursements-at-scale.jpg';
+import focusAiPaymentsImg from '../../assets/Images/nomba-hackathon/focus/ai-native-agentic-payments.jpg';
+import focusPredictionImg from '../../assets/Images/nomba-hackathon/focus/prediction-markets.jpg';
+import focusSubscriptionsImg from '../../assets/Images/nomba-hackathon/focus/subscriptions-engine.jpg';
+import focusDedicatedVaImg from '../../assets/Images/nomba-hackathon/focus/dedicated-virtual-accounts.jpg';
+import focusFraudImg from '../../assets/Images/nomba-hackathon/focus/fraud-risk-and-chargebacks.jpg';
+import { NOMBATRACK_GROUPS } from './nombaTracksData';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin, SplitText);
-
-const FOCUS_TRACKS = [
-  {
-    title: 'Secure Checkout & Fraud Defense',
-    description:
-      'Build secure checkout patterns for cards, transfers, USSD, and QR with stronger fraud detection, transaction verification, and webhook reliability.',
-    bullets: ['PCI-aware flow design', 'Tokenization-ready UX', 'Risk and verification dashboards'],
-  },
-  {
-    title: 'Merchant Integration Accelerator',
-    description:
-      'Create tools that help businesses integrate faster with Nomba APIs including onboarding, payment-link setup, and reconciliation workflows.',
-    bullets: ['Onboarding automation', 'Merchant setup assistants', 'Settlement and reconciliation views'],
-  },
-  {
-    title: 'Cross-Border & Multi-Currency Flows',
-    description:
-      'Design solutions for USD and NGN payment experiences with settlement visibility, currency routing insights, and conversion confidence.',
-    bullets: ['NGN/USD acceptance flows', 'Settlement wallet clarity', 'Cross-border payment UX'],
-  },
-];
 
 const TIMELINE_PHASES = [
   {
@@ -145,6 +136,52 @@ const FAQS = [
       'Projects go through validation, then judging. Finalists are invited to Demo Day on July 11, 2026 for live presentations and awards.',
   },
 ];
+
+const TRACK_VISUALS = {
+  build: {
+    image: codingTeam,
+    glowA: '#4f46e5',
+    glowB: '#06b6d4',
+    badge: 'Builder Track',
+  },
+  infrastructure: {
+    image: heroTeam,
+    glowA: '#ff7a18',
+    glowB: '#ffcc00',
+    badge: 'Platform Track',
+  },
+};
+
+const FOCUS_VISUALS = {
+  'checkout-recurring': { image: paymentTerminal, emoji: '🔁', tintA: 'rgba(255, 183, 3, 0.74)', tintB: 'rgba(251, 133, 0, 0.72)' },
+  'virtual-accounts-as-infrastructure': {
+    image: focusVirtualAccountsImg,
+    emoji: '🏦',
+    tintA: 'rgba(0, 194, 168, 0.7)',
+    tintB: 'rgba(46, 196, 182, 0.72)',
+  },
+  'webhook-native-applications': { image: focusWebhookImg, emoji: '🧠', tintA: 'rgba(58, 134, 255, 0.72)', tintB: 'rgba(67, 97, 238, 0.7)' },
+  'integrations-and-plugins': { image: focusIntegrationsImg, emoji: '🧩', tintA: 'rgba(138, 201, 38, 0.72)', tintB: 'rgba(25, 130, 196, 0.68)' },
+  'payouts-and-disbursements-at-scale': {
+    image: focusPayoutsImg,
+    emoji: '💸',
+    tintA: 'rgba(6, 214, 160, 0.72)',
+    tintB: 'rgba(17, 138, 178, 0.7)',
+  },
+  'conversational-whatsapp-commerce': {
+    image: heroTeam,
+    emoji: '💬',
+    tintA: 'rgba(131, 56, 236, 0.74)',
+    tintB: 'rgba(6, 214, 160, 0.68)',
+  },
+  'ai-native-agentic-payments': { image: focusAiPaymentsImg, emoji: '🤖', tintA: 'rgba(58, 12, 163, 0.75)', tintB: 'rgba(72, 149, 239, 0.7)' },
+  'stablecoin-on-off-ramps': { image: successGraphic, emoji: '🪙', tintA: 'rgba(241, 91, 181, 0.74)', tintB: 'rgba(0, 187, 249, 0.72)' },
+  'prediction-markets': { image: focusPredictionImg, emoji: '📈', tintA: 'rgba(255, 0, 110, 0.74)', tintB: 'rgba(131, 56, 236, 0.72)' },
+  'subscriptions-engine': { image: focusSubscriptionsImg, emoji: '⚙️', tintA: 'rgba(255, 190, 11, 0.74)', tintB: 'rgba(58, 134, 255, 0.72)' },
+  'dedicated-virtual-accounts': { image: focusDedicatedVaImg, emoji: '🧾', tintA: 'rgba(46, 196, 182, 0.72)', tintB: 'rgba(87, 117, 144, 0.7)' },
+  'reconciliation-and-finance-ops': { image: learningGraphic, emoji: '📚', tintA: 'rgba(231, 111, 81, 0.74)', tintB: 'rgba(244, 162, 97, 0.72)' },
+  'fraud-risk-and-chargebacks': { image: focusFraudImg, emoji: '🛡️', tintA: 'rgba(214, 40, 40, 0.75)', tintB: 'rgba(106, 4, 15, 0.74)' },
+};
 
 const NombaHackathon = () => {
   const rootRef = useRef(null);
@@ -363,32 +400,52 @@ const NombaHackathon = () => {
             return;
           }
 
-          gsap.set('.nm-reveal', { autoAlpha: 0, y: mobile ? 14 : 24 });
+          gsap.set('.nm-reveal', { autoAlpha: 0 });
 
           ScrollTrigger.batch('.nm-reveal', {
             start: mobile ? 'top 92%' : 'top 85%',
             once: mobile,
             onEnter: (batch) =>
-              gsap.to(batch, {
-                autoAlpha: 1,
-                y: 0,
-                duration: mobile ? 0.5 : 0.7,
-                stagger: mobile ? 0.06 : 0.08,
-                ease: 'power2.out',
-                overwrite: true,
-              }),
+              gsap.fromTo(
+                batch,
+                { y: mobile ? 14 : 24 },
+                {
+                  autoAlpha: 1,
+                  y: 0,
+                  duration: mobile ? 0.5 : 0.7,
+                  stagger: mobile ? 0.06 : 0.08,
+                  ease: 'power2.out',
+                  overwrite: true,
+                }
+              ),
             ...(mobile
               ? {}
               : {
                   onLeaveBack: (batch) =>
                     gsap.to(batch, {
                       autoAlpha: 0,
-                      y: 24,
+                      y: 0,
                       duration: 0.35,
                       ease: 'power2.out',
                       overwrite: true,
                     }),
                 }),
+          });
+
+          gsap.set('.nm-focus-pop', { autoAlpha: 0, y: mobile ? 12 : 24, scale: 0.97 });
+          ScrollTrigger.batch('.nm-focus-pop', {
+            start: mobile ? 'top 94%' : 'top 88%',
+            once: true,
+            onEnter: (batch) =>
+              gsap.to(batch, {
+                autoAlpha: 1,
+                y: 0,
+                scale: 1,
+                duration: mobile ? 0.5 : 0.65,
+                stagger: mobile ? 0.05 : 0.07,
+                ease: 'power2.out',
+                overwrite: true,
+              }),
           });
 
           let splitTitle;
@@ -812,10 +869,6 @@ const NombaHackathon = () => {
               <img src={nombaMark} alt="Nomba logo" className="nm-brand-chip__mark" />
               <Typography className="nm-brand-chip__text nm-brand-chip__text--nomba">nomba</Typography>
             </Box>
-            <Typography className="nm-brand-divider">|</Typography>
-            <Box className="nm-brand-chip nm-brand-chip--devcareer">
-              <img src={devCareerLogo} alt="DevCareer logo" className="nm-brand-chip__devcareer" />
-            </Box>
           </Stack>
 
           <Typography component="h1" className="nm-hero__title">
@@ -895,24 +948,84 @@ const NombaHackathon = () => {
         <Box className="nm-container">
           <Typography className="nm-kicker">Hackathon Focus Areas</Typography>
           <Typography className="nm-heading" component="h2">
-            Three product directions for this edition
+            Two tracks, thirteen focus areas
           </Typography>
           <Typography className="nm-copy nm-copy--wide">
-            Teams can build across multiple domains, but each submission should have one primary focus area.
+            Choose one primary focus area under either the Build or Infrastructure track. You can
+            jump straight to registration from any focus below, or read full briefs on the dedicated
+            tracks page.
           </Typography>
 
-          <Box className="nm-track-grid">
-            {FOCUS_TRACKS.map((track) => (
-              <Box key={track.title} className="nm-track-card nm-reveal">
-                <Typography className="nm-track-card__title">{track.title}</Typography>
-                <Typography className="nm-track-card__desc">{track.description}</Typography>
-                <ul className="nm-track-card__list">
-                  {track.bullets.map((bullet) => (
-                    <li key={bullet}>{bullet}</li>
-                  ))}
-                </ul>
-              </Box>
-            ))}
+          <Box className="nm-track-group-grid">
+            {NOMBATRACK_GROUPS.map((group) => {
+              const trackVisual = TRACK_VISUALS[group.id] || TRACK_VISUALS.build;
+
+              return (
+                <Box key={group.id} className="nm-track-group-card nm-reveal">
+                  <Link
+                    to={{ pathname: '/programs/nomba-hackathon/tracks', hash: `#track-${group.id}` }}
+                    style={{ textDecoration: 'none' }}
+                  >
+                    <Box
+                      className="nm-track-cover"
+                      style={{
+                        '--nm-track-glow-a': trackVisual.glowA,
+                        '--nm-track-glow-b': trackVisual.glowB,
+                      }}
+                    >
+                      <img src={trackVisual.image} alt={`${group.label} track`} className="nm-track-cover__image" />
+                      <Box className="nm-track-cover__overlay" />
+                      <Box className="nm-track-cover__content">
+                        <Typography className="nm-track-cover__badge">{trackVisual.badge}</Typography>
+                        <Typography className="nm-track-cover__title">{group.label} Track</Typography>
+                        <Typography className="nm-track-cover__copy">{group.headline}</Typography>
+                        <Button className="nm-track-open-btn">Open {group.label} Focus Area Page</Button>
+                      </Box>
+                    </Box>
+                  </Link>
+
+                  <Box className="nm-mini-focus-grid">
+                    {group.focuses.map((focus) => {
+                      const visual = FOCUS_VISUALS[focus.id] || {
+                        image: codingTeam,
+                        emoji: '⚡',
+                        tintA: '#6d28d9',
+                        tintB: '#06b6d4',
+                      };
+
+                      return (
+                        <Link
+                          key={focus.id}
+                          to={{ pathname: '/programs/nomba-hackathon/tracks', hash: `#focus-${focus.id}` }}
+                          className="nm-mini-focus-card-link nm-focus-pop"
+                          style={{ textDecoration: 'none' }}
+                        >
+                          <Box
+                            className="nm-mini-focus-card"
+                            style={{
+                              '--nm-focus-tint-a': visual.tintA,
+                              '--nm-focus-tint-b': visual.tintB,
+                            }}
+                          >
+                            <Box className="nm-mini-focus-card__media">
+                              <img src={visual.image} alt={`${focus.title} preview`} className="nm-mini-focus-card__img" />
+                              <span className="nm-mini-focus-card__scrim" />
+                              <span className="nm-mini-focus-card__emoji" aria-hidden="true">
+                                {visual.emoji}
+                              </span>
+                            </Box>
+                            <Typography className="nm-mini-focus-card__title">{focus.title}</Typography>
+                            <Typography className="nm-mini-focus-card__meta">
+                              {focus.keyApis.slice(0, 2).join(' • ')}
+                            </Typography>
+                          </Box>
+                        </Link>
+                      );
+                    })}
+                  </Box>
+                </Box>
+              );
+            })}
           </Box>
         </Box>
       </Box>

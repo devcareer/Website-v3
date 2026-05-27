@@ -17,7 +17,7 @@
 .nm-page {
   background: var(--nm-white);
   color: var(--nm-black);
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 .nm-container {
@@ -287,49 +287,211 @@
 }
 
 /* Tracks */
-.nm-track-grid {
+.nm-track-group-grid {
   margin-top: 34px;
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 18px;
+  gap: 22px;
 }
 
-.nm-track-card {
-  background: var(--nm-white);
-  border: 1px solid #ece8d8;
-  border-radius: var(--nm-radius-lg);
-  padding: 24px;
-  box-shadow: 0 12px 22px rgba(0, 0, 0, 0.03);
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
+.nm-track-group-card {
+  background: linear-gradient(160deg, #fffdf8 0%, #fff8dc 100%);
+  border: 1px solid #eadfb5;
+  border-radius: 26px;
+  padding: 18px;
+  box-shadow: 0 20px 34px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
 }
 
-.nm-track-card:hover {
-  transform: translateY(-6px);
-  box-shadow: 0 24px 34px rgba(0, 0, 0, 0.08);
+.nm-track-cover {
+  position: relative;
+  border-radius: 20px;
+  overflow: hidden;
+  min-height: 245px;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  isolation: isolate;
 }
 
-.nm-track-card__title {
-  font-size: 1.2rem !important;
+.nm-track-cover::before {
+  content: '';
+  position: absolute;
+  inset: -120px -80px auto;
+  height: 260px;
+  background: radial-gradient(circle, var(--nm-track-glow-a), transparent 70%);
+  opacity: 0.34;
+  z-index: 2;
+  animation: nmTrackGlow 5.8s ease-in-out infinite alternate;
+}
+
+.nm-track-cover::after {
+  content: '';
+  position: absolute;
+  inset: auto -120px -140px;
+  height: 280px;
+  background: radial-gradient(circle, var(--nm-track-glow-b), transparent 68%);
+  opacity: 0.34;
+  z-index: 2;
+  animation: nmTrackGlow 6.4s ease-in-out infinite alternate-reverse;
+}
+
+.nm-track-cover__image {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.03);
+}
+
+.nm-track-cover__overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    126deg,
+    rgba(15, 15, 18, 0.86) 0%,
+    rgba(15, 15, 18, 0.64) 48%,
+    rgba(15, 15, 18, 0.28) 100%
+  );
+  z-index: 2;
+}
+
+.nm-track-cover__content {
+  position: relative;
+  z-index: 3;
+  padding: 22px 20px;
+  display: grid;
+  gap: 10px;
+}
+
+.nm-track-cover__badge {
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.1);
+  padding: 5px 10px;
+  color: rgba(255, 255, 255, 0.86) !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06rem;
+  font-size: 0.68rem !important;
   font-weight: 800 !important;
-  margin-bottom: 12px !important;
-  color: #111111 !important;
 }
 
-.nm-track-card__desc {
-  font-size: 0.95rem !important;
-  line-height: 1.7 !important;
-  color: #55555e !important;
-  margin-bottom: 16px !important;
+.nm-track-cover__title {
+  color: #fff !important;
+  font-size: clamp(1.36rem, 2.7vw, 1.84rem) !important;
+  line-height: 1.18 !important;
+  font-weight: 900 !important;
 }
 
-.nm-track-card__list {
-  margin: 0;
-  padding-left: 18px;
+.nm-track-cover__copy {
+  color: rgba(255, 255, 255, 0.82) !important;
+  line-height: 1.6 !important;
+  font-size: 0.93rem !important;
+}
+
+.nm-track-open-btn {
+  border-radius: 999px;
+  width: fit-content;
+  margin-top: 4px !important;
+  text-transform: none !important;
+  font-size: 0.8rem !important;
+  font-weight: 700 !important;
+  padding: 8px 14px !important;
+  background: linear-gradient(140deg, #ffd957 0%, #ffcc00 100%) !important;
+  color: #161616 !important;
+  box-shadow: 0 9px 16px rgba(255, 204, 0, 0.3) !important;
+}
+
+.nm-mini-focus-grid {
+  margin-top: 14px;
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.nm-mini-focus-card-link {
+  display: block;
+  color: inherit;
+}
+
+.nm-mini-focus-card-link:focus-visible {
+  outline: 2px solid #ffcc00;
+  outline-offset: 3px;
+  border-radius: 12px;
+}
+
+.nm-mini-focus-card {
+  border: 1px solid #eee7c7;
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px;
   display: grid;
   gap: 8px;
-  color: #3f3f46;
-  font-size: 0.88rem;
-  line-height: 1.55;
+  box-shadow: 0 7px 16px rgba(0, 0, 0, 0.04);
+}
+
+.nm-mini-focus-card__media {
+  position: relative;
+  border-radius: 9px;
+  overflow: hidden;
+  aspect-ratio: 16 / 9;
+}
+
+.nm-mini-focus-card__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transform: scale(1.06);
+  transition: transform 0.35s ease;
+}
+
+.nm-mini-focus-card__scrim {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(160deg, var(--nm-focus-tint-a) 0%, transparent 62%),
+    linear-gradient(16deg, var(--nm-focus-tint-b) 0%, transparent 52%),
+    linear-gradient(180deg, rgba(0, 0, 0, 0.04) 0%, rgba(0, 0, 0, 0.38) 100%);
+}
+
+.nm-mini-focus-card__emoji {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-size: 1rem;
+  background: rgba(255, 255, 255, 0.86);
+  box-shadow: 0 8px 14px rgba(0, 0, 0, 0.2);
+}
+
+.nm-mini-focus-card__title {
+  color: #1e1e26 !important;
+  font-size: 0.86rem !important;
+  line-height: 1.4 !important;
+  font-weight: 800 !important;
+  min-height: 2.5em;
+}
+
+.nm-mini-focus-card__meta {
+  color: #61616b !important;
+  font-size: 0.74rem !important;
+  line-height: 1.45 !important;
+}
+
+.nm-mini-focus-card:hover .nm-mini-focus-card__img {
+  transform: scale(1.12);
+}
+
+@keyframes nmTrackGlow {
+  from {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  to {
+    transform: translate3d(0, -10px, 0) scale(1.08);
+  }
 }
 
 /* Training */
@@ -985,9 +1147,12 @@
     grid-template-columns: 1fr;
   }
 
-  .nm-track-grid,
   .nm-prize-podium {
     grid-template-columns: 1fr;
+  }
+
+  .nm-mini-focus-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .nm-prize-podium {
@@ -1032,8 +1197,17 @@
 
   .nm-btn-primary,
   .nm-btn-secondary,
-  .nm-btn-training {
+  .nm-btn-training,
+  .nm-track-open-btn {
     width: 100%;
+  }
+
+  .nm-mini-focus-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nm-track-cover {
+    min-height: 228px;
   }
 
   .nm-stat {

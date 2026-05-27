@@ -12,6 +12,7 @@ import {
   LaptopForDevelopers,
   NombaHackathon,
   NombaForwardTraining,
+  NombaHackathonTracks,
   NombaHackathonRegistration,
   ProfileRoot,
   RaenestHackathon,
@@ -52,6 +53,10 @@ export const router = createBrowserRouter([
           {
             path: 'nomba-hackathon',
             element: <NombaHackathon />,
+          },
+          {
+            path: 'nomba-hackathon/tracks',
+            element: <NombaHackathonTracks />,
           },
           {
             path: 'nomba-forward-training',
