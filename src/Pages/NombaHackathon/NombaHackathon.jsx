@@ -14,7 +14,7 @@ import heroTeam from '../../assets/Images/nomba-hackathon/hero-team.jpg';
 import codingTeam from '../../assets/Images/nomba-hackathon/coding-team.jpg';
 import paymentTerminal from '../../assets/Images/nomba-hackathon/payment-terminal.jpg';
 import learningGraphic from '../../assets/Images/learning.png';
-import successGraphic from '../../assets/Images/success.png';
+import focusStablecoinImg from '../../assets/Images/nomba-hackathon/focus/stablecoin-on-off-ramps.svg';
 import focusVirtualAccountsImg from '../../assets/Images/nomba-hackathon/focus/virtual-accounts-as-infrastructure.jpg';
 import focusWebhookImg from '../../assets/Images/nomba-hackathon/focus/webhook-native-applications.jpg';
 import focusIntegrationsImg from '../../assets/Images/nomba-hackathon/focus/integrations-and-plugins.jpg';
@@ -31,33 +31,33 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin, SplitText);
 const TIMELINE_PHASES = [
   {
     phase: 'Registration',
-    dates: '1 - 15 June 2026',
+    dates: '8 - 23 June 2026',
     activities: 'Open registration and outreach across DevCareer and external channels.',
     milestones: ['Applications open', 'Community outreach', 'Team matching support'],
   },
   {
     phase: 'Onboarding & Training',
-    dates: '16 - 21 June 2026',
+    dates: '24 - 29 June 2026',
     activities:
       'Orientation, sandbox credentials, live API training, office hours, and challenge briefs.',
     milestones: ['Kickoff orientation', 'Training labs', 'API key provisioning'],
   },
   {
     phase: 'Building',
-    dates: '23 - 29 June 2026',
+    dates: '1 - 7 July 2026',
     activities:
-      'One-week build sprint with Nomba engineer support; submissions close 11:59 PM WAT, 29 June 2026.',
+      'One-week build sprint with Nomba engineer support; submissions close 11:59 PM WAT, 7 July 2026.',
     milestones: ['Daily office hours', 'Mentor clinics', 'Submission freeze'],
   },
   {
     phase: 'Judging',
-    dates: '30 June - 6 July 2026',
+    dates: '8 - 14 July 2026',
     activities: 'Submission evaluation by Nomba team and external judges.',
     milestones: ['Technical review', 'Security checks', 'Final scorecards'],
   },
   {
     phase: 'Demo Day & Awards',
-    dates: '11 July 2026',
+    dates: '19 July 2026',
     activities:
       'Virtual Demo Day, live-streamed prize ceremony, and affiliate onboarding session.',
     milestones: ['Finalist demos', 'Live awards', 'Post-program onboarding'],
@@ -133,7 +133,7 @@ const FAQS = [
   {
     question: 'What happens after submission?',
     answer:
-      'Projects go through validation, then judging. Finalists are invited to Demo Day on July 11, 2026 for live presentations and awards.',
+      'Projects go through validation, then judging. Finalists are invited to Demo Day on July 19, 2026 for live presentations and awards.',
   },
 ];
 
@@ -175,7 +175,7 @@ const FOCUS_VISUALS = {
     tintB: 'rgba(6, 214, 160, 0.68)',
   },
   'ai-native-agentic-payments': { image: focusAiPaymentsImg, emoji: '🤖', tintA: 'rgba(58, 12, 163, 0.75)', tintB: 'rgba(72, 149, 239, 0.7)' },
-  'stablecoin-on-off-ramps': { image: successGraphic, emoji: '🪙', tintA: 'rgba(241, 91, 181, 0.74)', tintB: 'rgba(0, 187, 249, 0.72)' },
+  'stablecoin-on-off-ramps': { image: focusStablecoinImg, emoji: '🪙', tintA: 'rgba(241, 91, 181, 0.74)', tintB: 'rgba(0, 187, 249, 0.72)' },
   'prediction-markets': { image: focusPredictionImg, emoji: '📈', tintA: 'rgba(255, 0, 110, 0.74)', tintB: 'rgba(131, 56, 236, 0.72)' },
   'subscriptions-engine': { image: focusSubscriptionsImg, emoji: '⚙️', tintA: 'rgba(255, 190, 11, 0.74)', tintB: 'rgba(58, 134, 255, 0.72)' },
   'dedicated-virtual-accounts': { image: focusDedicatedVaImg, emoji: '🧾', tintA: 'rgba(46, 196, 182, 0.72)', tintB: 'rgba(87, 117, 144, 0.7)' },
@@ -872,7 +872,8 @@ const NombaHackathon = () => {
           </Stack>
 
           <Typography component="h1" className="nm-hero__title">
-            Build Payment Infrastructure Products for Nigeria&apos;s Next Growth Wave
+            <span className="nm-hero__title-line">Build Payment Infrastructure Products</span>
+            <span className="nm-hero__title-line">for Nigeria&apos;s Next Growth Wave</span>
           </Typography>
 
           <Typography className="nm-hero__subtitle">
@@ -927,15 +928,15 @@ const NombaHackathon = () => {
               Trusted rails for modern African payments
             </Typography>
             <Typography className="nm-copy">
-              Nomba supports cards, transfers, USSD, and QR with instant settlement patterns and
-              developer-ready APIs. This hackathon is designed to build practical, secure products with that
-              infrastructure.
+              Instant settlement, multi-channel payments, and production-grade APIs. All live, all
+              documented. Pick a real problem African businesses face and build something that works.
             </Typography>
             <Stack className="nm-chip-row" direction="row" flexWrap="wrap" gap={1.2}>
-              <span className="nm-chip">Instant settlement patterns</span>
-              <span className="nm-chip">Cards + Transfers + USSD + QR</span>
-              <span className="nm-chip">OAuth 2.0 API access</span>
-              <span className="nm-chip">Security-led architecture</span>
+              <span className="nm-chip">Instant settlement</span>
+              <span className="nm-chip">Multi-channel payments</span>
+              <span className="nm-chip">Production-grade APIs</span>
+              <span className="nm-chip">Live documentation</span>
+              <span className="nm-chip">Built for real African business use cases</span>
             </Stack>
           </Box>
           <Box className="nm-brand__right">
@@ -1075,7 +1076,7 @@ const NombaHackathon = () => {
 
           <Box className="nm-timeline-grid">
             <Box className="nm-timeline-intro nm-reveal">
-              <Typography className="nm-timeline-intro__window">June 1 - July 11, 2026</Typography>
+              <Typography className="nm-timeline-intro__window">June 8 - July 19, 2026</Typography>
               <Typography className="nm-timeline-intro__headline">5 major phases. One decisive sprint.</Typography>
               <Typography className="nm-timeline-intro__copy">
                 From onboarding to live awards, each phase has a clear objective to help teams ship with quality,

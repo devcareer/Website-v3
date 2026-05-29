@@ -185,12 +185,17 @@
 }
 
 .nm-hero__title {
-  font-size: clamp(2.1rem, 5.2vw, 4.8rem) !important;
+  font-size: clamp(1.9rem, 4.4vw, 4.15rem) !important;
   font-weight: 900 !important;
-  line-height: 1.02 !important;
+  line-height: 1.08 !important;
   color: var(--nm-white) !important;
-  max-width: 960px;
+  max-width: 1060px;
   margin-bottom: 20px !important;
+}
+
+.nm-hero__title-line {
+  display: block;
+  white-space: nowrap;
 }
 
 .nm-hero__subtitle {
@@ -405,7 +410,7 @@
   margin-top: 14px;
   display: grid;
   gap: 10px;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
 }
 
 .nm-mini-focus-card-link {
@@ -1189,6 +1194,11 @@
 
   .nm-hero__logos {
     align-items: flex-start !important;
+  }
+
+  .nm-hero__title {
+    font-size: clamp(0.98rem, 4.4vw, 1.24rem) !important;
+    line-height: 1.18 !important;
   }
 
   .nm-hero__cta-row {
