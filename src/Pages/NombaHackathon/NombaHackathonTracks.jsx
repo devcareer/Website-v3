@@ -2,7 +2,12 @@ import React, { useEffect } from 'react';
 import { Box, Button, Stack, Typography } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
 import './NombaHackathonTracks.css';
-import { buildTrackRegistrationLink, NOMBATRACK_GROUPS } from './nombaTracksData';
+import {
+  buildTrackRegistrationLink,
+  NOMBATRACK_GROUPS,
+  TOTAL_TRACK_FOCUS_AREAS,
+  TOTAL_TRACK_GROUPS,
+} from './nombaTracksData';
 
 const NombaHackathonTracks = () => {
   const { pathname, hash } = useLocation();
@@ -40,17 +45,16 @@ const NombaHackathonTracks = () => {
             Nomba Hackathon Focus Areas
           </Typography>
           <Typography className="nmt-subtitle">
-            Two track categories, thirteen focus areas. Pick one focus area as your primary direction
-            and register directly from any card below.
+            {`${TOTAL_TRACK_GROUPS} track categories, ${TOTAL_TRACK_FOCUS_AREAS} focus areas. Pick one focus area as your primary direction and register directly from any card below.`}
           </Typography>
 
           <Stack className="nmt-stat-row" direction={{ xs: 'column', sm: 'row' }}>
             <Box className="nmt-stat">
-              <Typography className="nmt-stat__number">2</Typography>
+              <Typography className="nmt-stat__number">{TOTAL_TRACK_GROUPS}</Typography>
               <Typography className="nmt-stat__label">Track Categories</Typography>
             </Box>
             <Box className="nmt-stat">
-              <Typography className="nmt-stat__number">13</Typography>
+              <Typography className="nmt-stat__number">{TOTAL_TRACK_FOCUS_AREAS}</Typography>
               <Typography className="nmt-stat__label">Focus Areas</Typography>
             </Box>
           </Stack>

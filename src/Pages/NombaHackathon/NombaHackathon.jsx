@@ -24,7 +24,7 @@ import focusPredictionImg from '../../assets/Images/nomba-hackathon/focus/predic
 import focusSubscriptionsImg from '../../assets/Images/nomba-hackathon/focus/subscriptions-engine.jpg';
 import focusDedicatedVaImg from '../../assets/Images/nomba-hackathon/focus/dedicated-virtual-accounts.jpg';
 import focusFraudImg from '../../assets/Images/nomba-hackathon/focus/fraud-risk-and-chargebacks.jpg';
-import { NOMBATRACK_GROUPS } from './nombaTracksData';
+import { NOMBATRACK_GROUPS, TOTAL_TRACK_FOCUS_AREAS, TOTAL_TRACK_GROUPS } from './nombaTracksData';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin, SplitText);
 
@@ -877,8 +877,9 @@ const NombaHackathon = () => {
           </Typography>
 
           <Typography className="nm-hero__subtitle">
-            Join the Nomba x DevCareer hackathon to build high-impact payment solutions, attend free
-            Nomba Forward deployed engineer training, and earn certification in payment security and integration.
+            {
+              'Join the Nomba x DevCareer hackathon to build high-impact payment solutions, attend free Nomba Forward deployed engineer training, and earn certification in payment security and integration.'
+            }
           </Typography>
 
           <Stack className="nm-hero__cta-row" direction={{ xs: 'column', sm: 'row' }}>
@@ -949,7 +950,7 @@ const NombaHackathon = () => {
         <Box className="nm-container">
           <Typography className="nm-kicker">Hackathon Focus Areas</Typography>
           <Typography className="nm-heading" component="h2">
-            Two tracks, thirteen focus areas
+            {`${TOTAL_TRACK_GROUPS} tracks, ${TOTAL_TRACK_FOCUS_AREAS} focus areas`}
           </Typography>
           <Typography className="nm-copy nm-copy--wide">
             Choose one primary focus area under either the Build or Infrastructure track. You can
