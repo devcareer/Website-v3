@@ -12,18 +12,11 @@ import nombaMark from '../../assets/Images/nomba-hackathon/nomba-mark.png';
 import nombaSocial from '../../assets/Images/nomba-hackathon/nomba-social.jpg';
 import heroTeam from '../../assets/Images/nomba-hackathon/hero-team.jpg';
 import codingTeam from '../../assets/Images/nomba-hackathon/coding-team.jpg';
-import paymentTerminal from '../../assets/Images/nomba-hackathon/payment-terminal.jpg';
-import learningGraphic from '../../assets/Images/learning.png';
-import focusStablecoinImg from '../../assets/Images/nomba-hackathon/focus/stablecoin-on-off-ramps.svg';
-import focusVirtualAccountsImg from '../../assets/Images/nomba-hackathon/focus/virtual-accounts-as-infrastructure.jpg';
-import focusWebhookImg from '../../assets/Images/nomba-hackathon/focus/webhook-native-applications.jpg';
-import focusIntegrationsImg from '../../assets/Images/nomba-hackathon/focus/integrations-and-plugins.jpg';
-import focusPayoutsImg from '../../assets/Images/nomba-hackathon/focus/payouts-and-disbursements-at-scale.jpg';
-import focusAiPaymentsImg from '../../assets/Images/nomba-hackathon/focus/ai-native-agentic-payments.jpg';
-import focusPredictionImg from '../../assets/Images/nomba-hackathon/focus/prediction-markets.jpg';
-import focusSubscriptionsImg from '../../assets/Images/nomba-hackathon/focus/subscriptions-engine.jpg';
-import focusDedicatedVaImg from '../../assets/Images/nomba-hackathon/focus/dedicated-virtual-accounts.jpg';
-import focusFraudImg from '../../assets/Images/nomba-hackathon/focus/fraud-risk-and-chargebacks.jpg';
+import buildCheckoutCardImg from '../../assets/Images/nomba-hackathon/Build - Checkout.png';
+import buildIntegrationPluginsCardImg from '../../assets/Images/nomba-hackathon/Build - Integration Plugins.png';
+import buildVirtualAccountsInfrastructureCardImg from '../../assets/Images/nomba-hackathon/Build - Virtual Accounts as Infrastructure.png';
+import infraSubscriptionsEngineCardImg from '../../assets/Images/nomba-hackathon/Infra - Subscriptions Engine.png';
+import infraDedicatedVirtualAccountsCardImg from '../../assets/Images/nomba-hackathon/Infra - dedicated Virtual Accounts.png';
 import { NOMBATRACK_GROUPS, TOTAL_TRACK_FOCUS_AREAS, TOTAL_TRACK_GROUPS } from './nombaTracksData';
 
 gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin, SplitText);
@@ -153,34 +146,36 @@ const TRACK_VISUALS = {
 };
 
 const FOCUS_VISUALS = {
-  'checkout-recurring': { image: paymentTerminal, emoji: '🔁', tintA: 'rgba(255, 183, 3, 0.74)', tintB: 'rgba(251, 133, 0, 0.72)' },
+  'checkout-recurring': {
+    image: buildCheckoutCardImg,
+    emoji: '🔁',
+    tintA: 'rgba(255, 183, 3, 0.74)',
+    tintB: 'rgba(251, 133, 0, 0.72)',
+  },
   'virtual-accounts-as-infrastructure': {
-    image: focusVirtualAccountsImg,
+    image: buildVirtualAccountsInfrastructureCardImg,
     emoji: '🏦',
     tintA: 'rgba(0, 194, 168, 0.7)',
     tintB: 'rgba(46, 196, 182, 0.72)',
   },
-  'webhook-native-applications': { image: focusWebhookImg, emoji: '🧠', tintA: 'rgba(58, 134, 255, 0.72)', tintB: 'rgba(67, 97, 238, 0.7)' },
-  'integrations-and-plugins': { image: focusIntegrationsImg, emoji: '🧩', tintA: 'rgba(138, 201, 38, 0.72)', tintB: 'rgba(25, 130, 196, 0.68)' },
-  'payouts-and-disbursements-at-scale': {
-    image: focusPayoutsImg,
-    emoji: '💸',
-    tintA: 'rgba(6, 214, 160, 0.72)',
-    tintB: 'rgba(17, 138, 178, 0.7)',
+  'integrations-and-plugins': {
+    image: buildIntegrationPluginsCardImg,
+    emoji: '🧩',
+    tintA: 'rgba(138, 201, 38, 0.72)',
+    tintB: 'rgba(25, 130, 196, 0.68)',
   },
-  'conversational-whatsapp-commerce': {
-    image: heroTeam,
-    emoji: '💬',
-    tintA: 'rgba(131, 56, 236, 0.74)',
-    tintB: 'rgba(6, 214, 160, 0.68)',
+  'subscriptions-engine': {
+    image: infraSubscriptionsEngineCardImg,
+    emoji: '⚙️',
+    tintA: 'rgba(255, 190, 11, 0.74)',
+    tintB: 'rgba(58, 134, 255, 0.72)',
   },
-  'ai-native-agentic-payments': { image: focusAiPaymentsImg, emoji: '🤖', tintA: 'rgba(58, 12, 163, 0.75)', tintB: 'rgba(72, 149, 239, 0.7)' },
-  'stablecoin-on-off-ramps': { image: focusStablecoinImg, emoji: '🪙', tintA: 'rgba(241, 91, 181, 0.74)', tintB: 'rgba(0, 187, 249, 0.72)' },
-  'prediction-markets': { image: focusPredictionImg, emoji: '📈', tintA: 'rgba(255, 0, 110, 0.74)', tintB: 'rgba(131, 56, 236, 0.72)' },
-  'subscriptions-engine': { image: focusSubscriptionsImg, emoji: '⚙️', tintA: 'rgba(255, 190, 11, 0.74)', tintB: 'rgba(58, 134, 255, 0.72)' },
-  'dedicated-virtual-accounts': { image: focusDedicatedVaImg, emoji: '🧾', tintA: 'rgba(46, 196, 182, 0.72)', tintB: 'rgba(87, 117, 144, 0.7)' },
-  'reconciliation-and-finance-ops': { image: learningGraphic, emoji: '📚', tintA: 'rgba(231, 111, 81, 0.74)', tintB: 'rgba(244, 162, 97, 0.72)' },
-  'fraud-risk-and-chargebacks': { image: focusFraudImg, emoji: '🛡️', tintA: 'rgba(214, 40, 40, 0.75)', tintB: 'rgba(106, 4, 15, 0.74)' },
+  'dedicated-virtual-accounts': {
+    image: infraDedicatedVirtualAccountsCardImg,
+    emoji: '🧾',
+    tintA: 'rgba(46, 196, 182, 0.72)',
+    tintB: 'rgba(87, 117, 144, 0.7)',
+  },
 };
 
 const NombaHackathon = () => {
