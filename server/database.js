@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 const { Pool } = pg;
 
 dotenv.config();
+dotenv.config({ path: '.env.local', override: true });
 
 const DATABASE_URL = process.env.DATABASE_URL;
 
@@ -68,10 +69,28 @@ export const initializeDatabase = async () => {
     CREATE INDEX IF NOT EXISTS idx_nomba_registrations_email
     ON nomba_hackathon_registrations (LOWER(email));
   `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS nomba_hackathon_email_verifications (
+      id BIGSERIAL PRIMARY KEY,
+      email TEXT NOT NULL,
+      code_hash TEXT NOT NULL,
+      registration_payload JSONB NOT NULL,
+      attempts INTEGER NOT NULL DEFAULT 0,
+      expires_at TIMESTAMPTZ NOT NULL,
+      consumed_at TIMESTAMPTZ,
+      created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+    );
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_nomba_email_verifications_lookup
+    ON nomba_hackathon_email_verifications (LOWER(email), consumed_at, expires_at, created_at DESC);
+  `);
 };
 
-export const insertNombaRegistration = async (registration) => {
-  const result = await pool.query(
+export const insertNombaRegistration = async (registration, queryable = pool) => {
+  const result = await queryable.query(
     `
       INSERT INTO nomba_hackathon_registrations (
         program,
@@ -135,6 +154,90 @@ export const insertNombaRegistration = async (registration) => {
   );
 
   return result.rows[0];
+};
+
+export const createNombaEmailVerification = async ({ email, codeHash, registration, expiresAt }) => {
+  const result = await pool.query(
+    `
+      INSERT INTO nomba_hackathon_email_verifications (
+        email,
+        code_hash,
+        registration_payload,
+        expires_at
+      )
+      VALUES ($1, $2, $3::jsonb, $4::timestamptz)
+      RETURNING id, expires_at AS "expiresAt", created_at AS "createdAt";
+    `,
+    [email, codeHash, JSON.stringify(registration), expiresAt]
+  );
+
+  return result.rows[0];
+};
+
+export const getActiveNombaEmailVerification = async (email) => {
+  const result = await pool.query(
+    `
+      SELECT
+        id,
+        email,
+        code_hash AS "codeHash",
+        registration_payload AS "registrationPayload",
+        attempts,
+        expires_at AS "expiresAt",
+        created_at AS "createdAt"
+      FROM nomba_hackathon_email_verifications
+      WHERE LOWER(email) = LOWER($1)
+        AND consumed_at IS NULL
+      ORDER BY created_at DESC
+      LIMIT 1;
+    `,
+    [email]
+  );
+
+  return result.rows[0] || null;
+};
+
+export const incrementNombaEmailVerificationAttempts = async (id) => {
+  await pool.query(
+    `
+      UPDATE nomba_hackathon_email_verifications
+      SET attempts = attempts + 1
+      WHERE id = $1;
+    `,
+    [id]
+  );
+};
+
+export const completeNombaEmailVerification = async ({ id, registration }) => {
+  const client = await pool.connect();
+
+  try {
+    await client.query('BEGIN');
+    const consumedVerification = await client.query(
+      `
+        UPDATE nomba_hackathon_email_verifications
+        SET consumed_at = NOW()
+        WHERE id = $1
+          AND consumed_at IS NULL
+        RETURNING id;
+      `,
+      [id]
+    );
+
+    if (consumedVerification.rowCount === 0) {
+      throw new Error('Verification code has already been used.');
+    }
+
+    const savedRegistration = await insertNombaRegistration(registration, client);
+    await client.query('COMMIT');
+
+    return savedRegistration;
+  } catch (error) {
+    await client.query('ROLLBACK');
+    throw error;
+  } finally {
+    client.release();
+  }
 };
 
 export const listNombaRegistrations = async ({ limit = 200, offset = 0 } = {}) => {

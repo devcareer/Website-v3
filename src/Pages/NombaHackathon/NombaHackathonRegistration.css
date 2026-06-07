@@ -100,6 +100,36 @@
   box-shadow: 0 12px 24px rgba(255, 204, 0, 0.28) !important;
 }
 
+.nmr-verification__copy {
+  color: #2c2c22 !important;
+  line-height: 1.7 !important;
+  margin-bottom: 0 !important;
+}
+
+.nmr-verification__meta {
+  color: #6d6341 !important;
+  font-size: 0.88rem !important;
+  margin-top: -6px !important;
+}
+
+.nmr-secondary-btn,
+.nmr-edit-btn {
+  border-radius: 999px !important;
+  text-transform: none !important;
+  font-weight: 700 !important;
+}
+
+.nmr-secondary-btn {
+  border-color: #d4a600 !important;
+  color: #7a6400 !important;
+  padding: 12px 20px !important;
+}
+
+.nmr-edit-btn {
+  align-self: center;
+  color: #6d6341 !important;
+}
+
 .nmr-success {
   min-height: 100vh;
   background: radial-gradient(circle at 80% 10%, rgba(255, 217, 94, 0.22), transparent 45%),

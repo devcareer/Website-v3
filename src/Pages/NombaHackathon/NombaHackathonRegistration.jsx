@@ -32,6 +32,7 @@ gsap.registerPlugin(useGSAP, SplitText);
 const FORM_ENDPOINT =
   import.meta.env.VITE_NOMBA_HACKATHON_FORM_URL ||
   '/api/nomba-hackathon/registrations';
+const VERIFY_ENDPOINT = `${FORM_ENDPOINT.replace(/\/$/, '')}/verify`;
 
 const ROLE_OPTIONS = [
   'Frontend Engineer',
@@ -128,6 +129,9 @@ const NombaHackathonRegistration = () => {
 
 const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [verificationRequest, setVerificationRequest] = useState(null);
+  const [verificationCode, setVerificationCode] = useState('');
+  const [isVerifying, setIsVerifying] = useState(false);
   const COUNTRIES = useMemo(() => countryList().getData(), []);
   const initialValues = useMemo(
     () => ({
@@ -200,48 +204,63 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
     return errors;
   };
 
+  const requestVerificationCode = async (formValues) => {
+    setIsSubmitting(true);
+
+    const payload = {
+      program: 'Nomba Forward Hackathon 2026',
+      submittedAt: new Date().toISOString(),
+      ...formValues,
+    };
+
+    try {
+      const response = await fetch(FORM_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || !result?.verificationRequired) {
+        throw new Error(result?.error || 'Verification request failed');
+      }
+
+      setVerificationRequest({
+        email: result.email,
+        expiresAt: result.expiresAt,
+      });
+      setVerificationCode('');
+      toast.success('We sent a 6-digit verification code to your email.', {
+        position: 'top-right',
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'light',
+      });
+    } catch (error) {
+      toast.error('Unable to send verification code right now. Please try again.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'light',
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   const { values, errors, touched, handleChange, handleBlur, handleSubmit, setFieldValue } = useFormik({
     initialValues,
     enableReinitialize: true,
     validate,
-    onSubmit: async (formValues) => {
-      setIsSubmitting(true);
-
-      const payload = {
-        program: 'Nomba Forward Hackathon 2026',
-        submittedAt: new Date().toISOString(),
-        ...formValues,
-      };
-
-      try {
-        const response = await fetch(FORM_ENDPOINT, {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
-        const result = await response.json().catch(() => null);
-
-        if (!response.ok || !result?.success) {
-          throw new Error(result?.error || 'Registration request failed');
-        }
-
-        onSuccess(formValues.firstName);
-      } catch (error) {
-        toast.error('Unable to submit registration right now. Please try again.', {
-          position: 'top-right',
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          theme: 'light',
-        });
-      } finally {
-        setIsSubmitting(false);
-      }
-    },
+    onSubmit: requestVerificationCode,
   });
 
   const focusOptions = useMemo(() => getFocusOptionsForTrack(values.track), [values.track]);
@@ -254,6 +273,57 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
 
     if (!nextFocusOptions.includes(values.focusArea)) {
       setFieldValue('focusArea', '');
+    }
+  };
+
+  const handleVerifyCode = async (event) => {
+    event.preventDefault();
+
+    if (!verificationRequest || !/^\d{6}$/.test(verificationCode)) {
+      toast.error('Enter the 6-digit code sent to your email.', {
+        position: 'top-right',
+        autoClose: 4000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'light',
+      });
+      return;
+    }
+
+    setIsVerifying(true);
+
+    try {
+      const response = await fetch(VERIFY_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: verificationRequest.email,
+          code: verificationCode,
+        }),
+      });
+      const result = await response.json().catch(() => null);
+
+      if (!response.ok || !result?.success) {
+        throw new Error(result?.error || 'Verification failed');
+      }
+
+      onSuccess(values.firstName);
+    } catch (error) {
+      toast.error(error.message || 'Unable to verify registration right now. Please try again.', {
+        position: 'top-right',
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        theme: 'light',
+      });
+    } finally {
+      setIsVerifying(false);
     }
   };
 
@@ -272,6 +342,26 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
       color: '#7a6400',
     },
   };
+
+  if (verificationRequest) {
+    return (
+      <VerificationStep
+        email={verificationRequest.email}
+        expiresAt={verificationRequest.expiresAt}
+        code={verificationCode}
+        onCodeChange={setVerificationCode}
+        onSubmit={handleVerifyCode}
+        onResend={() => requestVerificationCode(values)}
+        onEdit={() => {
+          setVerificationRequest(null);
+          setVerificationCode('');
+        }}
+        isResending={isSubmitting}
+        isVerifying={isVerifying}
+        fieldStyle={fieldStyle}
+      />
+    );
+  }
 
   return (
     <Box className="nmr-form" component="form" onSubmit={handleSubmit} noValidate>
@@ -495,6 +585,70 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
     </Box>
   );
 };
+
+const VerificationStep = ({
+  email,
+  expiresAt,
+  code,
+  onCodeChange,
+  onSubmit,
+  onResend,
+  onEdit,
+  isResending,
+  isVerifying,
+  fieldStyle,
+}) => (
+  <Box className="nmr-form nmr-verification" component="form" onSubmit={onSubmit} noValidate>
+    <Typography className="nmr-form__title">Confirm Your Email</Typography>
+    <Typography className="nmr-verification__copy">
+      We sent a 6-digit code to <strong>{email}</strong>. Enter it below to complete your registration.
+    </Typography>
+    {expiresAt && (
+      <Typography className="nmr-verification__meta">
+        Code expires at {new Intl.DateTimeFormat('en-GB', { timeStyle: 'short' }).format(new Date(expiresAt))}.
+      </Typography>
+    )}
+
+    <TextField
+      fullWidth
+      required
+      sx={fieldStyle}
+      label="Verification Code"
+      name="verificationCode"
+      value={code}
+      onChange={(event) => onCodeChange(event.target.value.replace(/\D/g, '').slice(0, 6))}
+      inputProps={{ inputMode: 'numeric', maxLength: 6 }}
+      helperText="Use the 6-digit code from your email."
+    />
+
+    <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
+      <LoadingButton
+        type="submit"
+        loading={isVerifying}
+        className="nmr-submit"
+        variant="contained"
+        disableElevation
+        fullWidth
+      >
+        Verify & Complete Registration
+      </LoadingButton>
+      <LoadingButton
+        type="button"
+        loading={isResending}
+        className="nmr-secondary-btn"
+        variant="outlined"
+        onClick={onResend}
+        fullWidth
+      >
+        Resend Code
+      </LoadingButton>
+    </Stack>
+
+    <Button type="button" className="nmr-edit-btn" onClick={onEdit}>
+      Edit registration details
+    </Button>
+  </Box>
+);
 
 const SuccessScreen = ({ name, navigate }) => {
   return (
