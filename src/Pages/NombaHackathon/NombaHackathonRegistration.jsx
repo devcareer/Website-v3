@@ -197,10 +197,6 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
     if (!values.consentOriginality) {
       errors.consentOriginality = 'You must agree to originality requirements';
     }
-    if (!values.consentCommitment) {
-      errors.consentCommitment = 'You must agree to timeline commitment';
-    }
-
     return errors;
   };
 
@@ -489,20 +485,6 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
         />
         {touched.consentOriginality && errors.consentOriginality && (
           <Typography className="nmr-error">{errors.consentOriginality}</Typography>
-        )}
-
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={values.consentCommitment}
-              onChange={(event) => setFieldValue('consentCommitment', event.target.checked)}
-              name="consentCommitment"
-            />
-          }
-          label="I can commit to key dates from June 1, 2026 to July 11, 2026 including onboarding and Demo Day requirements."
-        />
-        {touched.consentCommitment && errors.consentCommitment && (
-          <Typography className="nmr-error">{errors.consentCommitment}</Typography>
         )}
       </Box>
 

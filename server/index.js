@@ -107,10 +107,6 @@ const validateRegistration = (registration) => {
     errors.consentOriginality = 'Required';
   }
 
-  if (!registration.consentCommitment) {
-    errors.consentCommitment = 'Required';
-  }
-
   return errors;
 };
 
