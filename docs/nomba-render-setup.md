@@ -18,6 +18,7 @@ Use a Render Web Service for this repo so the React build and API run from the s
 - `DATABASE_URL=<Render Postgres internal database URL>`
 - `ADMIN_API_KEY=<long random secret>`
 - `ADMIN_EMAIL=<admin login email>`
+- `ADMIN_EMAILS=<comma-separated admin emails, for example admin@example.com,nomba@devcareer.io>`
 - `ADMIN_PASSWORD=<admin login password>`
 - `ADMIN_SESSION_SECRET=<long random secret used to sign browser admin sessions>`
 - `RESEND_API_KEY=<Resend API key used to send verification codes>`

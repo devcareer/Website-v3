@@ -443,6 +443,25 @@ const tokensMatch = (actual, expected) => {
   return actualBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(actualBuffer, expectedBuffer);
 };
 
+const getAdminEmails = () => {
+  const configuredEmails = [
+    ...(process.env.ADMIN_EMAILS || '')
+      .split(',')
+      .map((email) => email.trim())
+      .filter(Boolean),
+    process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME,
+  ].filter(Boolean);
+  const uniqueEmails = [...new Set(configuredEmails.map((email) => email.toLowerCase()))];
+
+  return uniqueEmails.length > 0 ? uniqueEmails : ['admin'];
+};
+
+const findAdminEmail = (email) => {
+  const normalizedEmail = String(email || '').trim().toLowerCase();
+
+  return getAdminEmails().find((adminEmail) => tokensMatch(normalizedEmail, adminEmail)) || '';
+};
+
 const getAdminSessionSecret = () => process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
 
 const signAdminPayload = (encodedPayload) => {
@@ -575,22 +594,22 @@ app.get('/api/health', async (_req, res) => {
 });
 
 app.post('/api/admin/login', (req, res) => {
-  const expectedEmail = process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME || 'admin';
   const expectedPassword = process.env.ADMIN_PASSWORD || process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
   const email = textValue(req.body, 'email');
   const password = typeof req.body.password === 'string' ? req.body.password : '';
+  const matchedEmail = findAdminEmail(email);
 
   if (!expectedPassword || !getAdminSessionSecret()) {
     res.status(503).json({ error: 'Admin login is not configured.' });
     return;
   }
 
-  if (!tokensMatch(email.toLowerCase(), expectedEmail.toLowerCase()) || !tokensMatch(password, expectedPassword)) {
+  if (!matchedEmail || !tokensMatch(password, expectedPassword)) {
     res.status(401).json({ error: 'Invalid admin login.' });
     return;
   }
 
-  const token = createAdminSessionToken(expectedEmail);
+  const token = createAdminSessionToken(matchedEmail);
   const secureCookie = process.env.NODE_ENV === 'production' || req.get('x-forwarded-proto') === 'https' ? '; Secure' : '';
 
   res.setHeader(
@@ -602,7 +621,7 @@ app.post('/api/admin/login', (req, res) => {
   res.json({
     token,
     admin: {
-      email: expectedEmail,
+      email: matchedEmail,
     },
     expiresAt: new Date(Date.now() + adminSessionTtlMs).toISOString(),
   });
@@ -616,7 +635,7 @@ app.post('/api/admin/logout', (_req, res) => {
 app.get('/api/admin/me', requireAdminToken, (req, res) => {
   res.json({
     admin: {
-      email: req.adminSession?.email || process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME || 'admin',
+      email: req.adminSession?.email || getAdminEmails()[0],
     },
   });
 });
