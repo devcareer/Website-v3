@@ -18,6 +18,8 @@ const app = express();
 const port = process.env.PORT || 3001;
 const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const distPath = path.join(projectRoot, 'dist');
+const adminCookieName = 'dc_nomba_admin';
+const adminSessionTtlMs = Number(process.env.ADMIN_SESSION_TTL_MS || 12 * 60 * 60 * 1000);
 
 const allowedOrigins = (process.env.CORS_ORIGIN || process.env.CORS_ORIGINS || '')
   .split(',')
@@ -114,7 +116,13 @@ const validateRegistration = (registration) => {
 
 const getAdminToken = (req) => {
   const bearerToken = req.get('authorization')?.replace(/^Bearer\s+/i, '').trim();
-  return req.get('x-admin-token') || bearerToken || '';
+  const cookieToken = req.headers.cookie
+    ?.split(';')
+    .map((cookie) => cookie.trim())
+    .find((cookie) => cookie.startsWith(`${adminCookieName}=`))
+    ?.slice(adminCookieName.length + 1);
+
+  return req.get('x-admin-token') || bearerToken || (cookieToken ? decodeURIComponent(cookieToken) : '') || '';
 };
 
 const tokensMatch = (actual, expected) => {
@@ -128,15 +136,72 @@ const tokensMatch = (actual, expected) => {
   return actualBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(actualBuffer, expectedBuffer);
 };
 
+const getAdminSessionSecret = () => process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
+
+const signAdminPayload = (encodedPayload) => {
+  const secret = getAdminSessionSecret();
+
+  if (!secret) {
+    return '';
+  }
+
+  return crypto.createHmac('sha256', secret).update(encodedPayload).digest('base64url');
+};
+
+const createAdminSessionToken = (email) => {
+  const payload = {
+    email,
+    exp: Date.now() + adminSessionTtlMs,
+  };
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = signAdminPayload(encodedPayload);
+
+  return `${encodedPayload}.${signature}`;
+};
+
+const verifyAdminSessionToken = (token) => {
+  const [encodedPayload, signature] = token.split('.');
+
+  if (!encodedPayload || !signature) {
+    return null;
+  }
+
+  const expectedSignature = signAdminPayload(encodedPayload);
+
+  if (!tokensMatch(signature, expectedSignature)) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString('utf8'));
+
+    if (!payload.exp || Date.now() > payload.exp) {
+      return null;
+    }
+
+    return payload;
+  } catch (_error) {
+    return null;
+  }
+};
+
 const requireAdminToken = (req, res, next) => {
   const expectedToken = process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
+  const token = getAdminToken(req);
+  const session = verifyAdminSessionToken(token);
+
+  if (session) {
+    req.adminSession = session;
+    next();
+    return;
+  }
 
   if (!expectedToken) {
     res.status(503).json({ error: 'Admin access is not configured.' });
     return;
   }
 
-  if (!tokensMatch(getAdminToken(req), expectedToken)) {
+  if (!tokensMatch(token, expectedToken)) {
     res.status(401).json({ error: 'Unauthorized' });
     return;
   }
@@ -191,6 +256,53 @@ app.get('/api/health', async (_req, res) => {
   res.json({
     ok: true,
     database: hasDatabase ? 'configured' : 'missing',
+  });
+});
+
+app.post('/api/admin/login', (req, res) => {
+  const expectedEmail = process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME || 'admin';
+  const expectedPassword = process.env.ADMIN_PASSWORD || process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
+  const email = textValue(req.body, 'email');
+  const password = typeof req.body.password === 'string' ? req.body.password : '';
+
+  if (!expectedPassword || !getAdminSessionSecret()) {
+    res.status(503).json({ error: 'Admin login is not configured.' });
+    return;
+  }
+
+  if (!tokensMatch(email.toLowerCase(), expectedEmail.toLowerCase()) || !tokensMatch(password, expectedPassword)) {
+    res.status(401).json({ error: 'Invalid admin login.' });
+    return;
+  }
+
+  const token = createAdminSessionToken(expectedEmail);
+  const secureCookie = process.env.NODE_ENV === 'production' || req.get('x-forwarded-proto') === 'https' ? '; Secure' : '';
+
+  res.setHeader(
+    'Set-Cookie',
+    `${adminCookieName}=${encodeURIComponent(token)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${Math.floor(
+      adminSessionTtlMs / 1000
+    )}${secureCookie}`
+  );
+  res.json({
+    token,
+    admin: {
+      email: expectedEmail,
+    },
+    expiresAt: new Date(Date.now() + adminSessionTtlMs).toISOString(),
+  });
+});
+
+app.post('/api/admin/logout', (_req, res) => {
+  res.setHeader('Set-Cookie', `${adminCookieName}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`);
+  res.json({ success: true });
+});
+
+app.get('/api/admin/me', requireAdminToken, (req, res) => {
+  res.json({
+    admin: {
+      email: req.adminSession?.email || process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME || 'admin',
+    },
   });
 });
 

@@ -11,6 +11,7 @@ import {
   Home,
   LaptopForDevelopers,
   NombaHackathon,
+  NombaHackathonAdmin,
   NombaForwardTraining,
   NombaHackathonTracks,
   NombaHackathonRegistration,
@@ -127,6 +128,10 @@ export const router = createBrowserRouter([
   {
     path: '/programs/nomba-hackathon/register',
     element: <NombaHackathonRegistration />,
+  },
+  {
+    path: '/admin/nomba-hackathon',
+    element: <NombaHackathonAdmin />,
   },
   { path: '/p/:id', element: <FreeProfile /> },
   { path: '/error', element: <Error /> },

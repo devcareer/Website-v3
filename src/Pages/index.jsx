@@ -23,3 +23,4 @@ export { default as NombaHackathon } from './NombaHackathon/NombaHackathon';
 export { default as NombaHackathonRegistration } from './NombaHackathon/NombaHackathonRegistration';
 export { default as NombaForwardTraining } from './NombaHackathon/NombaForwardTraining';
 export { default as NombaHackathonTracks } from './NombaHackathon/NombaHackathonTracks';
+export { default as NombaHackathonAdmin } from './Admin/NombaHackathonAdmin';
