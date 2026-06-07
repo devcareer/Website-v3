@@ -1,3 +1,4 @@
+/api/health https://website-v3-yvhj.onrender.com/api/health 200
 /api/admin/* https://website-v3-yvhj.onrender.com/api/admin/:splat 200
 /api/nomba-hackathon/* https://website-v3-yvhj.onrender.com/api/nomba-hackathon/:splat 200
 /* /index.html 200

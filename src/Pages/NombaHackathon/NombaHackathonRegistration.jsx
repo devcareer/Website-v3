@@ -221,9 +221,10 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
           },
           body: JSON.stringify(payload),
         });
+        const result = await response.json().catch(() => null);
 
-        if (!response.ok) {
-          throw new Error('Registration request failed');
+        if (!response.ok || !result?.success) {
+          throw new Error(result?.error || 'Registration request failed');
         }
 
         onSuccess(formValues.firstName);
