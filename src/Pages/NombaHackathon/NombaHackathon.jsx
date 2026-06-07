@@ -1238,7 +1238,7 @@ const NombaHackathon = () => {
               Ready to build with Nomba?
             </Typography>
             <Typography className="nm-copy nm-copy--wide">
-              Register now, secure your onboarding slot, and start building toward Demo Day on July 11, 2026.
+              Register now, secure your onboarding slot, and start building toward Demo Day on July 19, 2026.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>

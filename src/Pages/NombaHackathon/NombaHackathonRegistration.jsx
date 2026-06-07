@@ -107,7 +107,7 @@ const NombaHackathonRegistration = () => {
           </Link>
           <Typography className="nmr-hero__title">Register For Nomba Forward Hackathon 2026</Typography>
           <Typography className="nmr-hero__subtitle nmr-reveal">
-            Registration closes on June 15, 2026. Choose your primary track and focus area to secure
+            Registration closes on June 23, 2026. Choose your primary track and focus area to secure
             onboarding and training access.
           </Typography>
         </Box>
@@ -503,18 +503,24 @@ const SuccessScreen = ({ name, navigate }) => {
         <Typography className="nmr-success__emoji">🎉</Typography>
         <Typography className="nmr-success__title">Registration Successful{name ? `, ${name}` : ''}!</Typography>
         <Typography className="nmr-success__subtitle">
-          You are now on the list for Nomba Forward Hackathon 2026. Watch your inbox for onboarding details before June 16, 2026.
+          You are now on the list for Nomba Forward Hackathon 2026. Watch your inbox for onboarding details before June 24, 2026.
         </Typography>
 
         <Box className="nmr-success__timeline">
           <p>
-            <strong>Registration:</strong> June 1 - 15, 2026
+            <strong>Registration:</strong> June 8 - 23, 2026
           </p>
           <p>
-            <strong>Onboarding:</strong> June 16 - 21, 2026
+            <strong>Onboarding:</strong> June 24 - 29, 2026
           </p>
           <p>
-            <strong>Demo Day:</strong> July 11, 2026
+            <strong>Build Sprint:</strong> July 1 - 7, 2026
+          </p>
+          <p>
+            <strong>Validation & Judging:</strong> July 8 - 14, 2026
+          </p>
+          <p>
+            <strong>Demo Day:</strong> July 19, 2026
           </p>
         </Box>
 
