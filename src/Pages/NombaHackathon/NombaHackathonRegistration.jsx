@@ -31,7 +31,7 @@ gsap.registerPlugin(useGSAP, SplitText);
 
 const FORM_ENDPOINT =
   import.meta.env.VITE_NOMBA_HACKATHON_FORM_URL ||
-  'https://script.google.com/macros/s/AKfycbx70l90dyjLM4yLYE-NRWk5RXyBfItSFtBZOTR91_8OMEAG8G9NxAk-pNomTDHrgh9u/exec';
+  '/api/nomba-hackathon/registrations';
 
 const ROLE_OPTIONS = [
   'Frontend Engineer',
@@ -211,19 +211,24 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
     onSubmit: async (formValues) => {
       setIsSubmitting(true);
 
-      const payload = new FormData();
-      payload.append('program', 'Nomba Forward Hackathon 2026');
-      payload.append('submittedAt', new Date().toISOString());
-
-      Object.entries(formValues).forEach(([key, value]) => {
-        payload.append(key, typeof value === 'boolean' ? String(value) : value);
-      });
+      const payload = {
+        program: 'Nomba Forward Hackathon 2026',
+        submittedAt: new Date().toISOString(),
+        ...formValues,
+      };
 
       try {
-        await fetch(FORM_ENDPOINT, {
+        const response = await fetch(FORM_ENDPOINT, {
           method: 'POST',
-          body: payload,
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
         });
+
+        if (!response.ok) {
+          throw new Error('Registration request failed');
+        }
 
         onSuccess(formValues.firstName);
       } catch (error) {
