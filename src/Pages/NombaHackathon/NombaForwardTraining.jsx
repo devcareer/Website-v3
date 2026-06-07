@@ -259,8 +259,9 @@ const NombaForwardTraining = () => {
           }
 
           if (desktop) {
+            gsap.set('.nft-parallax', { yPercent: -6 });
             gsap.to('.nft-parallax', {
-              yPercent: 10,
+              yPercent: 6,
               ease: 'none',
               scrollTrigger: {
                 trigger: '.nft-parallax',

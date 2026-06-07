@@ -404,13 +404,25 @@
   border-radius: 22px;
   overflow: hidden;
   border: 1px solid rgba(255, 255, 255, 0.16);
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  aspect-ratio: 4 / 3;
+  min-height: 420px;
 }
 
 .nft-path__image-wrap img {
+  display: block;
   width: 100%;
-  min-height: 420px;
   height: 100%;
   object-fit: cover;
+  object-position: 58% center;
+}
+
+@media (min-width: 1024px) {
+  .nft-path__image-wrap img {
+    height: 112%;
+  }
 }
 
 /* Benefits */
@@ -479,8 +491,10 @@
     grid-template-columns: 1fr;
   }
 
-  .nft-path__image-wrap img {
-    min-height: 300px;
+  .nft-path__image-wrap {
+    aspect-ratio: auto;
+    min-height: 0;
+    height: 300px;
   }
 }
 
