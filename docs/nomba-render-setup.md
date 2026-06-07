@@ -23,6 +23,10 @@ Use a Render Web Service for this repo so the React build and API run from the s
 - `RESEND_API_KEY=<Resend API key used to send verification codes>`
 - `RESEND_FROM_EMAIL=DevCareerNomba Hackathon <message@hack.devcareer.io>`
 - `EMAIL_VERIFICATION_SECRET=<long random secret used to hash email codes>`
+- `DEVCAREER_X_URL=https://x.com/dev_careers`
+- `DEVCAREER_INSTAGRAM_URL=https://www.instagram.com/dev_careers/`
+- `NOMBA_HACKATHON_URL=https://devcareer.io/programs/nomba-hackathon`
+- `NOMBA_DOCS_URL=https://developer.nomba.com`
 - `DATABASE_SSL=true`
 - `CORS_ORIGIN=` can stay empty if the frontend and API are served by this same Web Service.
 

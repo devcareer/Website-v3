@@ -29,6 +29,11 @@ const emailVerificationTtlMs = Number(process.env.EMAIL_VERIFICATION_TTL_MS || 1
 const emailVerificationMaxAttempts = Number(process.env.EMAIL_VERIFICATION_MAX_ATTEMPTS || 5);
 const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'DevCareerNomba Hackathon <message@hack.devcareer.io>';
 const emailSenderName = 'DevCareerNomba Hackathon';
+const hackathonName = 'Nomba Forward Hackathon 2026';
+const devCareerXUrl = process.env.DEVCAREER_X_URL || 'https://x.com/dev_careers';
+const devCareerInstagramUrl = process.env.DEVCAREER_INSTAGRAM_URL || 'https://www.instagram.com/dev_careers/';
+const hackathonPageUrl = process.env.NOMBA_HACKATHON_URL || 'https://devcareer.io/programs/nomba-hackathon';
+const nombaDocsUrl = process.env.NOMBA_DOCS_URL || 'https://developer.nomba.com';
 
 const allowedOrigins = (process.env.CORS_ORIGIN || process.env.CORS_ORIGINS || '')
   .split(',')
@@ -184,13 +189,79 @@ const postJson = (url, { headers = {}, payload = {} }) =>
     request.end();
   });
 
-const sendVerificationEmail = async ({ email, firstName, code }) => {
+const emailButton = ({ href, label, background = '#ffcc00', color = '#181818' }) => `
+  <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"
+    style="display: inline-block; background: ${background}; color: ${color}; text-decoration: none; font-size: 14px; font-weight: 800; padding: 13px 18px; border-radius: 999px;">
+    ${escapeHtml(label)}
+  </a>
+`;
+
+const renderSocialLinks = () => `
+  <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 20px;">
+    <tr>
+      <td style="background: #fff7d8; border: 1px solid #f2df8d; border-radius: 18px; padding: 18px;">
+        <p style="margin: 0 0 12px; color: #191917; font-size: 15px; font-weight: 800;">Follow DevCareer for hackathon updates</p>
+        <p style="margin: 0 0 16px; color: #4f4a33; font-size: 14px; line-height: 1.6;">
+          We will share reminders, build resources, and important announcements across our social channels.
+        </p>
+        <table role="presentation" cellspacing="0" cellpadding="0">
+          <tr>
+            <td style="padding-right: 10px;">${emailButton({ href: devCareerXUrl, label: 'Follow on X', background: '#181818', color: '#ffffff' })}</td>
+            <td>${emailButton({ href: devCareerInstagramUrl, label: 'Follow on Instagram', background: '#e94883', color: '#ffffff' })}</td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+`;
+
+const renderEmailShell = ({ previewText, eyebrow, title, children }) => `
+  <!doctype html>
+  <html>
+    <head>
+      <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>${escapeHtml(title)}</title>
+    </head>
+    <body style="margin: 0; padding: 0; background: #f6f3e8; font-family: Arial, Helvetica, sans-serif;">
+      <div style="display: none; max-height: 0; overflow: hidden; opacity: 0;">${escapeHtml(previewText)}</div>
+      <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: #f6f3e8; padding: 28px 14px;">
+        <tr>
+          <td align="center">
+            <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 640px; background: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #ece4bd;">
+              <tr>
+                <td style="background: #171713; padding: 28px 28px 32px;">
+                  <p style="margin: 0 0 10px; color: #ffcc00; font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;">${escapeHtml(eyebrow)}</p>
+                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; line-height: 1.2; font-weight: 900;">${escapeHtml(title)}</h1>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding: 28px;">
+                  ${children}
+                </td>
+              </tr>
+              <tr>
+                <td style="background: #181818; padding: 20px 28px;">
+                  <p style="margin: 0; color: #f8f3d9; font-size: 13px; line-height: 1.7;">
+                    ${escapeHtml(emailSenderName)} | DevCareer
+                  </p>
+                </td>
+              </tr>
+            </table>
+            <p style="max-width: 640px; margin: 14px auto 0; color: #7a7355; font-size: 12px; line-height: 1.6;">
+              You received this email because you registered for ${escapeHtml(hackathonName)}.
+            </p>
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>
+`;
+
+const sendEmail = async ({ to, subject, text, html }) => {
   if (!process.env.RESEND_API_KEY) {
     throw new Error('Email verification is not configured.');
   }
-
-  const verificationMinutes = Math.max(1, Math.round(emailVerificationTtlMs / 60000));
-  const displayName = escapeHtml(firstName || 'there');
 
   const response = await postJson('https://api.resend.com/emails', {
     headers: {
@@ -198,32 +269,156 @@ const sendVerificationEmail = async ({ email, firstName, code }) => {
     },
     payload: {
       from: resendFromEmail,
-      to: [email],
-      subject: 'Your Nomba Forward Hackathon verification code',
-      text: `Hi ${firstName || 'there'},\n\nYour Nomba Forward Hackathon verification code is ${code}. It expires in ${verificationMinutes} minutes.\n\nIf you did not request this, you can ignore this email.\n\n${emailSenderName}`,
-      html: `
-        <div style="font-family: Arial, sans-serif; color: #172033; line-height: 1.6;">
-          <p>Hi ${displayName},</p>
-          <p>Your Nomba Forward Hackathon verification code is:</p>
-          <p style="font-size: 28px; font-weight: 700; letter-spacing: 6px; margin: 20px 0;">${code}</p>
-          <p>This code expires in ${verificationMinutes} minutes.</p>
-          <p>If you did not request this, you can ignore this email.</p>
-          <p>${emailSenderName}</p>
-        </div>
-      `,
+      to: [to],
+      subject,
+      text,
+      html,
     },
   });
   const { data } = response;
 
   if (!response.ok) {
     console.error(
-      'Unable to send Nomba verification email:',
+      'Unable to send Nomba email:',
       data?.message || data?.error || response.statusText || response.status
     );
-    throw new Error('Unable to send verification email.');
+    throw new Error('Unable to send email.');
   }
 
   return data;
+};
+
+const sendVerificationEmail = async ({ email, firstName, code }) => {
+  const verificationMinutes = Math.max(1, Math.round(emailVerificationTtlMs / 60000));
+  const displayName = escapeHtml(firstName || 'there');
+
+  return sendEmail({
+    to: email,
+    subject: 'Your Nomba Forward Hackathon verification code',
+    text: [
+      `Hi ${firstName || 'there'},`,
+      '',
+      `Your ${hackathonName} verification code is ${code}.`,
+      `It expires in ${verificationMinutes} minutes.`,
+      '',
+      `Follow DevCareer on X: ${devCareerXUrl}`,
+      `Follow DevCareer on Instagram: ${devCareerInstagramUrl}`,
+      '',
+      'If you did not request this, you can ignore this email.',
+      '',
+      emailSenderName,
+    ].join('\n'),
+    html: renderEmailShell({
+      previewText: `Your ${hackathonName} verification code is ${code}.`,
+      eyebrow: 'Email verification',
+      title: 'Confirm your hackathon registration',
+      children: `
+        <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          Use the code below to confirm your email and complete your registration for <strong>${escapeHtml(hackathonName)}</strong>.
+        </p>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
+          <tr>
+            <td align="center" style="background: #fff2ae; border: 1px solid #f2cc34; border-radius: 20px; padding: 24px;">
+              <p style="margin: 0 0 8px; color: #6c5700; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Your verification code</p>
+              <p style="margin: 0; color: #151515; font-size: 40px; font-weight: 900; letter-spacing: 8px;">${code}</p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin: 0 0 10px; color: #4a4631; font-size: 14px; line-height: 1.7;">
+          This code expires in <strong>${verificationMinutes} minutes</strong>. If you did not start this registration, you can ignore this email.
+        </p>
+        ${renderSocialLinks()}
+      `,
+    }),
+  });
+};
+
+const sendRegistrationConfirmationEmail = async ({ registration }) => {
+  const displayName = escapeHtml(registration.firstName || 'there');
+  const safeTrack = escapeHtml(registration.track || 'Selected track');
+  const safeFocusArea = escapeHtml(registration.focusArea || 'Selected focus area');
+  const safeMode = escapeHtml(registration.participationMode || 'Solo');
+
+  return sendEmail({
+    to: registration.email,
+    subject: 'You are registered for Nomba Forward Hackathon 2026',
+    text: [
+      `Hi ${registration.firstName || 'there'},`,
+      '',
+      `Your registration for ${hackathonName} has been confirmed.`,
+      '',
+      `Track: ${registration.track}`,
+      `Focus area: ${registration.focusArea}`,
+      `Participation mode: ${registration.participationMode}`,
+      '',
+      'Key dates:',
+      'Registration: June 8 - 23, 2026',
+      'Onboarding: June 24 - 29, 2026',
+      'Build Sprint: July 1 - 7, 2026',
+      'Validation & Judging: July 8 - 14, 2026',
+      'Demo Day: July 19, 2026',
+      '',
+      `Hackathon page: ${hackathonPageUrl}`,
+      `Nomba API docs: ${nombaDocsUrl}`,
+      `Follow DevCareer on X: ${devCareerXUrl}`,
+      `Follow DevCareer on Instagram: ${devCareerInstagramUrl}`,
+      '',
+      emailSenderName,
+    ].join('\n'),
+    html: renderEmailShell({
+      previewText: `Your registration for ${hackathonName} has been confirmed.`,
+      eyebrow: 'Registration confirmed',
+      title: 'You are officially registered',
+      children: `
+        <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          Your registration for <strong>${escapeHtml(hackathonName)}</strong> is confirmed. We will send onboarding information and next steps to this email.
+        </p>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 20px 0; border-collapse: separate; border-spacing: 0 10px;">
+          <tr>
+            <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
+              <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">Track</p>
+              <p style="margin: 0; color: #181818; font-size: 15px; font-weight: 800;">${safeTrack}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
+              <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">Focus area</p>
+              <p style="margin: 0; color: #181818; font-size: 15px; font-weight: 800;">${safeFocusArea}</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
+              <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">Participation mode</p>
+              <p style="margin: 0; color: #181818; font-size: 15px; font-weight: 800;">${safeMode}</p>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
+          <tr>
+            <td style="background: #191917; border-radius: 18px; padding: 18px;">
+              <p style="margin: 0 0 12px; color: #ffcc00; font-size: 13px; font-weight: 800; text-transform: uppercase;">Key dates</p>
+              <p style="margin: 0; color: #ffffff; font-size: 14px; line-height: 1.8;">
+                Registration: June 8 - 23, 2026<br>
+                Onboarding: June 24 - 29, 2026<br>
+                Build Sprint: July 1 - 7, 2026<br>
+                Validation &amp; Judging: July 8 - 14, 2026<br>
+                Demo Day: July 19, 2026
+              </p>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+          <tr>
+            <td style="padding-right: 10px;">${emailButton({ href: hackathonPageUrl, label: 'View Hackathon Page' })}</td>
+            <td>${emailButton({ href: nombaDocsUrl, label: 'Explore Nomba Docs', background: '#181818', color: '#ffffff' })}</td>
+          </tr>
+        </table>
+        ${renderSocialLinks()}
+      `,
+    }),
+  });
 };
 
 const getAdminToken = (req) => {
@@ -516,11 +711,20 @@ app.post('/api/nomba-hackathon/registrations/verify', async (req, res) => {
       id: verification.id,
       registration,
     });
+    let confirmationEmailSent = true;
+
+    try {
+      await sendRegistrationConfirmationEmail({ registration });
+    } catch (emailError) {
+      confirmationEmailSent = false;
+      console.error('Unable to send Nomba registration confirmation email:', emailError);
+    }
 
     res.status(201).json({
       success: true,
       id: savedRegistration.id,
       createdAt: savedRegistration.created_at,
+      confirmationEmailSent,
     });
   } catch (error) {
     console.error('Unable to verify Nomba hackathon registration:', error);
