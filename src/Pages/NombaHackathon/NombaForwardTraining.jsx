@@ -16,65 +16,59 @@ gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 const CURRICULUM_MODULES = [
   {
     id: '01',
-    title: 'Payment Infrastructure Fundamentals',
-    topics: [
-      'Nigerian payment landscape and rails architecture',
-      'Cards, transfers, USSD, QR: where each flow fits',
-      'Settlement paths, retries, and transaction states',
-    ],
-    outcome: 'Participants can model reliable end-to-end payment journeys for Nigerian businesses.',
+    title: 'Welcome & Overview',
   },
   {
     id: '02',
-    title: 'Security, Fraud and Compliance Foundations',
-    topics: [
-      'Threat modeling for checkout and payout systems',
-      'Authentication, authorization, and access controls',
-      'PCI-aware implementation patterns and secure data handling',
-    ],
-    outcome: 'Teams ship with security-first engineering decisions and defensible architecture choices.',
+    title: 'Your Hackathon Environment',
   },
   {
     id: '03',
-    title: 'Nomba API Integration & Webhooks',
-    topics: [
-      'Authentication lifecycle and token management',
-      'Webhook signature validation and replay protection',
-      'Idempotency, retries, and resilient API client design',
-    ],
-    outcome: 'Builders can integrate Nomba APIs safely and operate webhook workflows confidently.',
+    title: 'Setup & Authentication',
   },
   {
     id: '04',
-    title: 'Checkout, Reconciliation and Monitoring',
-    topics: [
-      'Designing conversion-friendly checkout experiences',
-      'Reconciliation data model for transactions and settlements',
-      'Observability baselines: logs, metrics, and alerting',
-    ],
-    outcome: 'Participants can build payment products that are usable, auditable, and observable.',
+    title: 'Sub-accounts',
   },
   {
     id: '05',
-    title: 'Production Readiness Engineering',
-    topics: [
-      'Incident response playbooks for payment-critical systems',
-      'Load and failure scenario testing for payment APIs',
-      'Release strategy, rollback plans, and change safety',
-    ],
-    outcome: 'Teams leave with a practical release playbook and operational readiness discipline.',
+    title: 'Online Checkout',
   },
   {
     id: '06',
-    title: 'Capstone Build + Certification Review',
-    topics: [
-      'Live integration challenge with Nomba-aligned problem set',
-      'Security and architecture walkthrough with reviewers',
-      'Technical defense and improvement recommendations',
-    ],
-    outcome: 'Qualified participants complete certification assessment with tangible build artifacts.',
+    title: 'Tokenized Cards & Recurring Payments',
+  },
+  {
+    id: '07',
+    title: 'Virtual Accounts',
+  },
+  {
+    id: '08',
+    title: 'Webhooks',
+  },
+  {
+    id: '09',
+    title: 'Transfers',
+  },
+  {
+    id: '10',
+    title: 'Direct Debits (Mandates)',
+  },
+  {
+    id: '11',
+    title: 'Transactions & Reconciliation',
+  },
+  {
+    id: '12',
+    title: 'Mapping APIs to Tracks',
+  },
+  {
+    id: '13',
+    title: 'Build-Week Checklist',
   },
 ];
+
+const TRAINING_URL = 'https://training.nomba.com/';
 
 const CERT_PATH = [
   {
@@ -317,9 +311,9 @@ const NombaForwardTraining = () => {
           </Typography>
 
           <Stack className="nft-hero__cta" direction={{ xs: 'column', sm: 'row' }}>
-            <Link to="/programs/nomba-hackathon/register" style={{ textDecoration: 'none' }}>
-              <Button className="nft-btn nft-btn--primary">Join Hackathon & Training</Button>
-            </Link>
+            <Button component="a" href={TRAINING_URL} className="nft-btn nft-btn--primary">
+              Start Training
+            </Button>
             <Link to="/programs/nomba-hackathon" style={{ textDecoration: 'none' }}>
               <Button className="nft-btn nft-btn--secondary">Back to Hackathon</Button>
             </Link>
@@ -383,11 +377,11 @@ const NombaForwardTraining = () => {
 
           <Box className="nft-curriculum__grid">
             <Box className="nft-curriculum__intro nft-reveal">
-              <Typography className="nft-curriculum__window">6 Modules</Typography>
+              <Typography className="nft-curriculum__window">All Modules</Typography>
               <Typography className="nft-curriculum__headline">Build secure payment systems, not just demos.</Typography>
               <Typography className="nft-curriculum__copy">
-                Each module includes live walkthroughs, applied lab work, and mentor checkpoints so teams can
-                implement with confidence under hackathon timelines.
+                Move from account setup to Nomba API workflows, then map what you learn into the hackathon
+                tracks and build-week checklist.
               </Typography>
               <Box className="nft-progress">
                 <span className="nft-progress__fill" />
@@ -400,13 +394,10 @@ const NombaForwardTraining = () => {
                   <Typography className="nft-module-card__id">{module.id}</Typography>
                   <Box className="nft-module-card__body">
                     <Typography className="nft-module-card__title">{module.title}</Typography>
-                    <ul>
-                      {module.topics.map((topic) => (
-                        <li key={topic}>{topic}</li>
-                      ))}
-                    </ul>
-                    <Typography className="nft-module-card__outcome">Outcome: {module.outcome}</Typography>
                   </Box>
+                  <span className="nft-module-card__arrow" aria-hidden="true">
+                    →
+                  </span>
                 </Box>
               ))}
             </Box>

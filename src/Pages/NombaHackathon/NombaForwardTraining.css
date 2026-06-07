@@ -308,11 +308,12 @@
 
 .nft-module-card {
   display: grid;
-  grid-template-columns: 70px 1fr;
+  grid-template-columns: 70px 1fr auto;
   gap: 14px;
+  align-items: center;
   border: 1px solid #e8deba;
   border-radius: 18px;
-  padding: 18px;
+  padding: 15px 18px;
   background: #fffef9;
   box-shadow: 0 10px 24px rgba(0, 0, 0, 0.03);
 }
@@ -336,29 +337,20 @@
 .nft-module-card__title {
   font-size: 1.06rem !important;
   font-weight: 800 !important;
-  margin-bottom: 10px !important;
+  margin-bottom: 0 !important;
   color: #202028 !important;
 }
 
-.nft-module-card ul {
-  margin: 0;
-  padding-left: 18px;
+.nft-module-card__arrow {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
   display: grid;
-  gap: 6px;
-}
-
-.nft-module-card li {
-  color: #4f4f58;
-  font-size: 0.9rem;
-  line-height: 1.55;
-}
-
-.nft-module-card__outcome {
-  margin-top: 11px !important;
-  color: #2f2f36 !important;
-  font-size: 0.88rem !important;
-  line-height: 1.6 !important;
-  font-weight: 600 !important;
+  place-items: center;
+  background: #fff4bf;
+  color: #171717;
+  font-size: 1.2rem;
+  font-weight: 800;
 }
 
 /* Path */
@@ -506,7 +498,8 @@
   }
 
   .nft-module-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: 52px 1fr auto;
+    gap: 12px;
   }
 
   .nft-hero__cta,
