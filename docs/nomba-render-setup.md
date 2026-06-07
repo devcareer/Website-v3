@@ -10,12 +10,11 @@ Use a Render Web Service for this repo so the React build and API run from the s
 ## Web Service Settings
 
 - Runtime: Node
-- Build command: `HUSKY=0 yarn install --frozen-lockfile && yarn build`
+- Build command: `HUSKY=0 yarn install --frozen-lockfile --production=false && yarn build`
 - Start command: `yarn start`
 
 ## Environment Variables
 
-- `NODE_ENV=production`
 - `DATABASE_URL=<Render Postgres internal database URL>`
 - `ADMIN_API_KEY=<long random secret>`
 - `DATABASE_SSL=true`
