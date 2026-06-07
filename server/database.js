@@ -46,6 +46,7 @@ export const initializeDatabase = async () => {
       email TEXT NOT NULL,
       phone TEXT NOT NULL,
       country TEXT NOT NULL,
+      state TEXT,
       participation_mode TEXT NOT NULL,
       team_name TEXT,
       team_size INTEGER,
@@ -58,6 +59,11 @@ export const initializeDatabase = async () => {
       raw_payload JSONB NOT NULL DEFAULT '{}'::jsonb,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+  `);
+
+  await pool.query(`
+    ALTER TABLE nomba_hackathon_registrations
+    ADD COLUMN IF NOT EXISTS state TEXT;
   `);
 
   await pool.query(`
@@ -100,6 +106,7 @@ export const insertNombaRegistration = async (registration, queryable = pool) =>
         email,
         phone,
         country,
+        state,
         participation_mode,
         team_name,
         team_size,
@@ -120,15 +127,16 @@ export const insertNombaRegistration = async (registration, queryable = pool) =>
         $6,
         $7,
         $8,
-        NULLIF($9, ''),
-        $10,
+        $9,
+        NULLIF($10, ''),
         $11,
         $12,
         $13,
         $14,
         $15,
         $16,
-        $17::jsonb
+        $17,
+        $18::jsonb
       )
       RETURNING id, created_at;
     `,
@@ -140,6 +148,7 @@ export const insertNombaRegistration = async (registration, queryable = pool) =>
       registration.email,
       registration.phone,
       registration.country,
+      registration.state,
       registration.participationMode,
       registration.teamName,
       registration.teamSize,
@@ -244,6 +253,7 @@ export const listNombaRegistrations = async ({ limit = 200, offset = 0 } = {}) =
   const result = await pool.query(
     `
       SELECT
+        COUNT(*) OVER()::int AS "totalCount",
         id,
         program,
         submitted_at AS "submittedAt",
@@ -252,6 +262,7 @@ export const listNombaRegistrations = async ({ limit = 200, offset = 0 } = {}) =
         email,
         phone,
         country,
+        state,
         participation_mode AS "participationMode",
         team_name AS "teamName",
         team_size AS "teamSize",

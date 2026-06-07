@@ -14,7 +14,6 @@ import {
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { useFormik } from 'formik';
-import countryList from 'react-select-country-list';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import { SplitText } from 'gsap/SplitText';
@@ -44,6 +43,45 @@ const ROLE_OPTIONS = [
 ];
 
 const EXPERIENCE_LEVELS = ['Beginner (0-1 years)', 'Intermediate (1-3 years)', 'Advanced (3-5 years)', 'Expert (5+ years)'];
+const NIGERIAN_STATES = [
+  'Abia',
+  'Adamawa',
+  'Akwa Ibom',
+  'Anambra',
+  'Bauchi',
+  'Bayelsa',
+  'Benue',
+  'Borno',
+  'Cross River',
+  'Delta',
+  'Ebonyi',
+  'Edo',
+  'Ekiti',
+  'Enugu',
+  'FCT',
+  'Gombe',
+  'Imo',
+  'Jigawa',
+  'Kaduna',
+  'Kano',
+  'Katsina',
+  'Kebbi',
+  'Kogi',
+  'Kwara',
+  'Lagos',
+  'Nasarawa',
+  'Niger',
+  'Ogun',
+  'Ondo',
+  'Osun',
+  'Oyo',
+  'Plateau',
+  'Rivers',
+  'Sokoto',
+  'Taraba',
+  'Yobe',
+  'Zamfara',
+];
 
 const NombaHackathonRegistration = () => {
   const navigate = useNavigate();
@@ -132,14 +170,13 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
   const [verificationRequest, setVerificationRequest] = useState(null);
   const [verificationCode, setVerificationCode] = useState('');
   const [isVerifying, setIsVerifying] = useState(false);
-  const COUNTRIES = useMemo(() => countryList().getData(), []);
   const initialValues = useMemo(
     () => ({
       firstName: '',
       lastName: '',
       email: '',
       phone: '',
-      country: '',
+      state: '',
       participationMode: '',
       teamName: '',
       teamSize: '',
@@ -170,8 +207,8 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
     if (!values.phone.trim()) {
       errors.phone = 'Phone number is required';
     }
-    if (!values.country) {
-      errors.country = 'Please select your country';
+    if (!values.state) {
+      errors.state = 'Please select your Nigerian state';
     }
     if (!values.participationMode) {
       errors.participationMode = 'Select solo or team participation';
@@ -420,22 +457,22 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
         />
       </Stack>
 
-      <FormControl fullWidth required sx={fieldStyle} error={touched.country && Boolean(errors.country)}>
-        <InputLabel>Country</InputLabel>
+      <FormControl fullWidth required sx={fieldStyle} error={touched.state && Boolean(errors.state)}>
+        <InputLabel>State in Nigeria</InputLabel>
         <Select
-          name="country"
-          label="Country"
-          value={values.country}
+          name="state"
+          label="State in Nigeria"
+          value={values.state}
           onChange={handleChange}
           onBlur={handleBlur}
         >
-          {COUNTRIES.map((country) => (
-            <MenuItem key={country.value} value={country.label}>
-              {country.label}
+          {NIGERIAN_STATES.map((state) => (
+            <MenuItem key={state} value={state}>
+              {state}
             </MenuItem>
           ))}
         </Select>
-        {touched.country && errors.country && <Typography className="nmr-error">{errors.country}</Typography>}
+        {touched.state && errors.state && <Typography className="nmr-error">{errors.state}</Typography>}
       </FormControl>
 
       <Typography className="nmr-form__title">Participation Details</Typography>

@@ -1,12 +1,13 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Stack, TextField } from '@mui/material';
-import { FileDownload, Logout, Refresh, Search } from '@mui/icons-material';
+import { FileDownload, KeyboardArrowDown, KeyboardArrowUp, Logout, Refresh, Search } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import './NombaHackathonAdmin.css';
 
 const ADMIN_TOKEN_KEY = 'devcareer_nomba_admin_token';
 const ADMIN_EMAIL_KEY = 'devcareer_nomba_admin_email';
+const RESULTS_LIMIT = 50;
 
 const formatDate = (value) => {
   if (!value) {
@@ -124,7 +125,9 @@ const AdminLogin = ({ onAuthenticated }) => {
 
 const AdminDashboard = ({ adminEmail, token, onLogout }) => {
   const [registrations, setRegistrations] = useState([]);
+  const [totalRegistrations, setTotalRegistrations] = useState(0);
   const [query, setQuery] = useState('');
+  const [sortConfig, setSortConfig] = useState({ key: 'submitted', direction: 'desc' });
   const [isLoading, setIsLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [error, setError] = useState('');
@@ -140,7 +143,7 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
       setError('');
 
       try {
-        const response = await fetch('/api/admin/nomba-hackathon/registrations?limit=1000', {
+        const response = await fetch(`/api/admin/nomba-hackathon/registrations?limit=${RESULTS_LIMIT}`, {
           credentials: 'include',
           headers: authHeaders,
         });
@@ -151,6 +154,7 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
         }
 
         setRegistrations(data.registrations || []);
+        setTotalRegistrations(data.total ?? data.registrations?.length ?? 0);
         setLastLoadedAt(new Date());
       } catch (loadError) {
         setError(loadError.message);
@@ -173,12 +177,12 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
     const soloCount = registrations.filter((registration) => registration.participationMode === 'Solo').length;
 
     return {
-      total: registrations.length,
+      total: totalRegistrations,
       teamCount,
       soloCount,
       latest: registrations[0]?.createdAt,
     };
-  }, [registrations]);
+  }, [registrations, totalRegistrations]);
 
   const filteredRegistrations = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -193,7 +197,7 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
         registration.lastName,
         registration.email,
         registration.phone,
-        registration.country,
+        registration.state,
         registration.participationMode,
         registration.teamName,
         registration.track,
@@ -207,6 +211,52 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
         .includes(normalizedQuery)
     );
   }, [query, registrations]);
+
+  const sortedRegistrations = useMemo(() => {
+    const getValue = (registration, key) => {
+      if (key === 'applicant') {
+        return `${registration.firstName || ''} ${registration.lastName || ''}`;
+      }
+
+      if (key === 'contact') {
+        return registration.email || '';
+      }
+
+      if (key === 'submitted') {
+        return new Date(registration.createdAt || registration.submittedAt || 0).getTime();
+      }
+
+      return registration[key] || '';
+    };
+
+    return [...filteredRegistrations].sort((left, right) => {
+      const leftValue = getValue(left, sortConfig.key);
+      const rightValue = getValue(right, sortConfig.key);
+      const direction = sortConfig.direction === 'asc' ? 1 : -1;
+
+      if (typeof leftValue === 'number' && typeof rightValue === 'number') {
+        return (leftValue - rightValue) * direction;
+      }
+
+      return String(leftValue).localeCompare(String(rightValue), undefined, { sensitivity: 'base' }) * direction;
+    });
+  }, [filteredRegistrations, sortConfig]);
+
+  const handleSort = (key) => {
+    setSortConfig((currentSort) => {
+      if (currentSort.key === key) {
+        return {
+          key,
+          direction: currentSort.direction === 'asc' ? 'desc' : 'asc',
+        };
+      }
+
+      return {
+        key,
+        direction: key === 'submitted' ? 'desc' : 'asc',
+      };
+    });
+  };
 
   const downloadCsv = async () => {
     setIsDownloading(true);
@@ -278,8 +328,8 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
 
         <section className="nha-stats" aria-label="Registration summary">
           <Stat label="Total Responses" value={stats.total} />
-          <Stat label="Solo Applicants" value={stats.soloCount} />
-          <Stat label="Team Applicants" value={stats.teamCount} />
+          <Stat label="Solo In Latest 50" value={stats.soloCount} />
+          <Stat label="Team In Latest 50" value={stats.teamCount} />
           <Stat label="Latest Response" value={stats.latest ? formatDate(stats.latest) : '-'} />
         </section>
 
@@ -295,7 +345,8 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
             }}
           />
           <span className="nha-status">
-            Showing {filteredRegistrations.length} of {registrations.length}
+            Showing {sortedRegistrations.length} of {registrations.length} loaded records
+            {totalRegistrations > registrations.length ? ` (latest ${registrations.length} of ${totalRegistrations})` : ''}
           </span>
         </section>
 
@@ -305,19 +356,19 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
           <table className="nha-table">
             <thead>
               <tr>
-                <th>Applicant</th>
-                <th>Contact</th>
-                <th>Country</th>
-                <th>Mode</th>
-                <th>Track</th>
-                <th>Focus Area</th>
-                <th>Role</th>
-                <th>Experience</th>
-                <th>Submitted</th>
+                <SortableHeader label="Applicant" sortKey="applicant" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader label="Contact" sortKey="contact" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader label="State" sortKey="state" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader label="Mode" sortKey="participationMode" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader label="Track" sortKey="track" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader label="Focus Area" sortKey="focusArea" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader label="Role" sortKey="role" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader label="Experience" sortKey="experienceLevel" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader label="Submitted" sortKey="submitted" sortConfig={sortConfig} onSort={handleSort} />
               </tr>
             </thead>
             <tbody>
-              {filteredRegistrations.map((registration) => (
+              {sortedRegistrations.map((registration) => (
                 <tr key={registration.id}>
                   <td>
                     <div className="nha-person">
@@ -336,7 +387,7 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
                       <a href={`tel:${registration.phone}`}>{registration.phone}</a>
                     </Stack>
                   </td>
-                  <td>{registration.country}</td>
+                  <td>{registration.state || '-'}</td>
                   <td>
                     <span className="nha-pill">{registration.participationMode}</span>
                   </td>
@@ -350,12 +401,26 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
             </tbody>
           </table>
 
-          {!isLoading && filteredRegistrations.length === 0 && (
+          {!isLoading && sortedRegistrations.length === 0 && (
             <div className="nha-empty">{query ? 'No registrations match this search.' : 'No registrations yet.'}</div>
           )}
         </section>
       </div>
     </main>
+  );
+};
+
+const SortableHeader = ({ label, sortKey, sortConfig, onSort }) => {
+  const isActive = sortConfig.key === sortKey;
+  const SortIcon = sortConfig.direction === 'asc' ? KeyboardArrowUp : KeyboardArrowDown;
+
+  return (
+    <th>
+      <button type="button" className={`nha-sort ${isActive ? 'nha-sort--active' : ''}`} onClick={() => onSort(sortKey)}>
+        <span>{label}</span>
+        {isActive && <SortIcon fontSize="small" />}
+      </button>
+    </th>
   );
 };
 

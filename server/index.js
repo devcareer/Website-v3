@@ -39,6 +39,46 @@ const allowedOrigins = (process.env.CORS_ORIGIN || process.env.CORS_ORIGINS || '
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
+const nigerianStates = [
+  'Abia',
+  'Adamawa',
+  'Akwa Ibom',
+  'Anambra',
+  'Bauchi',
+  'Bayelsa',
+  'Benue',
+  'Borno',
+  'Cross River',
+  'Delta',
+  'Ebonyi',
+  'Edo',
+  'Ekiti',
+  'Enugu',
+  'FCT',
+  'Gombe',
+  'Imo',
+  'Jigawa',
+  'Kaduna',
+  'Kano',
+  'Katsina',
+  'Kebbi',
+  'Kogi',
+  'Kwara',
+  'Lagos',
+  'Nasarawa',
+  'Niger',
+  'Ogun',
+  'Ondo',
+  'Osun',
+  'Oyo',
+  'Plateau',
+  'Rivers',
+  'Sokoto',
+  'Taraba',
+  'Yobe',
+  'Zamfara',
+];
+const nigerianStateSet = new Set(nigerianStates.map((state) => state.toLowerCase()));
 
 app.use(
   cors({
@@ -57,6 +97,16 @@ app.use(express.urlencoded({ extended: false, limit: '64kb' }));
 
 const textValue = (body, key) => (typeof body[key] === 'string' ? body[key].trim() : '');
 const booleanValue = (body, key) => body[key] === true || body[key] === 'true';
+const stateValue = (body) => {
+  const state = textValue(body, 'state');
+  const legacyCountry = textValue(body, 'country');
+
+  if (state) {
+    return state;
+  }
+
+  return nigerianStateSet.has(legacyCountry.toLowerCase()) ? legacyCountry : '';
+};
 
 const normalizeRegistration = (body) => ({
   program: textValue(body, 'program') || 'Nomba Forward Hackathon 2026',
@@ -65,7 +115,8 @@ const normalizeRegistration = (body) => ({
   lastName: textValue(body, 'lastName'),
   email: textValue(body, 'email').toLowerCase(),
   phone: textValue(body, 'phone'),
-  country: textValue(body, 'country'),
+  country: 'Nigeria',
+  state: stateValue(body),
   participationMode: textValue(body, 'participationMode'),
   teamName: textValue(body, 'teamName'),
   teamSize: textValue(body, 'teamSize') ? Number(textValue(body, 'teamSize')) : null,
@@ -85,7 +136,7 @@ const validateRegistration = (registration) => {
     'lastName',
     'email',
     'phone',
-    'country',
+    'state',
     'participationMode',
     'track',
     'focusArea',
@@ -101,6 +152,10 @@ const validateRegistration = (registration) => {
 
   if (registration.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registration.email)) {
     errors.email = 'Invalid email address';
+  }
+
+  if (registration.state && !nigerianStateSet.has(registration.state.toLowerCase())) {
+    errors.state = 'Select a valid Nigerian state';
   }
 
   if (!['Solo', 'Team'].includes(registration.participationMode)) {
@@ -336,6 +391,7 @@ const sendVerificationEmail = async ({ email, firstName, code }) => {
 
 const sendRegistrationConfirmationEmail = async ({ registration }) => {
   const displayName = escapeHtml(registration.firstName || 'there');
+  const safeState = escapeHtml(registration.state || 'Not provided');
   const safeTrack = escapeHtml(registration.track || 'Selected track');
   const safeFocusArea = escapeHtml(registration.focusArea || 'Selected focus area');
   const safeMode = escapeHtml(registration.participationMode || 'Solo');
@@ -348,9 +404,10 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
       '',
       `Your registration for ${hackathonName} has been confirmed.`,
       '',
-      `Track: ${registration.track}`,
-      `Focus area: ${registration.focusArea}`,
-      `Participation mode: ${registration.participationMode}`,
+      `State: ${registration.state || 'Not provided'}`,
+      `Track: ${registration.track || 'Selected track'}`,
+      `Focus area: ${registration.focusArea || 'Selected focus area'}`,
+      `Participation mode: ${registration.participationMode || 'Solo'}`,
       '',
       'Key dates:',
       'Registration: June 8 - 23, 2026',
@@ -376,6 +433,12 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
           Your registration for <strong>${escapeHtml(hackathonName)}</strong> is confirmed. We will send onboarding information and next steps to this email.
         </p>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 20px 0; border-collapse: separate; border-spacing: 0 10px;">
+          <tr>
+            <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
+              <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">State</p>
+              <p style="margin: 0; color: #181818; font-size: 15px; font-weight: 800;">${safeState}</p>
+            </td>
+          </tr>
           <tr>
             <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
               <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">Track</p>
@@ -569,7 +632,7 @@ const toCsv = (rows) => {
     'lastName',
     'email',
     'phone',
-    'country',
+    'state',
     'participationMode',
     'teamName',
     'teamSize',
@@ -762,7 +825,9 @@ app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (re
   const offset = Number.isFinite(requestedOffset) ? Math.max(requestedOffset, 0) : 0;
 
   try {
-    const registrations = await listNombaRegistrations({ limit, offset });
+    const rows = await listNombaRegistrations({ limit, offset });
+    const total = rows[0]?.totalCount || 0;
+    const registrations = rows.map(({ totalCount: _totalCount, ...registration }) => registration);
 
     if (req.query.format === 'csv') {
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
@@ -771,7 +836,7 @@ app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (re
       return;
     }
 
-    res.json({ registrations, limit, offset });
+    res.json({ registrations, limit, offset, total });
   } catch (error) {
     console.error('Unable to list Nomba hackathon registrations:', error);
     res.status(500).json({ error: 'Unable to load registrations.' });

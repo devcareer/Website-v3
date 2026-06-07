@@ -165,6 +165,29 @@
   text-transform: uppercase;
 }
 
+.nha-sort {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
+  text-transform: inherit;
+}
+
+.nha-sort--active {
+  color: #172033;
+}
+
+.nha-sort svg {
+  width: 16px;
+  height: 16px;
+}
+
 .nha-person {
   color: #172033;
   font-weight: 700;
