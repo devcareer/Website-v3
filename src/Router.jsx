@@ -130,6 +130,10 @@ export const router = createBrowserRouter([
     element: <NombaHackathonRegistration />,
   },
   {
+    path: '/hackathon/admin',
+    element: <NombaHackathonAdmin />,
+  },
+  {
     path: '/admin/nomba-hackathon',
     element: <NombaHackathonAdmin />,
   },

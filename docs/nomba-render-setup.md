@@ -26,7 +26,8 @@ Use a Render Web Service for this repo so the React build and API run from the s
 ## Endpoints
 
 - Public form submit: `POST /api/nomba-hackathon/registrations`
-- Admin login page: `/admin/nomba-hackathon`
+- Admin login page: `/hackathon/admin`
+- Admin fallback page: `/admin/nomba-hackathon`
 - Admin login API: `POST /api/admin/login`
 - Admin JSON export: `GET /api/admin/nomba-hackathon/registrations`
 - Admin CSV export: `GET /api/admin/nomba-hackathon/registrations?format=csv`
