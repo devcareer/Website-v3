@@ -32,6 +32,7 @@ const emailVerificationTtlMs = Number(process.env.EMAIL_VERIFICATION_TTL_MS || 1
 const emailVerificationMaxAttempts = Number(process.env.EMAIL_VERIFICATION_MAX_ATTEMPTS || 5);
 const reverificationLinkTtlMs = Number(process.env.REVERIFICATION_LINK_TTL_MS || 7 * 24 * 60 * 60 * 1000);
 const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'DevCareerNomba Hackathon <message@hack.devcareer.io>';
+const resendBatchSize = 100;
 const emailSenderName = 'DevCareerNomba Hackathon';
 const hackathonName = 'Nomba Forward Hackathon 2026';
 const devCareerXUrl = process.env.DEVCAREER_X_URL || 'https://x.com/dev_careers';
@@ -411,6 +412,45 @@ const sendEmail = async ({ to, subject, text, html }) => {
   return data;
 };
 
+const sendEmailBatch = async (emails, { idempotencyKey } = {}) => {
+  if (!process.env.RESEND_API_KEY) {
+    throw new Error('Email verification is not configured.');
+  }
+
+  if (!Array.isArray(emails) || emails.length === 0) {
+    return { data: [] };
+  }
+
+  if (emails.length > resendBatchSize) {
+    throw new Error(`Resend batch email payload cannot exceed ${resendBatchSize} emails.`);
+  }
+
+  const response = await postJson('https://api.resend.com/emails/batch', {
+    headers: {
+      Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
+      ...(idempotencyKey ? { 'Idempotency-Key': idempotencyKey } : {}),
+    },
+    payload: emails.map((email) => ({
+      from: resendFromEmail,
+      to: [email.to],
+      subject: email.subject,
+      text: email.text,
+      html: email.html,
+    })),
+  });
+  const { data } = response;
+
+  if (!response.ok) {
+    console.error(
+      'Unable to send Nomba email batch:',
+      data?.message || data?.error || response.statusText || response.status
+    );
+    throw new Error('Unable to send email batch.');
+  }
+
+  return data;
+};
+
 const sendVerificationEmail = async ({ email, firstName, code }) => {
   const verificationMinutes = Math.max(1, Math.round(emailVerificationTtlMs / 60000));
   const displayName = escapeHtml(firstName || 'there');
@@ -552,7 +592,7 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
   });
 };
 
-const sendReverificationLinkEmail = async ({ registration, verificationUrl, linkExpiresAt }) => {
+const buildReverificationLinkEmailPayload = ({ registration, verificationUrl, linkExpiresAt }) => {
   const displayName = escapeHtml(registration.firstName || 'there');
   const linkExpiry = new Intl.DateTimeFormat('en-GB', {
     dateStyle: 'medium',
@@ -560,7 +600,7 @@ const sendReverificationLinkEmail = async ({ registration, verificationUrl, link
     timeZone: 'Africa/Lagos',
   }).format(new Date(linkExpiresAt));
 
-  return sendEmail({
+  return {
     to: registration.email,
     subject: 'Confirm your Nomba Forward Hackathon registration',
     text: [
@@ -596,8 +636,11 @@ const sendReverificationLinkEmail = async ({ registration, verificationUrl, link
         ${renderSocialLinks()}
       `,
     }),
-  });
+  };
 };
+
+const sendReverificationLinkEmail = async ({ registration, verificationUrl, linkExpiresAt }) =>
+  sendEmail(buildReverificationLinkEmailPayload({ registration, verificationUrl, linkExpiresAt }));
 
 const renderOneClickResultPage = ({ title, message, tone = 'success' }) => {
   const isSuccess = tone === 'success';
@@ -788,6 +831,43 @@ const toCsv = (rows) => {
   ].join('\n');
 };
 
+const chunkArray = (items, size) => {
+  const chunks = [];
+
+  for (let index = 0; index < items.length; index += size) {
+    chunks.push(items.slice(index, index + size));
+  }
+
+  return chunks;
+};
+
+const listAllNombaPendingVerifications = async () => {
+  const pageSize = 1000;
+  const rows = [];
+  let offset = 0;
+  let total = null;
+
+  while (total === null || rows.length < total) {
+    const page = await listNombaPendingVerifications({ limit: pageSize, offset });
+
+    if (total === null) {
+      total = page[0]?.totalCount || 0;
+    }
+
+    if (page.length === 0) {
+      break;
+    }
+
+    rows.push(...page);
+    offset += page.length;
+  }
+
+  return {
+    rows,
+    total: total ?? rows.length,
+  };
+};
+
 const serializePendingVerification = (row) => {
   const registration = normalizeRegistration(row.registrationPayload || {});
   const validationErrors = validateStoredRegistration(registration);
@@ -813,6 +893,15 @@ const serializePendingVerification = (row) => {
     isValid: Object.keys(validationErrors).length === 0,
     validationErrors,
   };
+};
+
+const buildReverificationLinkForVerification = (verification) => {
+  const token = createReverificationToken({
+    verificationId: verification.id,
+    email: verification.email,
+  });
+
+  return `${getPublicOrigin()}/api/nomba-hackathon/registrations/reverify?token=${encodeURIComponent(token)}`;
 };
 
 app.get('/api/health', async (_req, res) => {
@@ -1150,6 +1239,90 @@ app.get('/api/admin/nomba-hackathon/verifications/pending', requireAdminToken, a
   }
 });
 
+app.post('/api/admin/nomba-hackathon/verifications/reverification-links/batch', requireAdminToken, async (_req, res) => {
+  if (!requireDatabase(res)) {
+    return;
+  }
+
+  try {
+    const { rows, total } = await listAllNombaPendingVerifications();
+    const linkExpiresAt = new Date(Date.now() + reverificationLinkTtlMs).toISOString();
+    const skippedInvalid = [];
+    const batchItems = [];
+
+    rows.forEach((verification) => {
+      const registration = normalizeRegistration(verification.registrationPayload || {});
+      const errors = validateStoredRegistration(registration);
+
+      if (Object.keys(errors).length > 0) {
+        skippedInvalid.push({
+          id: verification.id,
+          fields: Object.keys(errors),
+        });
+        return;
+      }
+
+      const verificationUrl = buildReverificationLinkForVerification(verification);
+
+      batchItems.push({
+        verificationId: verification.id,
+        emailPayload: buildReverificationLinkEmailPayload({
+          registration,
+          verificationUrl,
+          linkExpiresAt,
+        }),
+      });
+    });
+
+    if (batchItems.length === 0) {
+      res.json({
+        success: true,
+        sent: 0,
+        total,
+        eligible: 0,
+        skippedInvalid: skippedInvalid.length,
+        batches: 0,
+        linkExpiresAt,
+      });
+      return;
+    }
+
+    const emailIds = [];
+    const chunks = chunkArray(batchItems, resendBatchSize);
+
+    for (let index = 0; index < chunks.length; index += 1) {
+      const chunk = chunks[index];
+      const idempotencyHash = crypto
+        .createHash('sha256')
+        .update(chunk.map((item) => item.verificationId).join(','))
+        .digest('hex')
+        .slice(0, 32);
+      const idempotencyKey = `nomba-reverify-${Math.floor(Date.now() / 86400000)}-${index + 1}-${idempotencyHash}`;
+      const data = await sendEmailBatch(
+        chunk.map((item) => item.emailPayload),
+        { idempotencyKey }
+      );
+      const sentIds = Array.isArray(data?.data) ? data.data : [];
+
+      emailIds.push(...sentIds);
+    }
+
+    res.json({
+      success: true,
+      sent: batchItems.length,
+      total,
+      eligible: batchItems.length,
+      skippedInvalid: skippedInvalid.length,
+      batches: chunks.length,
+      emailIds,
+      linkExpiresAt,
+    });
+  } catch (error) {
+    console.error('Unable to send Nomba hackathon batch reverification links:', error);
+    res.status(500).json({ error: 'Unable to send batch re-verification links.' });
+  }
+});
+
 app.post('/api/admin/nomba-hackathon/verifications/:id/reverification-link', requireAdminToken, async (req, res) => {
   if (!requireDatabase(res)) {
     return;
@@ -1181,14 +1354,8 @@ app.post('/api/admin/nomba-hackathon/verifications/:id/reverification-link', req
       return;
     }
 
-    const token = createReverificationToken({
-      verificationId: verification.id,
-      email: verification.email,
-    });
     const linkExpiresAt = new Date(Date.now() + reverificationLinkTtlMs).toISOString();
-    const verificationUrl = `${getPublicOrigin()}/api/nomba-hackathon/registrations/reverify?token=${encodeURIComponent(
-      token
-    )}`;
+    const verificationUrl = buildReverificationLinkForVerification(verification);
 
     await sendReverificationLinkEmail({
       registration,

@@ -134,7 +134,15 @@ export const router = createBrowserRouter([
     element: <NombaHackathonAdmin />,
   },
   {
+    path: '/hackathon/admin/unverified',
+    element: <NombaHackathonAdmin />,
+  },
+  {
     path: '/admin/nomba-hackathon',
+    element: <NombaHackathonAdmin />,
+  },
+  {
+    path: '/admin/nomba-hackathon/unverified',
     element: <NombaHackathonAdmin />,
   },
   { path: '/p/:id', element: <FreeProfile /> },
