@@ -511,7 +511,7 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
       'You are now in the running for the USD 4,000 first-place prize, USD 1,500 for 2nd, and USD 1,000 for 3rd.',
       'Importantly, you have taken the first step toward becoming a Nomba Partner.',
       '',
-      'Below is your official, detailed playbook featuring the 13 precise tracks made available to you by the Nomba team.',
+      'Below is your official, detailed playbook featuring the 5 precise tracks made available to you by the Nomba team.',
       'Review these closely with your current team, or use them to brainstorm if you are looking for a squad!',
       '',
       'Timeline Reminder',
@@ -548,7 +548,7 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
           Importantly, you have taken the first step toward becoming a <strong>Nomba Partner</strong>.
         </p>
         <p style="margin: 0 0 20px; color: #4a4631; font-size: 15px; line-height: 1.7;">
-          Below is your <strong>official, detailed playbook</strong> featuring the <strong>13 precise tracks</strong>
+          Below is your <strong>official, detailed playbook</strong> featuring the <strong>5 precise tracks</strong>
           made available to you by the Nomba team. Review these closely with your current team, or use them to brainstorm
           if you are looking for a squad.
         </p>
