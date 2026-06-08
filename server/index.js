@@ -37,8 +37,8 @@ const emailSenderName = 'DevCareerNomba Hackathon';
 const hackathonName = 'Nomba Forward Hackathon 2026';
 const devCareerXUrl = process.env.DEVCAREER_X_URL || 'https://x.com/dev_careers';
 const devCareerInstagramUrl = process.env.DEVCAREER_INSTAGRAM_URL || 'https://www.instagram.com/dev_careers/';
+const devCareerWorkspaceUrl = process.env.DEVCAREER_WORKSPACE_URL || 'https://bit.ly/devcareerafrica';
 const hackathonPageUrl = process.env.NOMBA_HACKATHON_URL || 'https://devcareer.io/programs/nomba-hackathon';
-const nombaDocsUrl = process.env.NOMBA_DOCS_URL || 'https://developer.nomba.com';
 
 const allowedOrigins = (process.env.CORS_ORIGIN || process.env.CORS_ORIGINS || '')
   .split(',')
@@ -498,94 +498,117 @@ const sendVerificationEmail = async ({ email, firstName, code }) => {
 };
 
 const sendRegistrationConfirmationEmail = async ({ registration }) => {
-  const displayName = escapeHtml(registration.firstName || 'there');
-  const safeState = escapeHtml(registration.state || 'Not provided');
-  const safeTrack = escapeHtml(registration.track || 'Selected track');
-  const safeFocusArea = escapeHtml(registration.focusArea || 'Selected focus area');
-  const safeMode = escapeHtml(registration.participationMode || 'Solo');
+  const fullName = [registration.firstName, registration.lastName].filter(Boolean).join(' ') || registration.firstName || 'there';
+  const displayName = escapeHtml(fullName);
 
   return sendEmail({
     to: registration.email,
-    subject: 'You are registered for Nomba Forward Hackathon 2026',
+    subject: 'Welcome to the Nomba x DevCareer Hackathon',
     text: [
-      `Hi ${registration.firstName || 'there'},`,
+      `Hey ${fullName},`,
       '',
-      `Your registration for ${hackathonName} has been confirmed.`,
+      'You are registered! Welcome to the Nomba X DevCareer Hackathon 2026.',
+      'You are now in the running for the USD 4,000 first-place prize, USD 1,500 for 2nd, and USD 1,000 for 3rd.',
+      'Importantly, you have taken the first step toward becoming a Nomba Partner.',
       '',
-      `State: ${registration.state || 'Not provided'}`,
-      `Track: ${registration.track || 'Selected track'}`,
-      `Focus area: ${registration.focusArea || 'Selected focus area'}`,
-      `Participation mode: ${registration.participationMode || 'Solo'}`,
+      'Below is your official, detailed playbook featuring the 13 precise tracks made available to you by the Nomba team.',
+      'Review these closely with your current team, or use them to brainstorm if you are looking for a squad!',
       '',
-      'Key dates:',
-      'Registration: June 8 - 23, 2026',
-      'Onboarding: June 24 - 29, 2026',
-      'Build Sprint: July 1 - 7, 2026',
-      'Validation & Judging: July 8 - 14, 2026',
-      'Demo Day: July 19, 2026',
+      'Timeline Reminder',
+      'June 8 - 23: Registration is live. Get your designer, PM, or dev friends to sign up before it closes!',
+      'June 24 - 29: Onboarding Week & Nomba Forward Deployed Engineer Training: Developer deep-dives, API walkthroughs, and AMA sessions.',
+      'June 30 - July 7: Build Week: Development phase. Project submissions close on July 5, 2026.',
+      'July 8 - 14: Judging Week: Expert panels review the code and implementation.',
+      'July 19: Grand Demo Day & Awards!',
       '',
-      `Hackathon page: ${hackathonPageUrl}`,
-      `Nomba API docs: ${nombaDocsUrl}`,
-      `Follow DevCareer on X: ${devCareerXUrl}`,
-      `Follow DevCareer on Instagram: ${devCareerInstagramUrl}`,
+      `Need a refresher on what you need to do? Check here: ${hackathonPageUrl}`,
       '',
-      emailSenderName,
+      'Your Immediate Next Steps',
+      `Join our official workspace: DevCareer Workspace - ${devCareerWorkspaceUrl}`,
+      'Declare your track or find a team: Head over to the #nomba-hackathon channel to get all official announcements, latest updates, and information on the hackathon.',
+      'Watch your inbox: By June 23, 2026, we will blast out the official onboarding calendar with API keys, sandboxes, and documentation links. You will get first hand troubleshooting from the Nomba team.',
+      '',
+      "We can't wait to see what you build. Let's shift the landscape of Nigerian fintech!",
+      '',
+      'Best regards,',
+      'The DevCareer Team',
     ].join('\n'),
     html: renderEmailShell({
-      previewText: `Your registration for ${hackathonName} has been confirmed.`,
+      previewText: 'You are registered for the Nomba x DevCareer Hackathon 2026.',
       eyebrow: 'Registration confirmed',
-      title: 'You are officially registered',
+      title: 'Welcome to the Nomba x DevCareer Hackathon',
       children: `
-        <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
+        <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hey ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
-          Your registration for <strong>${escapeHtml(hackathonName)}</strong> is confirmed. We will send onboarding information and next steps to this email.
+          <strong>You are registered!</strong> Welcome to the <strong>Nomba X DevCareer Hackathon 2026</strong>.
         </p>
-        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 20px 0; border-collapse: separate; border-spacing: 0 10px;">
-          <tr>
-            <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
-              <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">State</p>
-              <p style="margin: 0; color: #181818; font-size: 15px; font-weight: 800;">${safeState}</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
-              <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">Track</p>
-              <p style="margin: 0; color: #181818; font-size: 15px; font-weight: 800;">${safeTrack}</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
-              <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">Focus area</p>
-              <p style="margin: 0; color: #181818; font-size: 15px; font-weight: 800;">${safeFocusArea}</p>
-            </td>
-          </tr>
-          <tr>
-            <td style="background: #f8f5e8; border: 1px solid #eee4b8; border-radius: 14px; padding: 14px;">
-              <p style="margin: 0 0 4px; color: #85700c; font-size: 12px; font-weight: 800; text-transform: uppercase;">Participation mode</p>
-              <p style="margin: 0; color: #181818; font-size: 15px; font-weight: 800;">${safeMode}</p>
-            </td>
-          </tr>
-        </table>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          You are now in the running for the <strong>USD 4,000 first-place prize</strong>
+          (<strong>USD 1,500 for 2nd</strong>, and <strong>USD 1,000 for 3rd</strong>).
+          Importantly, you have taken the first step toward becoming a <strong>Nomba Partner</strong>.
+        </p>
+        <p style="margin: 0 0 20px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          Below is your <strong>official, detailed playbook</strong> featuring the <strong>13 precise tracks</strong>
+          made available to you by the Nomba team. Review these closely with your current team, or use them to brainstorm
+          if you are looking for a squad.
+        </p>
+
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
           <tr>
             <td style="background: #191917; border-radius: 18px; padding: 18px;">
-              <p style="margin: 0 0 12px; color: #ffcc00; font-size: 13px; font-weight: 800; text-transform: uppercase;">Key dates</p>
+              <p style="margin: 0 0 12px; color: #ffcc00; font-size: 13px; font-weight: 800; text-transform: uppercase;">Timeline Reminder</p>
               <p style="margin: 0; color: #ffffff; font-size: 14px; line-height: 1.8;">
-                Registration: June 8 - 23, 2026<br>
-                Onboarding: June 24 - 29, 2026<br>
-                Build Sprint: July 1 - 7, 2026<br>
-                Validation &amp; Judging: July 8 - 14, 2026<br>
-                Demo Day: July 19, 2026
+                <strong>June 8 - 23:</strong> Registration is live. Get your designer, PM, or dev friends to sign up before it closes!<br>
+                <strong>June 24 - 29:</strong> Onboarding Week &amp; Nomba Forward Deployed Engineer Training: Developer deep-dives, API walkthroughs, and AMA sessions.<br>
+                <strong>June 30 - July 7:</strong> Build Week: Development phase. Project submissions close on <strong>July 5, 2026</strong>.<br>
+                <strong>July 8 - 14:</strong> Judging Week: Expert panels review the code and implementation.<br>
+                <strong>July 19:</strong> Grand Demo Day &amp; Awards!
               </p>
             </td>
           </tr>
         </table>
-        <table role="presentation" cellspacing="0" cellpadding="0" style="margin-bottom: 20px;">
+
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          Need a refresher on what you need to do? <a href="${escapeHtml(hackathonPageUrl)}" target="_blank" rel="noopener noreferrer" style="color: #0d7a5f; font-weight: 800;">Check here</a>.
+        </p>
+
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
           <tr>
-            <td style="padding-right: 10px;">${emailButton({ href: hackathonPageUrl, label: 'View Hackathon Page' })}</td>
-            <td>${emailButton({ href: nombaDocsUrl, label: 'Explore Nomba Docs', background: '#181818', color: '#ffffff' })}</td>
+            <td style="background: #fff7d8; border: 1px solid #f2df8d; border-radius: 18px; padding: 18px;">
+              <p style="margin: 0 0 14px; color: #191917; font-size: 15px; font-weight: 800;">Your Immediate Next Steps</p>
+              <p style="margin: 0 0 12px; color: #4f4a33; font-size: 14px; line-height: 1.7;">
+                <strong>1. Join our official workspace:</strong>
+                <a href="${escapeHtml(devCareerWorkspaceUrl)}" target="_blank" rel="noopener noreferrer" style="color: #0d7a5f; font-weight: 800;">DevCareer Workspace</a>
+                to connect with fellow participants.
+              </p>
+              <p style="margin: 0 0 12px; color: #4f4a33; font-size: 14px; line-height: 1.7;">
+                <strong>2. Declare your track or find a team:</strong> Head over to the <strong>#nomba-hackathon</strong>
+                channel to get official announcements, latest updates, and hackathon information.
+              </p>
+              <p style="margin: 0; color: #4f4a33; font-size: 14px; line-height: 1.7;">
+                <strong>3. Watch your inbox:</strong> By <strong>June 23, 2026</strong>, we will blast out the official
+                onboarding calendar with <strong>API keys, sandboxes, and documentation links</strong>. You will get first hand
+                troubleshooting from the Nomba team.
+              </p>
+            </td>
           </tr>
         </table>
+
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 24px 0;">
+          <tr>
+            <td style="padding-right: 10px;">${emailButton({ href: devCareerWorkspaceUrl, label: 'Join DevCareer Workspace' })}</td>
+            <td>${emailButton({ href: hackathonPageUrl, label: 'Review Hackathon Brief', background: '#181818', color: '#ffffff' })}</td>
+          </tr>
+        </table>
+
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          We can't wait to see what you build. <strong>Let's shift the landscape of Nigerian fintech!</strong>
+        </p>
+        <p style="margin: 0; color: #252316; font-size: 15px; line-height: 1.7;">
+          Best regards,<br>
+          <strong>The DevCareer Team</strong>
+        </p>
+
         ${renderSocialLinks()}
       `,
     }),
