@@ -7,6 +7,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import {
   completeNombaEmailVerification,
+  consumeNombaEmailVerification,
   createNombaEmailVerification,
   getActiveNombaEmailVerification,
   hasDatabase,
@@ -97,6 +98,7 @@ app.use(express.urlencoded({ extended: false, limit: '64kb' }));
 
 const textValue = (body, key) => (typeof body[key] === 'string' ? body[key].trim() : '');
 const booleanValue = (body, key) => body[key] === true || body[key] === 'true';
+const maskEmail = (email) => email.replace(/^(.).+(@.+)$/, '$1***$2');
 const stateValue = (body) => {
   const state = textValue(body, 'state');
   const legacyCountry = textValue(body, 'country');
@@ -785,7 +787,17 @@ app.post('/api/nomba-hackathon/registrations/verify', async (req, res) => {
     const errors = validateRegistration(registration);
 
     if (Object.keys(errors).length > 0) {
-      res.status(400).json({ error: 'Invalid registration payload.', fields: errors });
+      await consumeNombaEmailVerification(verification.id);
+      console.warn('Invalid stored Nomba registration payload during verification:', {
+        verificationId: verification.id,
+        email: maskEmail(email),
+        fields: Object.keys(errors),
+      });
+      res.status(400).json({
+        error: 'This verification session is outdated. Please submit the registration form again to get a fresh code.',
+        fields: errors,
+        requiresNewRegistration: true,
+      });
       return;
     }
 

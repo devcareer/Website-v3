@@ -217,6 +217,18 @@ export const incrementNombaEmailVerificationAttempts = async (id) => {
   );
 };
 
+export const consumeNombaEmailVerification = async (id) => {
+  await pool.query(
+    `
+      UPDATE nomba_hackathon_email_verifications
+      SET consumed_at = NOW()
+      WHERE id = $1
+        AND consumed_at IS NULL;
+    `,
+    [id]
+  );
+};
+
 export const completeNombaEmailVerification = async ({ id, registration }) => {
   const client = await pool.connect();
 

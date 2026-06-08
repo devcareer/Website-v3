@@ -345,6 +345,11 @@ const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
       const result = await response.json().catch(() => null);
 
       if (!response.ok || !result?.success) {
+        if (result?.requiresNewRegistration) {
+          setVerificationRequest(null);
+          setVerificationCode('');
+        }
+
         throw new Error(result?.error || 'Verification failed');
       }
 
