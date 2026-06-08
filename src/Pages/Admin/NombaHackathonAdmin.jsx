@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Stack, TextField } from '@mui/material';
-import { FileDownload, KeyboardArrowDown, KeyboardArrowUp, Logout, Refresh, Search } from '@mui/icons-material';
+import { Email, FileDownload, KeyboardArrowDown, KeyboardArrowUp, Logout, Refresh, Search } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { toast } from 'react-toastify';
 import './NombaHackathonAdmin.css';
@@ -125,12 +125,17 @@ const AdminLogin = ({ onAuthenticated }) => {
 
 const AdminDashboard = ({ adminEmail, token, onLogout }) => {
   const [registrations, setRegistrations] = useState([]);
+  const [pendingVerifications, setPendingVerifications] = useState([]);
   const [totalRegistrations, setTotalRegistrations] = useState(0);
+  const [totalPendingVerifications, setTotalPendingVerifications] = useState(0);
   const [query, setQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'submitted', direction: 'desc' });
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoadingPending, setIsLoadingPending] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [sendingLinkIds, setSendingLinkIds] = useState({});
   const [error, setError] = useState('');
+  const [pendingError, setPendingError] = useState('');
   const [lastLoadedAt, setLastLoadedAt] = useState(null);
 
   const authHeaders = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
@@ -165,12 +170,45 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
     [authHeaders]
   );
 
+  const loadPendingVerifications = useCallback(
+    async ({ quiet = false } = {}) => {
+      if (!quiet) {
+        setIsLoadingPending(true);
+      }
+      setPendingError('');
+
+      try {
+        const response = await fetch(`/api/admin/nomba-hackathon/verifications/pending?limit=${RESULTS_LIMIT}`, {
+          credentials: 'include',
+          headers: authHeaders,
+        });
+        const data = await response.json();
+
+        if (!response.ok) {
+          throw new Error(data.error || 'Unable to load unverified registrations.');
+        }
+
+        setPendingVerifications(data.verifications || []);
+        setTotalPendingVerifications(data.total ?? data.verifications?.length ?? 0);
+      } catch (loadError) {
+        setPendingError(loadError.message);
+      } finally {
+        setIsLoadingPending(false);
+      }
+    },
+    [authHeaders]
+  );
+
   useEffect(() => {
     loadRegistrations();
-    const intervalId = window.setInterval(() => loadRegistrations({ quiet: true }), 10000);
+    loadPendingVerifications();
+    const intervalId = window.setInterval(() => {
+      loadRegistrations({ quiet: true });
+      loadPendingVerifications({ quiet: true });
+    }, 10000);
 
     return () => window.clearInterval(intervalId);
-  }, [loadRegistrations]);
+  }, [loadPendingVerifications, loadRegistrations]);
 
   const stats = useMemo(() => {
     const teamCount = registrations.filter((registration) => registration.participationMode === 'Team').length;
@@ -178,20 +216,16 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
 
     return {
       total: totalRegistrations,
+      unverified: totalPendingVerifications,
       teamCount,
       soloCount,
       latest: registrations[0]?.createdAt,
     };
-  }, [registrations, totalRegistrations]);
+  }, [registrations, totalPendingVerifications, totalRegistrations]);
 
-  const filteredRegistrations = useMemo(() => {
-    const normalizedQuery = query.trim().toLowerCase();
-
-    if (!normalizedQuery) {
-      return registrations;
-    }
-
-    return registrations.filter((registration) =>
+  const normalizedQuery = query.trim().toLowerCase();
+  const registrationMatchesQuery = useCallback(
+    (registration) =>
       [
         registration.firstName,
         registration.lastName,
@@ -208,9 +242,25 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
         .filter(Boolean)
         .join(' ')
         .toLowerCase()
-        .includes(normalizedQuery)
-    );
-  }, [query, registrations]);
+        .includes(normalizedQuery),
+    [normalizedQuery]
+  );
+
+  const filteredRegistrations = useMemo(() => {
+    if (!normalizedQuery) {
+      return registrations;
+    }
+
+    return registrations.filter(registrationMatchesQuery);
+  }, [normalizedQuery, registrationMatchesQuery, registrations]);
+
+  const filteredPendingVerifications = useMemo(() => {
+    if (!normalizedQuery) {
+      return pendingVerifications;
+    }
+
+    return pendingVerifications.filter(registrationMatchesQuery);
+  }, [normalizedQuery, pendingVerifications, registrationMatchesQuery]);
 
   const sortedRegistrations = useMemo(() => {
     const getValue = (registration, key) => {
@@ -287,6 +337,30 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
     }
   };
 
+  const sendReverificationLink = async (verification) => {
+    setSendingLinkIds((current) => ({ ...current, [verification.id]: true }));
+
+    try {
+      const response = await fetch(`/api/admin/nomba-hackathon/verifications/${verification.id}/reverification-link`, {
+        method: 'POST',
+        credentials: 'include',
+        headers: authHeaders,
+      });
+      const data = await response.json().catch(() => null);
+
+      if (!response.ok || !data?.success) {
+        throw new Error(data?.error || 'Unable to send re-verification link.');
+      }
+
+      toast.success(`Re-verification link sent to ${verification.email}.`);
+      await loadPendingVerifications({ quiet: true });
+    } catch (sendError) {
+      toast.error(sendError.message);
+    } finally {
+      setSendingLinkIds((current) => ({ ...current, [verification.id]: false }));
+    }
+  };
+
   return (
     <main className="nha-page">
       <div className="nha-shell">
@@ -305,8 +379,11 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
               className="nha-icon-action"
               variant="outlined"
               startIcon={<Refresh />}
-              onClick={() => loadRegistrations()}
-              disabled={isLoading}
+              onClick={() => {
+                loadRegistrations();
+                loadPendingVerifications();
+              }}
+              disabled={isLoading || isLoadingPending}
             >
               Refresh
             </Button>
@@ -328,6 +405,7 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
 
         <section className="nha-stats" aria-label="Registration summary">
           <Stat label="Total Responses" value={stats.total} />
+          <Stat label="Unverified" value={stats.unverified} />
           <Stat label="Solo In Latest 50" value={stats.soloCount} />
           <Stat label="Team In Latest 50" value={stats.teamCount} />
           <Stat label="Latest Response" value={stats.latest ? formatDate(stats.latest) : '-'} />
@@ -352,6 +430,12 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
 
         {error && <div className="nha-error">{error}</div>}
 
+        <div className="nha-section-heading">
+          <div>
+            <h2>Verified Registrations</h2>
+            <p>Applicants who completed OTP verification and were saved to the admin database.</p>
+          </div>
+        </div>
         <section className="nha-table-wrap">
           <table className="nha-table">
             <thead>
@@ -403,6 +487,96 @@ const AdminDashboard = ({ adminEmail, token, onLogout }) => {
 
           {!isLoading && sortedRegistrations.length === 0 && (
             <div className="nha-empty">{query ? 'No registrations match this search.' : 'No registrations yet.'}</div>
+          )}
+        </section>
+
+        <div className="nha-section-heading">
+          <div>
+            <h2>Unverified Registrations</h2>
+            <p>Latest pending application per email where the OTP was not completed yet.</p>
+          </div>
+          <span className="nha-status">
+            Showing {filteredPendingVerifications.length} of {pendingVerifications.length} loaded pending records
+            {totalPendingVerifications > pendingVerifications.length
+              ? ` (latest ${pendingVerifications.length} of ${totalPendingVerifications})`
+              : ''}
+          </span>
+        </div>
+
+        {pendingError && <div className="nha-error">{pendingError}</div>}
+
+        <section className="nha-table-wrap">
+          <table className="nha-table nha-table--pending">
+            <thead>
+              <tr>
+                <th>Applicant</th>
+                <th>Contact</th>
+                <th>State</th>
+                <th>Mode</th>
+                <th>Track</th>
+                <th>OTP Status</th>
+                <th>Started</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredPendingVerifications.map((verification) => (
+                <tr key={verification.id}>
+                  <td>
+                    <div className="nha-person">
+                      {verification.firstName} {verification.lastName}
+                    </div>
+                    {verification.teamName && (
+                      <div className="nha-muted">
+                        {verification.teamName}
+                        {verification.teamSize ? ` - ${verification.teamSize} people` : ''}
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    <Stack gap={0.4}>
+                      <a href={`mailto:${verification.email}`}>{verification.email}</a>
+                      <a href={`tel:${verification.phone}`}>{verification.phone}</a>
+                    </Stack>
+                  </td>
+                  <td>{verification.state || '-'}</td>
+                  <td>
+                    <span className="nha-pill">{verification.participationMode}</span>
+                  </td>
+                  <td>
+                    {verification.track}
+                    <div className="nha-muted">{verification.focusArea}</div>
+                  </td>
+                  <td>
+                    <span className={`nha-pill ${verification.expired ? 'nha-pill--warning' : ''}`}>
+                      {verification.expired ? 'OTP expired' : 'OTP active'}
+                    </span>
+                    <div className="nha-muted">Attempts: {verification.attempts}</div>
+                  </td>
+                  <td>{formatDate(verification.createdAt)}</td>
+                  <td>
+                    <LoadingButton
+                      className="nha-action nha-action--compact"
+                      variant="contained"
+                      startIcon={<Email />}
+                      loading={Boolean(sendingLinkIds[verification.id])}
+                      disabled={!verification.isValid}
+                      onClick={() => sendReverificationLink(verification)}
+                      disableElevation
+                    >
+                      Send Link
+                    </LoadingButton>
+                    {!verification.isValid && <div className="nha-muted">Needs fresh form</div>}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {!isLoadingPending && filteredPendingVerifications.length === 0 && (
+            <div className="nha-empty">
+              {query ? 'No unverified registrations match this search.' : 'No unverified registrations right now.'}
+            </div>
           )}
         </section>
       </div>

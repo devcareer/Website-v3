@@ -10,9 +10,11 @@ import {
   consumeNombaEmailVerification,
   createNombaEmailVerification,
   getActiveNombaEmailVerification,
+  getNombaEmailVerificationById,
   hasDatabase,
   initializeDatabase,
   incrementNombaEmailVerificationAttempts,
+  listNombaPendingVerifications,
   listNombaRegistrations,
   pool,
 } from './database.js';
@@ -28,6 +30,7 @@ const adminCookieName = 'dc_nomba_admin';
 const adminSessionTtlMs = Number(process.env.ADMIN_SESSION_TTL_MS || 12 * 60 * 60 * 1000);
 const emailVerificationTtlMs = Number(process.env.EMAIL_VERIFICATION_TTL_MS || 10 * 60 * 1000);
 const emailVerificationMaxAttempts = Number(process.env.EMAIL_VERIFICATION_MAX_ATTEMPTS || 5);
+const reverificationLinkTtlMs = Number(process.env.REVERIFICATION_LINK_TTL_MS || 7 * 24 * 60 * 60 * 1000);
 const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'DevCareerNomba Hackathon <message@hack.devcareer.io>';
 const emailSenderName = 'DevCareerNomba Hackathon';
 const hackathonName = 'Nomba Forward Hackathon 2026';
@@ -198,6 +201,65 @@ const hashVerificationCode = (email, code) => {
   }
 
   return crypto.createHmac('sha256', secret).update(`${email.toLowerCase()}:${code}`).digest('hex');
+};
+
+const getPublicOrigin = () => {
+  const configuredUrl = process.env.PUBLIC_BASE_URL || process.env.SITE_URL || process.env.NOMBA_PUBLIC_URL || hackathonPageUrl;
+
+  try {
+    return new URL(configuredUrl).origin;
+  } catch (_error) {
+    return 'https://devcareer.io';
+  }
+};
+
+const signReverificationPayload = (encodedPayload) => {
+  const secret = getEmailVerificationSecret();
+
+  if (!secret) {
+    return '';
+  }
+
+  return crypto.createHmac('sha256', secret).update(`nomba-reverify:${encodedPayload}`).digest('base64url');
+};
+
+const createReverificationToken = ({ verificationId, email }) => {
+  const payload = {
+    purpose: 'nomba-reverify',
+    verificationId: Number(verificationId),
+    email: String(email || '').trim().toLowerCase(),
+    exp: Date.now() + reverificationLinkTtlMs,
+  };
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const signature = signReverificationPayload(encodedPayload);
+
+  return `${encodedPayload}.${signature}`;
+};
+
+const verifyReverificationToken = (token) => {
+  const [encodedPayload, signature] = String(token || '').split('.');
+
+  if (!encodedPayload || !signature) {
+    return null;
+  }
+
+  const expectedSignature = signReverificationPayload(encodedPayload);
+
+  if (!tokensMatch(signature, expectedSignature)) {
+    return null;
+  }
+
+  try {
+    const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString('utf8'));
+
+    if (payload.purpose !== 'nomba-reverify' || !payload.verificationId || !payload.email || Date.now() > payload.exp) {
+      return null;
+    }
+
+    return payload;
+  } catch (_error) {
+    return null;
+  }
 };
 
 const postJson = (url, { headers = {}, payload = {} }) =>
@@ -486,6 +548,77 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
   });
 };
 
+const sendReverificationLinkEmail = async ({ registration, verificationUrl, linkExpiresAt }) => {
+  const displayName = escapeHtml(registration.firstName || 'there');
+  const linkExpiry = new Intl.DateTimeFormat('en-GB', {
+    dateStyle: 'medium',
+    timeStyle: 'short',
+    timeZone: 'Africa/Lagos',
+  }).format(new Date(linkExpiresAt));
+
+  return sendEmail({
+    to: registration.email,
+    subject: 'Confirm your Nomba Forward Hackathon registration',
+    text: [
+      `Hi ${registration.firstName || 'there'},`,
+      '',
+      `We noticed your ${hackathonName} registration was started but not confirmed.`,
+      'Click the link below once to confirm your application. We will send your registration confirmation email after it is verified.',
+      '',
+      verificationUrl,
+      '',
+      `This link expires on ${linkExpiry} WAT.`,
+      '',
+      emailSenderName,
+    ].join('\n'),
+    html: renderEmailShell({
+      previewText: `Confirm your ${hackathonName} registration with one click.`,
+      eyebrow: 'Registration confirmation',
+      title: 'Complete your hackathon registration',
+      children: `
+        <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          We noticed your <strong>${escapeHtml(hackathonName)}</strong> registration was started but not confirmed.
+          Click the button below once to verify your application.
+        </p>
+        <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
+          <tr>
+            <td>${emailButton({ href: verificationUrl, label: 'Confirm My Registration' })}</td>
+          </tr>
+        </table>
+        <p style="margin: 0 0 10px; color: #4a4631; font-size: 14px; line-height: 1.7;">
+          This link expires on <strong>${escapeHtml(linkExpiry)} WAT</strong>. If you already completed registration, you can ignore this email.
+        </p>
+        ${renderSocialLinks()}
+      `,
+    }),
+  });
+};
+
+const renderOneClickResultPage = ({ title, message, tone = 'success' }) => {
+  const isSuccess = tone === 'success';
+  const accent = isSuccess ? '#0d7a5f' : '#a51d2d';
+
+  return `
+    <!doctype html>
+    <html>
+      <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>${escapeHtml(title)}</title>
+      </head>
+      <body style="margin:0; min-height:100vh; display:grid; place-items:center; background:#f6f3e8; font-family:Arial, Helvetica, sans-serif; color:#181818;">
+        <main style="width:min(100% - 32px, 560px); background:#fff; border:1px solid #ece4bd; border-radius:24px; padding:32px; box-shadow:0 18px 42px rgba(0,0,0,0.08);">
+          <p style="margin:0 0 10px; color:${accent}; font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">${escapeHtml(hackathonName)}</p>
+          <h1 style="margin:0 0 14px; font-size:28px; line-height:1.2;">${escapeHtml(title)}</h1>
+          <p style="margin:0 0 22px; color:#4a4631; font-size:16px; line-height:1.7;">${escapeHtml(message)}</p>
+          <a href="${escapeHtml(hackathonPageUrl)}" style="display:inline-block; background:#ffcc00; color:#181818; text-decoration:none; font-weight:800; padding:13px 18px; border-radius:999px;">View Hackathon Page</a>
+        </main>
+      </body>
+    </html>
+  `;
+};
+
 const getAdminToken = (req) => {
   const bearerToken = req.get('authorization')?.replace(/^Bearer\s+/i, '').trim();
   const cookieToken = req.headers.cookie
@@ -649,6 +782,33 @@ const toCsv = (rows) => {
     columns.join(','),
     ...rows.map((row) => columns.map((column) => escapeCsvValue(row[column])).join(',')),
   ].join('\n');
+};
+
+const serializePendingVerification = (row) => {
+  const registration = normalizeRegistration(row.registrationPayload || {});
+  const validationErrors = validateRegistration(registration);
+
+  return {
+    id: row.id,
+    email: row.email,
+    firstName: registration.firstName,
+    lastName: registration.lastName,
+    phone: registration.phone,
+    state: registration.state,
+    participationMode: registration.participationMode,
+    teamName: registration.teamName,
+    teamSize: registration.teamSize,
+    track: registration.track,
+    focusArea: registration.focusArea,
+    role: registration.role,
+    experienceLevel: registration.experienceLevel,
+    attempts: row.attempts,
+    otpExpiresAt: row.expiresAt,
+    createdAt: row.createdAt,
+    expired: Boolean(row.expired),
+    isValid: Object.keys(validationErrors).length === 0,
+    validationErrors,
+  };
 };
 
 app.get('/api/health', async (_req, res) => {
@@ -826,6 +986,115 @@ app.post('/api/nomba-hackathon/registrations/verify', async (req, res) => {
   }
 });
 
+app.get('/api/nomba-hackathon/registrations/reverify', async (req, res) => {
+  if (!requireDatabase(res)) {
+    return;
+  }
+
+  const token = typeof req.query.token === 'string' ? req.query.token : '';
+  const payload = verifyReverificationToken(token);
+
+  if (!payload) {
+    res
+      .status(400)
+      .send(
+        renderOneClickResultPage({
+          title: 'Verification link is invalid',
+          message: 'This confirmation link is invalid or has expired. Please return to the registration page to request a new code.',
+          tone: 'error',
+        })
+      );
+    return;
+  }
+
+  try {
+    const verification = await getNombaEmailVerificationById(payload.verificationId);
+
+    if (!verification || verification.consumedAt) {
+      res.send(
+        renderOneClickResultPage({
+          title: 'Registration already handled',
+          message: 'This confirmation link has already been used or the registration is no longer pending.',
+        })
+      );
+      return;
+    }
+
+    if (String(verification.email || '').toLowerCase() !== payload.email) {
+      res
+        .status(400)
+        .send(
+          renderOneClickResultPage({
+            title: 'Verification link is invalid',
+            message: 'This confirmation link does not match the pending registration.',
+            tone: 'error',
+          })
+        );
+      return;
+    }
+
+    const registration = normalizeRegistration(verification.registrationPayload || {});
+    const errors = validateRegistration(registration);
+
+    if (Object.keys(errors).length > 0) {
+      await consumeNombaEmailVerification(verification.id);
+      console.warn('Invalid stored Nomba registration payload during one-click verification:', {
+        verificationId: verification.id,
+        email: maskEmail(payload.email),
+        fields: Object.keys(errors),
+      });
+      res
+        .status(400)
+        .send(
+          renderOneClickResultPage({
+            title: 'Registration needs to be resubmitted',
+            message: 'This pending registration is missing required information. Please submit the registration form again.',
+            tone: 'error',
+          })
+        );
+      return;
+    }
+
+    const savedRegistration = await completeNombaEmailVerification({
+      id: verification.id,
+      registration,
+    });
+
+    let confirmationEmailSent = false;
+
+    if (!savedRegistration.alreadyRegistered) {
+      try {
+        await sendRegistrationConfirmationEmail({ registration });
+        confirmationEmailSent = true;
+      } catch (emailError) {
+        console.error('Unable to send Nomba registration confirmation email after one-click verification:', emailError);
+      }
+    }
+
+    res.send(
+      renderOneClickResultPage({
+        title: savedRegistration.alreadyRegistered ? 'Registration already confirmed' : 'Registration confirmed',
+        message: savedRegistration.alreadyRegistered
+          ? 'Your Nomba Forward Hackathon registration was already confirmed. Watch your inbox for hackathon updates.'
+          : confirmationEmailSent
+            ? 'Your Nomba Forward Hackathon registration is now confirmed. We have sent your confirmation email.'
+            : 'Your Nomba Forward Hackathon registration is now confirmed. We could not send the confirmation email right now, but your application has been saved.',
+      })
+    );
+  } catch (error) {
+    console.error('Unable to complete one-click Nomba hackathon verification:', error);
+    res
+      .status(500)
+      .send(
+        renderOneClickResultPage({
+          title: 'Unable to confirm registration',
+          message: 'We could not confirm this registration right now. Please try again or contact the DevCareer team.',
+          tone: 'error',
+        })
+      );
+  }
+});
+
 app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (req, res) => {
   if (!requireDatabase(res)) {
     return;
@@ -852,6 +1121,85 @@ app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (re
   } catch (error) {
     console.error('Unable to list Nomba hackathon registrations:', error);
     res.status(500).json({ error: 'Unable to load registrations.' });
+  }
+});
+
+app.get('/api/admin/nomba-hackathon/verifications/pending', requireAdminToken, async (req, res) => {
+  if (!requireDatabase(res)) {
+    return;
+  }
+
+  const requestedLimit = Number(req.query.limit || 50);
+  const requestedOffset = Number(req.query.offset || 0);
+  const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), 1000) : 50;
+  const offset = Number.isFinite(requestedOffset) ? Math.max(requestedOffset, 0) : 0;
+
+  try {
+    const rows = await listNombaPendingVerifications({ limit, offset });
+    const total = rows[0]?.totalCount || 0;
+    const verifications = rows.map(serializePendingVerification);
+
+    res.json({ verifications, limit, offset, total });
+  } catch (error) {
+    console.error('Unable to list pending Nomba hackathon verifications:', error);
+    res.status(500).json({ error: 'Unable to load unverified registrations.' });
+  }
+});
+
+app.post('/api/admin/nomba-hackathon/verifications/:id/reverification-link', requireAdminToken, async (req, res) => {
+  if (!requireDatabase(res)) {
+    return;
+  }
+
+  const verificationId = Number(req.params.id);
+
+  if (!Number.isFinite(verificationId) || verificationId <= 0) {
+    res.status(400).json({ error: 'Invalid verification id.' });
+    return;
+  }
+
+  try {
+    const verification = await getNombaEmailVerificationById(verificationId);
+
+    if (!verification || verification.consumedAt) {
+      res.status(404).json({ error: 'Pending registration was not found.' });
+      return;
+    }
+
+    const registration = normalizeRegistration(verification.registrationPayload || {});
+    const errors = validateRegistration(registration);
+
+    if (Object.keys(errors).length > 0) {
+      res.status(400).json({
+        error: 'This pending registration is missing required information. Ask the applicant to submit the form again.',
+        fields: errors,
+      });
+      return;
+    }
+
+    const token = createReverificationToken({
+      verificationId: verification.id,
+      email: verification.email,
+    });
+    const linkExpiresAt = new Date(Date.now() + reverificationLinkTtlMs).toISOString();
+    const verificationUrl = `${getPublicOrigin()}/api/nomba-hackathon/registrations/reverify?token=${encodeURIComponent(
+      token
+    )}`;
+
+    await sendReverificationLinkEmail({
+      registration,
+      verificationUrl,
+      linkExpiresAt,
+    });
+
+    res.json({
+      success: true,
+      email: verification.email,
+      linkExpiresAt,
+    });
+  } catch (error) {
+    console.error('Unable to send Nomba hackathon reverification link:', error);
+    res.status(500).json({ error: 'Unable to send re-verification link.' });
   }
 });
 

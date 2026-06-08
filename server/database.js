@@ -206,6 +206,66 @@ export const getActiveNombaEmailVerification = async (email) => {
   return result.rows[0] || null;
 };
 
+export const getNombaEmailVerificationById = async (id) => {
+  const result = await pool.query(
+    `
+      SELECT
+        id,
+        email,
+        code_hash AS "codeHash",
+        registration_payload AS "registrationPayload",
+        attempts,
+        expires_at AS "expiresAt",
+        consumed_at AS "consumedAt",
+        created_at AS "createdAt"
+      FROM nomba_hackathon_email_verifications
+      WHERE id = $1;
+    `,
+    [id]
+  );
+
+  return result.rows[0] || null;
+};
+
+export const listNombaPendingVerifications = async ({ limit = 50, offset = 0 } = {}) => {
+  const result = await pool.query(
+    `
+      WITH latest_unverified AS (
+        SELECT DISTINCT ON (LOWER(v.email))
+          v.id,
+          v.email,
+          v.registration_payload,
+          v.attempts,
+          v.expires_at,
+          v.created_at
+        FROM nomba_hackathon_email_verifications v
+        WHERE v.consumed_at IS NULL
+          AND NOT EXISTS (
+            SELECT 1
+            FROM nomba_hackathon_registrations r
+            WHERE LOWER(r.email) = LOWER(v.email)
+          )
+        ORDER BY LOWER(v.email), v.created_at DESC
+      )
+      SELECT
+        COUNT(*) OVER()::int AS "totalCount",
+        id,
+        email,
+        registration_payload AS "registrationPayload",
+        attempts,
+        expires_at AS "expiresAt",
+        created_at AS "createdAt",
+        (expires_at <= NOW()) AS expired
+      FROM latest_unverified
+      ORDER BY created_at DESC
+      LIMIT $1 OFFSET $2;
+    `,
+    [limit, offset]
+  );
+
+  return result.rows;
+};
+
 export const incrementNombaEmailVerificationAttempts = async (id) => {
   await pool.query(
     `
@@ -247,6 +307,25 @@ export const completeNombaEmailVerification = async ({ id, registration }) => {
 
     if (consumedVerification.rowCount === 0) {
       throw new Error('Verification code has already been used.');
+    }
+
+    const existingRegistration = await client.query(
+      `
+        SELECT id, created_at
+        FROM nomba_hackathon_registrations
+        WHERE LOWER(email) = LOWER($1)
+        ORDER BY created_at DESC
+        LIMIT 1;
+      `,
+      [registration.email]
+    );
+
+    if (existingRegistration.rowCount > 0) {
+      await client.query('COMMIT');
+      return {
+        ...existingRegistration.rows[0],
+        alreadyRegistered: true,
+      };
     }
 
     const savedRegistration = await insertNombaRegistration(registration, client);

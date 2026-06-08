@@ -93,7 +93,7 @@
 
 .nha-stats {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
   gap: 12px;
   margin-top: 20px;
 }
@@ -142,10 +142,37 @@
   overflow: auto;
 }
 
+.nha-section-heading {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.nha-section-heading h2 {
+  margin: 0;
+  color: #172033;
+  font-family: Gilroy, 'IBM Plex Mono', sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.nha-section-heading p {
+  margin: 5px 0 0;
+  color: #617089;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .nha-table {
   width: 100%;
   min-width: 1120px;
   border-collapse: collapse;
+}
+
+.nha-table--pending {
+  min-width: 980px;
 }
 
 .nha-table th,
@@ -210,6 +237,17 @@
   font-weight: 700;
 }
 
+.nha-pill--warning {
+  background: #fff4d8;
+  color: #8a5b00;
+}
+
+.nha-action--compact {
+  min-width: 116px !important;
+  padding: 7px 10px !important;
+  font-size: 12px !important;
+}
+
 .nha-empty {
   padding: 42px 18px;
   text-align: center;
@@ -224,7 +262,8 @@
 
 @media (max-width: 840px) {
   .nha-header,
-  .nha-toolbar {
+  .nha-toolbar,
+  .nha-section-heading {
     flex-direction: column;
     align-items: stretch;
   }
