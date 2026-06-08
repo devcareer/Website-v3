@@ -134,7 +134,7 @@ const normalizeRegistration = (body) => ({
   rawPayload: body,
 });
 
-const validateRegistration = (registration) => {
+const validateRegistration = (registration, { allowMissingTeamSize = false } = {}) => {
   const errors = {};
   const requiredFields = [
     'firstName',
@@ -172,7 +172,9 @@ const validateRegistration = (registration) => {
       errors.teamName = 'Required for team participation';
     }
 
-    if (![2, 3, 4].includes(registration.teamSize)) {
+    const teamSizeIsMissing = registration.teamSize === null || registration.teamSize === undefined;
+
+    if (![2, 3, 4].includes(registration.teamSize) && !(allowMissingTeamSize && teamSizeIsMissing)) {
       errors.teamSize = 'Invalid team size';
     }
   }
@@ -183,6 +185,8 @@ const validateRegistration = (registration) => {
 
   return errors;
 };
+
+const validateStoredRegistration = (registration) => validateRegistration(registration, { allowMissingTeamSize: true });
 
 const getEmailVerificationSecret = () =>
   process.env.EMAIL_VERIFICATION_SECRET ||
@@ -786,7 +790,7 @@ const toCsv = (rows) => {
 
 const serializePendingVerification = (row) => {
   const registration = normalizeRegistration(row.registrationPayload || {});
-  const validationErrors = validateRegistration(registration);
+  const validationErrors = validateStoredRegistration(registration);
 
   return {
     id: row.id,
@@ -944,7 +948,7 @@ app.post('/api/nomba-hackathon/registrations/verify', async (req, res) => {
     }
 
     const registration = normalizeRegistration(verification.registrationPayload || {});
-    const errors = validateRegistration(registration);
+    const errors = validateStoredRegistration(registration);
 
     if (Object.keys(errors).length > 0) {
       await consumeNombaEmailVerification(verification.id);
@@ -1034,7 +1038,7 @@ app.get('/api/nomba-hackathon/registrations/reverify', async (req, res) => {
     }
 
     const registration = normalizeRegistration(verification.registrationPayload || {});
-    const errors = validateRegistration(registration);
+    const errors = validateStoredRegistration(registration);
 
     if (Object.keys(errors).length > 0) {
       await consumeNombaEmailVerification(verification.id);
@@ -1167,7 +1171,7 @@ app.post('/api/admin/nomba-hackathon/verifications/:id/reverification-link', req
     }
 
     const registration = normalizeRegistration(verification.registrationPayload || {});
-    const errors = validateRegistration(registration);
+    const errors = validateStoredRegistration(registration);
 
     if (Object.keys(errors).length > 0) {
       res.status(400).json({
