@@ -86,6 +86,24 @@ const PODIUM_PRIZES = PRIZE_PODIUM_ORDER.map((rank) => PRIZE_BREAKDOWN.find((pri
   Boolean
 );
 
+const applyStaticCriteriaFallback = (host) => {
+  host.classList.add('nm-criteria-static');
+  return () => host.classList.remove('nm-criteria-static');
+};
+
+const browserSupportsWebGL = () => {
+  try {
+    const canvas = document.createElement('canvas');
+    const context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+
+    context?.getExtension('WEBGL_lose_context')?.loseContext();
+
+    return Boolean(context);
+  } catch (_error) {
+    return false;
+  }
+};
+
 const JUDGING_CRITERIA = [
   { name: 'Problem Relevance', weight: 20, color: '#ff5f6d', colorSoft: '#ffc371' },
   { name: 'Technical Execution', weight: 25, color: '#3a86ff', colorSoft: '#62d2ff' },
@@ -208,8 +226,11 @@ const NombaHackathon = () => {
     const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     const lowPowerDevice = window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches;
     if (reducedMotion || lowPowerDevice) {
-      host.classList.add('nm-criteria-static');
-      return () => host.classList.remove('nm-criteria-static');
+      return applyStaticCriteriaFallback(host);
+    }
+
+    if (!browserSupportsWebGL()) {
+      return applyStaticCriteriaFallback(host);
     }
 
     const mobile = window.matchMedia('(max-width: 767px)').matches;
@@ -217,12 +238,20 @@ const NombaHackathon = () => {
     const camera = new THREE.PerspectiveCamera(42, 1, 0.1, 100);
     camera.position.set(0, 0, 8);
 
-    const renderer = new THREE.WebGLRenderer({
-      canvas,
-      alpha: true,
-      antialias: true,
-      powerPreference: 'high-performance',
-    });
+    let renderer;
+
+    try {
+      renderer = new THREE.WebGLRenderer({
+        canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'high-performance',
+      });
+    } catch (error) {
+      console.warn('Unable to create Nomba criteria WebGL renderer; using static fallback.', error);
+      return applyStaticCriteriaFallback(host);
+    }
+
     renderer.setClearColor(0x000000, 0);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.2 : 1.5));
 
