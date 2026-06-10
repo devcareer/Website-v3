@@ -8,6 +8,8 @@ import express from 'express';
 import {
   completeNombaEmailVerification,
   consumeNombaEmailVerification,
+  countNombaPendingVerifications,
+  countNombaRegistrations,
   createNombaEmailVerification,
   getActiveNombaEmailVerification,
   getNombaEmailVerificationById,
@@ -1223,7 +1225,7 @@ app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (re
 
   try {
     const rows = await listNombaRegistrations({ limit, offset });
-    const total = rows[0]?.totalCount || 0;
+    const total = rows[0]?.totalCount ?? (offset > 0 ? await countNombaRegistrations() : 0);
     const registrations = rows.map(({ totalCount: _totalCount, ...registration }) => registration);
 
     if (req.query.format === 'csv') {
@@ -1252,7 +1254,7 @@ app.get('/api/admin/nomba-hackathon/verifications/pending', requireAdminToken, a
 
   try {
     const rows = await listNombaPendingVerifications({ limit, offset });
-    const total = rows[0]?.totalCount || 0;
+    const total = rows[0]?.totalCount ?? (offset > 0 ? await countNombaPendingVerifications() : 0);
     const verifications = rows.map(serializePendingVerification);
 
     res.json({ verifications, limit, offset, total });

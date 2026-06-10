@@ -1,6 +1,16 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Stack, TextField } from '@mui/material';
-import { Email, FileDownload, KeyboardArrowDown, KeyboardArrowUp, Logout, Refresh, Search } from '@mui/icons-material';
+import {
+  Email,
+  FileDownload,
+  KeyboardArrowDown,
+  KeyboardArrowLeft,
+  KeyboardArrowRight,
+  KeyboardArrowUp,
+  Logout,
+  Refresh,
+  Search,
+} from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Link, useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -11,6 +21,8 @@ const ADMIN_EMAIL_KEY = 'devcareer_nomba_admin_email';
 const RESULTS_LIMIT = 50;
 const VERIFIED_ADMIN_PATH = '/hackathon/admin';
 const UNVERIFIED_ADMIN_PATH = '/hackathon/admin/unverified';
+
+const getTotalPages = (total) => Math.max(1, Math.ceil(total / RESULTS_LIMIT));
 
 const formatDate = (value) => {
   if (!value) {
@@ -154,6 +166,7 @@ const AdminLogin = ({ onAuthenticated }) => {
 const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
   const [registrations, setRegistrations] = useState([]);
   const [totalRegistrations, setTotalRegistrations] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [query, setQuery] = useState('');
   const [sortConfig, setSortConfig] = useState({ key: 'submitted', direction: 'desc' });
   const [isLoading, setIsLoading] = useState(true);
@@ -171,7 +184,8 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       setError('');
 
       try {
-        const response = await fetch(`/api/admin/nomba-hackathon/registrations?limit=${RESULTS_LIMIT}`, {
+        const offset = currentPage * RESULTS_LIMIT;
+        const response = await fetch(`/api/admin/nomba-hackathon/registrations?limit=${RESULTS_LIMIT}&offset=${offset}`, {
           credentials: 'include',
           headers: authHeaders,
         });
@@ -181,8 +195,17 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
           throw new Error(data.error || 'Unable to load registrations.');
         }
 
-        setRegistrations(data.registrations || []);
-        setTotalRegistrations(data.total ?? data.registrations?.length ?? 0);
+        const nextRegistrations = data.registrations || [];
+        const nextTotal = data.total ?? nextRegistrations.length;
+        const lastPage = Math.max(0, getTotalPages(nextTotal) - 1);
+
+        if (currentPage > lastPage) {
+          setCurrentPage(lastPage);
+          return;
+        }
+
+        setRegistrations(nextRegistrations);
+        setTotalRegistrations(nextTotal);
         setLastLoadedAt(new Date());
       } catch (loadError) {
         setError(loadError.message);
@@ -190,7 +213,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
         setIsLoading(false);
       }
     },
-    [authHeaders]
+    [authHeaders, currentPage]
   );
 
   useEffect(() => {
@@ -211,6 +234,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       latest: registrations[0]?.createdAt,
     };
   }, [registrations, totalRegistrations]);
+
+  const verifiedPageStart = registrations.length > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
+  const verifiedPageEnd = registrations.length > 0 ? currentPage * RESULTS_LIMIT + registrations.length : 0;
 
   const normalizedQuery = query.trim().toLowerCase();
   const filteredRegistrations = useMemo(() => {
@@ -346,9 +372,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
         <section className="nha-stats" aria-label="Registration summary">
           <Stat label="Total Responses" value={stats.total} />
-          <Stat label="Solo In Latest 50" value={stats.soloCount} />
-          <Stat label="Team In Latest 50" value={stats.teamCount} />
-          <Stat label="Latest Response" value={stats.latest ? formatDate(stats.latest) : '-'} />
+          <Stat label="Solo On Page" value={stats.soloCount} />
+          <Stat label="Team On Page" value={stats.teamCount} />
+          <Stat label="Newest On Page" value={stats.latest ? formatDate(stats.latest) : '-'} />
         </section>
 
         <section className="nha-toolbar">
@@ -363,8 +389,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
             }}
           />
           <span className="nha-status">
-            Showing {sortedRegistrations.length} of {registrations.length} loaded records
-            {totalRegistrations > registrations.length ? ` (latest ${registrations.length} of ${totalRegistrations})` : ''}
+            {normalizedQuery
+              ? `${sortedRegistrations.length} match${sortedRegistrations.length === 1 ? '' : 'es'} on this page`
+              : `Showing ${verifiedPageStart}-${verifiedPageEnd} of ${totalRegistrations}`}
           </span>
         </section>
 
@@ -429,6 +456,14 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
             <div className="nha-empty">{query ? 'No registrations match this search.' : 'No registrations yet.'}</div>
           )}
         </section>
+
+        <PaginationControls
+          currentPage={currentPage}
+          loadedCount={registrations.length}
+          total={totalRegistrations}
+          isLoading={isLoading}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </main>
   );
@@ -437,6 +472,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
 const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
   const [pendingVerifications, setPendingVerifications] = useState([]);
   const [totalPendingVerifications, setTotalPendingVerifications] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
   const [sendingLinkIds, setSendingLinkIds] = useState({});
@@ -454,7 +490,8 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
       setError('');
 
       try {
-        const response = await fetch(`/api/admin/nomba-hackathon/verifications/pending?limit=${RESULTS_LIMIT}`, {
+        const offset = currentPage * RESULTS_LIMIT;
+        const response = await fetch(`/api/admin/nomba-hackathon/verifications/pending?limit=${RESULTS_LIMIT}&offset=${offset}`, {
           credentials: 'include',
           headers: authHeaders,
         });
@@ -464,8 +501,17 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
           throw new Error(data.error || 'Unable to load unverified registrations.');
         }
 
-        setPendingVerifications(data.verifications || []);
-        setTotalPendingVerifications(data.total ?? data.verifications?.length ?? 0);
+        const nextPendingVerifications = data.verifications || [];
+        const nextTotal = data.total ?? nextPendingVerifications.length;
+        const lastPage = Math.max(0, getTotalPages(nextTotal) - 1);
+
+        if (currentPage > lastPage) {
+          setCurrentPage(lastPage);
+          return;
+        }
+
+        setPendingVerifications(nextPendingVerifications);
+        setTotalPendingVerifications(nextTotal);
         setLastLoadedAt(new Date());
       } catch (loadError) {
         setError(loadError.message);
@@ -473,7 +519,7 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
         setIsLoading(false);
       }
     },
-    [authHeaders]
+    [authHeaders, currentPage]
   );
 
   useEffect(() => {
@@ -503,6 +549,9 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
       needsFreshForm: pendingVerifications.length - eligibleLoaded,
     };
   }, [pendingVerifications, totalPendingVerifications]);
+
+  const pendingPageStart = pendingVerifications.length > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
+  const pendingPageEnd = pendingVerifications.length > 0 ? currentPage * RESULTS_LIMIT + pendingVerifications.length : 0;
 
   const sendReverificationLink = async (verification) => {
     setSendingLinkIds((current) => ({ ...current, [verification.id]: true }));
@@ -620,9 +669,9 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
         <section className="nha-stats" aria-label="Unverified registration summary">
           <Stat label="Total Unverified" value={pendingStats.total} />
-          <Stat label="Eligible Loaded" value={pendingStats.eligibleLoaded} />
-          <Stat label="Expired OTP Loaded" value={pendingStats.expiredLoaded} />
-          <Stat label="Needs Fresh Form" value={pendingStats.needsFreshForm} />
+          <Stat label="Eligible On Page" value={pendingStats.eligibleLoaded} />
+          <Stat label="Expired OTP On Page" value={pendingStats.expiredLoaded} />
+          <Stat label="Needs Fresh Form On Page" value={pendingStats.needsFreshForm} />
         </section>
 
         <section className="nha-toolbar">
@@ -637,10 +686,9 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
             }}
           />
           <span className="nha-status">
-            Showing {filteredPendingVerifications.length} of {pendingVerifications.length} loaded pending records
-            {totalPendingVerifications > pendingVerifications.length
-              ? ` (latest ${pendingVerifications.length} of ${totalPendingVerifications})`
-              : ''}
+            {normalizedQuery
+              ? `${filteredPendingVerifications.length} match${filteredPendingVerifications.length === 1 ? '' : 'es'} on this page`
+              : `Showing ${pendingPageStart}-${pendingPageEnd} of ${totalPendingVerifications}`}
           </span>
         </section>
 
@@ -727,8 +775,63 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
             </div>
           )}
         </section>
+
+        <PaginationControls
+          currentPage={currentPage}
+          loadedCount={pendingVerifications.length}
+          total={totalPendingVerifications}
+          isLoading={isLoading || isSendingAll}
+          onPageChange={setCurrentPage}
+        />
       </div>
     </main>
+  );
+};
+
+const PaginationControls = ({ currentPage, loadedCount, total, isLoading, onPageChange }) => {
+  const totalPages = getTotalPages(total);
+  const isFirstPage = currentPage <= 0;
+  const isLastPage = currentPage >= totalPages - 1 || total === 0;
+  const pageStart = loadedCount > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
+  const pageEnd = loadedCount > 0 ? currentPage * RESULTS_LIMIT + loadedCount : 0;
+
+  const goToPage = (nextPage) => {
+    const clampedPage = Math.min(Math.max(nextPage, 0), totalPages - 1);
+    onPageChange(clampedPage);
+  };
+
+  return (
+    <nav className="nha-pagination" aria-label="Registration pagination">
+      <div className="nha-pagination__summary">
+        <span>
+          Page {Math.min(currentPage + 1, totalPages)} of {totalPages}
+        </span>
+        <span>
+          {total > 0 ? `Records ${pageStart}-${pageEnd} of ${total}` : 'No records'}
+        </span>
+      </div>
+
+      <div className="nha-pagination__actions">
+        <Button
+          className="nha-icon-action"
+          variant="outlined"
+          startIcon={<KeyboardArrowLeft />}
+          onClick={() => goToPage(currentPage - 1)}
+          disabled={isLoading || isFirstPage}
+        >
+          Previous
+        </Button>
+        <Button
+          className="nha-icon-action"
+          variant="outlined"
+          endIcon={<KeyboardArrowRight />}
+          onClick={() => goToPage(currentPage + 1)}
+          disabled={isLoading || isLastPage}
+        >
+          Next
+        </Button>
+      </div>
+    </nav>
   );
 };
 

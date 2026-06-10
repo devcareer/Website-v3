@@ -266,6 +266,21 @@ export const listNombaPendingVerifications = async ({ limit = 50, offset = 0 } =
   return result.rows;
 };
 
+export const countNombaPendingVerifications = async () => {
+  const result = await pool.query(`
+    SELECT COUNT(DISTINCT LOWER(v.email))::int AS total
+    FROM nomba_hackathon_email_verifications v
+    WHERE v.consumed_at IS NULL
+      AND NOT EXISTS (
+        SELECT 1
+        FROM nomba_hackathon_registrations r
+        WHERE LOWER(r.email) = LOWER(v.email)
+      );
+  `);
+
+  return result.rows[0]?.total || 0;
+};
+
 export const incrementNombaEmailVerificationAttempts = async (id) => {
   await pool.query(
     `
@@ -372,4 +387,13 @@ export const listNombaRegistrations = async ({ limit = 200, offset = 0 } = {}) =
   );
 
   return result.rows;
+};
+
+export const countNombaRegistrations = async () => {
+  const result = await pool.query(`
+    SELECT COUNT(*)::int AS total
+    FROM nomba_hackathon_registrations;
+  `);
+
+  return result.rows[0]?.total || 0;
 };
