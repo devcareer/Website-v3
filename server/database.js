@@ -389,6 +389,35 @@ export const listNombaRegistrations = async ({ limit = 200, offset = 0 } = {}) =
   return result.rows;
 };
 
+export const listAllNombaRegistrations = async () => {
+  const result = await pool.query(`
+    SELECT
+      id,
+      program,
+      submitted_at AS "submittedAt",
+      first_name AS "firstName",
+      last_name AS "lastName",
+      email,
+      phone,
+      country,
+      state,
+      participation_mode AS "participationMode",
+      team_name AS "teamName",
+      team_size AS "teamSize",
+      track,
+      focus_area AS "focusArea",
+      role,
+      experience_level AS "experienceLevel",
+      consent_originality AS "consentOriginality",
+      consent_commitment AS "consentCommitment",
+      created_at AS "createdAt"
+    FROM nomba_hackathon_registrations
+    ORDER BY created_at DESC;
+  `);
+
+  return result.rows;
+};
+
 export const countNombaRegistrations = async () => {
   const result = await pool.query(`
     SELECT COUNT(*)::int AS total

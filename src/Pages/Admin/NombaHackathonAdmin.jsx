@@ -297,7 +297,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
     setIsDownloading(true);
 
     try {
-      const response = await fetch('/api/admin/nomba-hackathon/registrations?format=csv&limit=1000', {
+      const response = await fetch('/api/admin/nomba-hackathon/registrations?format=csv', {
         credentials: 'include',
         headers: authHeaders,
       });

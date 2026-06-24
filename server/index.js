@@ -16,6 +16,7 @@ import {
   hasDatabase,
   initializeDatabase,
   incrementNombaEmailVerificationAttempts,
+  listAllNombaRegistrations,
   listNombaPendingVerifications,
   listNombaRegistrations,
   pool,
@@ -1237,16 +1238,18 @@ app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (re
   const offset = Number.isFinite(requestedOffset) ? Math.max(requestedOffset, 0) : 0;
 
   try {
-    const rows = await listNombaRegistrations({ limit, offset });
-    const total = rows[0]?.totalCount ?? (offset > 0 ? await countNombaRegistrations() : 0);
-    const registrations = rows.map(({ totalCount: _totalCount, ...registration }) => registration);
-
     if (req.query.format === 'csv') {
+      const registrations = await listAllNombaRegistrations();
+
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', 'attachment; filename="nomba-hackathon-registrations.csv"');
       res.send(toCsv(registrations));
       return;
     }
+
+    const rows = await listNombaRegistrations({ limit, offset });
+    const total = rows[0]?.totalCount ?? (offset > 0 ? await countNombaRegistrations() : 0);
+    const registrations = rows.map(({ totalCount: _totalCount, ...registration }) => registration);
 
     res.json({ registrations, limit, offset, total });
   } catch (error) {
