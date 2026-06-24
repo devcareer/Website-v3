@@ -246,6 +246,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       ? registrations.length
       : currentPage * RESULTS_LIMIT + registrations.length
     : 0;
+  const verifiedRowOffset = showAllRegistrations ? 0 : currentPage * RESULTS_LIMIT;
 
   const normalizedQuery = query.trim().toLowerCase();
   const filteredRegistrations = useMemo(() => {
@@ -446,6 +447,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
           <table className="nha-table">
             <thead>
               <tr>
+                <th className="nha-table__serial">#</th>
                 <SortableHeader label="Applicant" sortKey="applicant" sortConfig={sortConfig} onSort={handleSort} />
                 <SortableHeader label="Contact" sortKey="contact" sortConfig={sortConfig} onSort={handleSort} />
                 <SortableHeader label="State" sortKey="state" sortConfig={sortConfig} onSort={handleSort} />
@@ -458,8 +460,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
               </tr>
             </thead>
             <tbody>
-              {sortedRegistrations.map((registration) => (
+              {sortedRegistrations.map((registration, index) => (
                 <tr key={registration.id}>
+                  <td className="nha-table__serial">{verifiedRowOffset + index + 1}</td>
                   <td>
                     <div className="nha-person">
                       {registration.firstName} {registration.lastName}
@@ -593,6 +596,7 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
   const pendingPageStart = pendingVerifications.length > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
   const pendingPageEnd = pendingVerifications.length > 0 ? currentPage * RESULTS_LIMIT + pendingVerifications.length : 0;
+  const pendingRowOffset = currentPage * RESULTS_LIMIT;
 
   const sendReverificationLink = async (verification) => {
     setSendingLinkIds((current) => ({ ...current, [verification.id]: true }));
@@ -764,6 +768,7 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
           <table className="nha-table nha-table--pending">
             <thead>
               <tr>
+                <th className="nha-table__serial">#</th>
                 <th>Applicant</th>
                 <th>Contact</th>
                 <th>State</th>
@@ -775,8 +780,9 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
               </tr>
             </thead>
             <tbody>
-              {filteredPendingVerifications.map((verification) => (
+              {filteredPendingVerifications.map((verification, index) => (
                 <tr key={verification.id}>
+                  <td className="nha-table__serial">{pendingRowOffset + index + 1}</td>
                   <td>
                     <div className="nha-person">
                       {verification.firstName} {verification.lastName}

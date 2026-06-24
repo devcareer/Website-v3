@@ -192,6 +192,14 @@
   text-transform: uppercase;
 }
 
+.nha-table .nha-table__serial {
+  width: 54px;
+  min-width: 54px;
+  color: #617089;
+  font-weight: 700;
+  text-align: center;
+}
+
 .nha-sort {
   display: inline-flex;
   align-items: center;
