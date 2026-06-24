@@ -297,7 +297,8 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
     setIsDownloading(true);
 
     try {
-      const response = await fetch('/api/admin/nomba-hackathon/registrations?format=csv', {
+      const response = await fetch(`/api/admin/nomba-hackathon/registrations?format=csv&all=true&ts=${Date.now()}`, {
+        cache: 'no-store',
         credentials: 'include',
         headers: authHeaders,
       });
@@ -315,6 +316,12 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       link.click();
       link.remove();
       window.URL.revokeObjectURL(url);
+
+      const exportedCount = response.headers.get('X-Exported-Count');
+
+      if (exportedCount) {
+        toast.success(`Downloaded ${exportedCount} verified registration${exportedCount === '1' ? '' : 's'}.`);
+      }
     } catch (downloadError) {
       toast.error(downloadError.message);
     } finally {
@@ -602,10 +609,28 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
       const data = await response.json().catch(() => null);
 
       if (!response.ok || !data?.success) {
-        throw new Error(data?.error || 'Unable to send batch re-verification links.');
+        const detail = data?.detail ? ` ${data.detail}` : '';
+        throw new Error(`${data?.error || 'Unable to send batch re-verification links.'}${detail}`);
       }
 
-      toast.success(`Sent ${data.sent} re-verification link${data.sent === 1 ? '' : 's'} in ${data.batches} batch${data.batches === 1 ? '' : 'es'}.`);
+      const failedCount = data.failed || 0;
+      const notAttemptedCount = data.notAttempted || 0;
+
+      if (failedCount > 0 || notAttemptedCount > 0) {
+        toast.warn(
+          `Sent ${data.sent} re-verification link${data.sent === 1 ? '' : 's'}. ${failedCount} failed${notAttemptedCount ? ` and ${notAttemptedCount} were not attempted` : ''}.`
+        );
+
+        if (data.failures?.[0]) {
+          toast.info(`First failure: ${data.failures[0].email} - ${data.failures[0].error}`);
+        }
+      } else {
+        toast.success(`Sent ${data.sent} re-verification link${data.sent === 1 ? '' : 's'} in ${data.batches} batch${data.batches === 1 ? '' : 'es'}.`);
+      }
+
+      if (data.batchFallbacks > 0) {
+        toast.info(`${data.batchFallbacks} Resend batch${data.batchFallbacks === 1 ? '' : 'es'} were retried individually.`);
+      }
 
       if (data.skippedInvalid > 0) {
         toast.info(`${data.skippedInvalid} pending registration${data.skippedInvalid === 1 ? '' : 's'} need a fresh form.`);

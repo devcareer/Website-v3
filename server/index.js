@@ -319,6 +319,28 @@ const postJson = (url, { headers = {}, payload = {} }) =>
     request.end();
   });
 
+const getProviderErrorMessage = (response, fallback = 'The email provider rejected the request.') => {
+  const data = response?.data;
+  const message =
+    data?.message ||
+    data?.error ||
+    data?.name ||
+    response?.statusText ||
+    fallback;
+
+  return typeof message === 'string' && message.trim() ? message.trim() : fallback;
+};
+
+const createEmailProviderError = (message, response) => {
+  const error = new Error(message);
+  error.status = response?.status;
+  error.providerMessage = getProviderErrorMessage(response, message);
+  return error;
+};
+
+const getEmailErrorDetail = (error) =>
+  error?.providerMessage || error?.message || 'Unable to send email.';
+
 const emailButton = ({ href, label, background = '#ffcc00', color = '#181818' }) => `
   <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"
     style="display: inline-block; background: ${background}; color: ${color}; text-decoration: none; font-size: 14px; font-weight: 800; padding: 13px 18px; border-radius: 999px;">
@@ -408,11 +430,12 @@ const sendEmail = async ({ to, subject, text, html }) => {
   const { data } = response;
 
   if (!response.ok) {
+    const providerMessage = getProviderErrorMessage(response, 'Unable to send email.');
     console.error(
       'Unable to send Nomba email:',
-      data?.message || data?.error || response.statusText || response.status
+      providerMessage
     );
-    throw new Error('Unable to send email.');
+    throw createEmailProviderError('Unable to send email.', response);
   }
 
   return data;
@@ -447,11 +470,12 @@ const sendEmailBatch = async (emails, { idempotencyKey } = {}) => {
   const { data } = response;
 
   if (!response.ok) {
+    const providerMessage = getProviderErrorMessage(response, 'Unable to send email batch.');
     console.error(
       'Unable to send Nomba email batch:',
-      data?.message || data?.error || response.statusText || response.status
+      providerMessage
     );
-    throw new Error('Unable to send email batch.');
+    throw createEmailProviderError('Unable to send email batch.', response);
   }
 
   return data;
@@ -870,6 +894,55 @@ const chunkArray = (items, size) => {
   return chunks;
 };
 
+const extractEmailIds = (data) => {
+  if (Array.isArray(data?.data)) {
+    return data.data;
+  }
+
+  if (Array.isArray(data)) {
+    return data;
+  }
+
+  return data ? [data] : [];
+};
+
+const shouldRetryBatchIndividually = (error) => [400, 422].includes(Number(error?.status));
+
+const sendEmailItemsIndividually = async (items) => {
+  const emailIds = [];
+  const failures = [];
+  const groups = chunkArray(items, 5);
+
+  for (const group of groups) {
+    const results = await Promise.allSettled(
+      group.map((item) => sendEmail(item.emailPayload))
+    );
+
+    results.forEach((result, index) => {
+      const item = group[index];
+
+      if (result.status === 'fulfilled') {
+        emailIds.push(...extractEmailIds(result.value));
+        return;
+      }
+
+      const detail = getEmailErrorDetail(result.reason);
+      console.error(`Unable to send Nomba reverification link to ${item.email}:`, detail);
+      failures.push({
+        verificationId: item.verificationId,
+        email: item.email,
+        error: detail,
+      });
+    });
+  }
+
+  return {
+    sent: items.length - failures.length,
+    emailIds,
+    failures,
+  };
+};
+
 const listAllNombaPendingVerifications = async () => {
   const pageSize = 1000;
   const rows = [];
@@ -1243,6 +1316,9 @@ app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (re
 
       res.setHeader('Content-Type', 'text/csv; charset=utf-8');
       res.setHeader('Content-Disposition', 'attachment; filename="nomba-hackathon-registrations.csv"');
+      res.setHeader('Cache-Control', 'no-store');
+      res.setHeader('X-Exported-Count', String(registrations.length));
+      res.setHeader('X-Total-Count', String(registrations.length));
       res.send(toCsv(registrations));
       return;
     }
@@ -1307,6 +1383,7 @@ app.post('/api/admin/nomba-hackathon/verifications/reverification-links/batch', 
 
       batchItems.push({
         verificationId: verification.id,
+        email: registration.email,
         emailPayload: buildReverificationLinkEmailPayload({
           registration,
           verificationUrl,
@@ -1329,6 +1406,11 @@ app.post('/api/admin/nomba-hackathon/verifications/reverification-links/batch', 
     }
 
     const emailIds = [];
+    const failures = [];
+    const batchFailures = [];
+    let sent = 0;
+    let batchFallbacks = 0;
+    let stoppedEarly = false;
     const chunks = chunkArray(batchItems, resendBatchSize);
 
     for (let index = 0; index < chunks.length; index += 1) {
@@ -1339,22 +1421,74 @@ app.post('/api/admin/nomba-hackathon/verifications/reverification-links/batch', 
         .digest('hex')
         .slice(0, 32);
       const idempotencyKey = `nomba-reverify-${Math.floor(Date.now() / 86400000)}-${index + 1}-${idempotencyHash}`;
-      const data = await sendEmailBatch(
-        chunk.map((item) => item.emailPayload),
-        { idempotencyKey }
-      );
-      const sentIds = Array.isArray(data?.data) ? data.data : [];
+      try {
+        const data = await sendEmailBatch(
+          chunk.map((item) => item.emailPayload),
+          { idempotencyKey }
+        );
 
-      emailIds.push(...sentIds);
+        sent += chunk.length;
+        emailIds.push(...extractEmailIds(data));
+      } catch (error) {
+        const detail = getEmailErrorDetail(error);
+        batchFailures.push({
+          batch: index + 1,
+          error: detail,
+        });
+
+        if (!shouldRetryBatchIndividually(error)) {
+          stoppedEarly = true;
+          failures.push(
+            ...chunk.map((item) => ({
+              verificationId: item.verificationId,
+              email: item.email,
+              error: detail,
+            }))
+          );
+          break;
+        }
+
+        batchFallbacks += 1;
+        const fallbackResult = await sendEmailItemsIndividually(chunk);
+        sent += fallbackResult.sent;
+        emailIds.push(...fallbackResult.emailIds);
+        failures.push(...fallbackResult.failures);
+      }
+    }
+
+    const notAttempted = stoppedEarly ? Math.max(0, batchItems.length - sent - failures.length) : 0;
+
+    if (sent === 0 && (failures.length > 0 || batchFailures.length > 0)) {
+      res.status(502).json({
+        success: false,
+        error: 'Unable to send batch re-verification links.',
+        detail: failures[0]?.error || batchFailures[0]?.error || 'The email provider rejected the request.',
+        total,
+        eligible: batchItems.length,
+        sent,
+        failed: failures.length,
+        notAttempted,
+        skippedInvalid: skippedInvalid.length,
+        batches: chunks.length,
+        batchFailures,
+        failures: failures.slice(0, 10),
+        linkExpiresAt,
+      });
+      return;
     }
 
     res.json({
       success: true,
-      sent: batchItems.length,
+      sent,
       total,
       eligible: batchItems.length,
       skippedInvalid: skippedInvalid.length,
+      failed: failures.length,
+      notAttempted,
       batches: chunks.length,
+      batchFallbacks,
+      batchFailures,
+      failures: failures.slice(0, 10),
       emailIds,
       linkExpiresAt,
     });
