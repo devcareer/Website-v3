@@ -23,6 +23,7 @@ const VERIFIED_ADMIN_PATH = '/hackathon/admin';
 const UNVERIFIED_ADMIN_PATH = '/hackathon/admin/unverified';
 
 const getTotalPages = (total) => Math.max(1, Math.ceil(total / RESULTS_LIMIT));
+const SHOW_ALL_PAGE_SIZE = 1000;
 
 const formatDate = (value) => {
   if (!value) {
@@ -53,6 +54,85 @@ const registrationMatchesQuery = (registration, normalizedQuery) =>
     .join(' ')
     .toLowerCase()
     .includes(normalizedQuery);
+
+const buildRegistrationsUrl = ({ limit, offset, all = false }) => {
+  const params = new URLSearchParams({
+    limit: String(limit),
+    offset: String(offset),
+  });
+
+  if (all) {
+    params.set('all', 'true');
+    params.set('ts', String(Date.now()));
+  }
+
+  return `/api/admin/nomba-hackathon/registrations?${params.toString()}`;
+};
+
+const fetchRegistrationsPage = async ({ authHeaders, limit, offset, all = false }) => {
+  const response = await fetch(buildRegistrationsUrl({ limit, offset, all }), {
+    cache: all ? 'no-store' : 'default',
+    credentials: 'include',
+    headers: authHeaders,
+  });
+  const data = await response.json();
+
+  if (!response.ok) {
+    throw new Error(data.error || 'Unable to load registrations.');
+  }
+
+  return data;
+};
+
+const registrationCsvColumns = [
+  'id',
+  'program',
+  'submittedAt',
+  'firstName',
+  'lastName',
+  'email',
+  'phone',
+  'state',
+  'participationMode',
+  'teamName',
+  'teamSize',
+  'track',
+  'focusArea',
+  'role',
+  'experienceLevel',
+  'createdAt',
+];
+
+const escapeCsvValue = (value) => {
+  if (value === null || value === undefined) {
+    return '';
+  }
+
+  const stringValue = String(value);
+
+  if (/[",\n\r]/.test(stringValue)) {
+    return `"${stringValue.replace(/"/g, '""')}"`;
+  }
+
+  return stringValue;
+};
+
+const registrationsToCsv = (rows) => [
+  registrationCsvColumns.join(','),
+  ...rows.map((row) => registrationCsvColumns.map((column) => escapeCsvValue(row[column])).join(',')),
+].join('\n');
+
+const downloadBlob = ({ blob, filename }) => {
+  const url = window.URL.createObjectURL(blob);
+  const link = document.createElement('a');
+
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
 
 const NombaHackathonAdmin = () => {
   const location = useLocation();
@@ -185,23 +265,42 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       setError('');
 
       try {
-        const offset = currentPage * RESULTS_LIMIT;
-        const endpoint = showAllRegistrations
-          ? `/api/admin/nomba-hackathon/registrations?all=true&ts=${Date.now()}`
-          : `/api/admin/nomba-hackathon/registrations?limit=${RESULTS_LIMIT}&offset=${offset}`;
-        const response = await fetch(endpoint, {
-          cache: showAllRegistrations ? 'no-store' : 'default',
-          credentials: 'include',
-          headers: authHeaders,
-        });
-        const data = await response.json();
+        let nextRegistrations = [];
+        let nextTotal = 0;
 
-        if (!response.ok) {
-          throw new Error(data.error || 'Unable to load registrations.');
+        if (showAllRegistrations) {
+          let offset = 0;
+
+          while (offset === 0 || nextRegistrations.length < nextTotal) {
+            const data = await fetchRegistrationsPage({
+              authHeaders,
+              limit: SHOW_ALL_PAGE_SIZE,
+              offset,
+              all: offset === 0,
+            });
+            const pageRegistrations = data.registrations || [];
+
+            nextTotal = data.total ?? nextRegistrations.length + pageRegistrations.length;
+            nextRegistrations = [...nextRegistrations, ...pageRegistrations];
+
+            if (pageRegistrations.length === 0 || nextRegistrations.length >= nextTotal) {
+              break;
+            }
+
+            offset += pageRegistrations.length;
+          }
+        } else {
+          const offset = currentPage * RESULTS_LIMIT;
+          const data = await fetchRegistrationsPage({
+            authHeaders,
+            limit: RESULTS_LIMIT,
+            offset,
+          });
+
+          nextRegistrations = data.registrations || [];
+          nextTotal = data.total ?? nextRegistrations.length;
         }
 
-        const nextRegistrations = data.registrations || [];
-        const nextTotal = data.total ?? nextRegistrations.length;
         const lastPage = showAllRegistrations ? 0 : Math.max(0, getTotalPages(nextTotal) - 1);
 
         if (!showAllRegistrations && currentPage > lastPage) {
@@ -223,10 +322,15 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
   useEffect(() => {
     loadRegistrations();
+
+    if (showAllRegistrations) {
+      return undefined;
+    }
+
     const intervalId = window.setInterval(() => loadRegistrations({ quiet: true }), 10000);
 
     return () => window.clearInterval(intervalId);
-  }, [loadRegistrations]);
+  }, [loadRegistrations, showAllRegistrations]);
 
   const stats = useMemo(() => {
     const teamCount = registrations.filter((registration) => registration.participationMode === 'Team').length;
@@ -321,6 +425,15 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
     setIsDownloading(true);
 
     try {
+      if (showAllRegistrations && registrations.length >= expectedCount) {
+        downloadBlob({
+          blob: new Blob([registrationsToCsv(registrations)], { type: 'text/csv;charset=utf-8' }),
+          filename: 'nomba-hackathon-registrations.csv',
+        });
+        toast.success(`Downloaded ${registrations.length} verified registration${registrations.length === 1 ? '' : 's'}.`);
+        return;
+      }
+
       const response = await fetch(`/api/admin/nomba-hackathon/registrations?format=csv&all=true&ts=${Date.now()}`, {
         cache: 'no-store',
         credentials: 'include',
@@ -332,14 +445,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       }
 
       const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = 'nomba-hackathon-registrations.csv';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
-      window.URL.revokeObjectURL(url);
+      downloadBlob({ blob, filename: 'nomba-hackathon-registrations.csv' });
 
       const exportedCount = response.headers.get('X-Exported-Count');
 
