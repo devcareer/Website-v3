@@ -171,6 +171,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
   const [sortConfig, setSortConfig] = useState({ key: 'submitted', direction: 'desc' });
   const [isLoading, setIsLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
+  const [showAllRegistrations, setShowAllRegistrations] = useState(false);
   const [error, setError] = useState('');
   const [lastLoadedAt, setLastLoadedAt] = useState(null);
 
@@ -185,7 +186,11 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
       try {
         const offset = currentPage * RESULTS_LIMIT;
-        const response = await fetch(`/api/admin/nomba-hackathon/registrations?limit=${RESULTS_LIMIT}&offset=${offset}`, {
+        const endpoint = showAllRegistrations
+          ? `/api/admin/nomba-hackathon/registrations?all=true&ts=${Date.now()}`
+          : `/api/admin/nomba-hackathon/registrations?limit=${RESULTS_LIMIT}&offset=${offset}`;
+        const response = await fetch(endpoint, {
+          cache: showAllRegistrations ? 'no-store' : 'default',
           credentials: 'include',
           headers: authHeaders,
         });
@@ -197,9 +202,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
         const nextRegistrations = data.registrations || [];
         const nextTotal = data.total ?? nextRegistrations.length;
-        const lastPage = Math.max(0, getTotalPages(nextTotal) - 1);
+        const lastPage = showAllRegistrations ? 0 : Math.max(0, getTotalPages(nextTotal) - 1);
 
-        if (currentPage > lastPage) {
+        if (!showAllRegistrations && currentPage > lastPage) {
           setCurrentPage(lastPage);
           return;
         }
@@ -213,7 +218,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
         setIsLoading(false);
       }
     },
-    [authHeaders, currentPage]
+    [authHeaders, currentPage, showAllRegistrations]
   );
 
   useEffect(() => {
@@ -235,8 +240,12 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
     };
   }, [registrations, totalRegistrations]);
 
-  const verifiedPageStart = registrations.length > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
-  const verifiedPageEnd = registrations.length > 0 ? currentPage * RESULTS_LIMIT + registrations.length : 0;
+  const verifiedPageStart = registrations.length > 0 ? (showAllRegistrations ? 1 : currentPage * RESULTS_LIMIT + 1) : 0;
+  const verifiedPageEnd = registrations.length > 0
+    ? showAllRegistrations
+      ? registrations.length
+      : currentPage * RESULTS_LIMIT + registrations.length
+    : 0;
 
   const normalizedQuery = query.trim().toLowerCase();
   const filteredRegistrations = useMemo(() => {
@@ -293,7 +302,21 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
     });
   };
 
+  const toggleShowAllRegistrations = () => {
+    setCurrentPage(0);
+    setShowAllRegistrations((current) => !current);
+  };
+
   const downloadCsv = async () => {
+    const expectedCount = totalRegistrations || registrations.length;
+    const confirmed = window.confirm(
+      `Download CSV for ${expectedCount} verified registration${expectedCount === 1 ? '' : 's'}?`
+    );
+
+    if (!confirmed) {
+      return;
+    }
+
     setIsDownloading(true);
 
     try {
@@ -355,6 +378,15 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
             <Button
               className="nha-icon-action"
               variant="outlined"
+              startIcon={showAllRegistrations ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+              onClick={toggleShowAllRegistrations}
+              disabled={isLoading || isDownloading}
+            >
+              {showAllRegistrations ? 'Paginated' : 'Show All'}
+            </Button>
+            <Button
+              className="nha-icon-action"
+              variant="outlined"
               startIcon={<Refresh />}
               onClick={() => loadRegistrations()}
               disabled={isLoading}
@@ -379,9 +411,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
         <section className="nha-stats" aria-label="Registration summary">
           <Stat label="Total Responses" value={stats.total} />
-          <Stat label="Solo On Page" value={stats.soloCount} />
-          <Stat label="Team On Page" value={stats.teamCount} />
-          <Stat label="Newest On Page" value={stats.latest ? formatDate(stats.latest) : '-'} />
+          <Stat label={showAllRegistrations ? 'Solo Total' : 'Solo On Page'} value={stats.soloCount} />
+          <Stat label={showAllRegistrations ? 'Team Total' : 'Team On Page'} value={stats.teamCount} />
+          <Stat label={showAllRegistrations ? 'Newest Loaded' : 'Newest On Page'} value={stats.latest ? formatDate(stats.latest) : '-'} />
         </section>
 
         <section className="nha-toolbar">
@@ -397,8 +429,8 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
           />
           <span className="nha-status">
             {normalizedQuery
-              ? `${sortedRegistrations.length} match${sortedRegistrations.length === 1 ? '' : 'es'} on this page`
-              : `Showing ${verifiedPageStart}-${verifiedPageEnd} of ${totalRegistrations}`}
+              ? `${sortedRegistrations.length} match${sortedRegistrations.length === 1 ? '' : 'es'} ${showAllRegistrations ? 'across all records' : 'on this page'}`
+              : `Showing ${showAllRegistrations ? 'all ' : ''}${verifiedPageStart}-${verifiedPageEnd} of ${totalRegistrations}`}
           </span>
         </section>
 
@@ -464,13 +496,15 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
           )}
         </section>
 
-        <PaginationControls
-          currentPage={currentPage}
-          loadedCount={registrations.length}
-          total={totalRegistrations}
-          isLoading={isLoading}
-          onPageChange={setCurrentPage}
-        />
+        {!showAllRegistrations && (
+          <PaginationControls
+            currentPage={currentPage}
+            loadedCount={registrations.length}
+            total={totalRegistrations}
+            isLoading={isLoading}
+            onPageChange={setCurrentPage}
+          />
+        )}
       </div>
     </main>
   );

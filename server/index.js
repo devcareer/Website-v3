@@ -1309,6 +1309,7 @@ app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (re
   const requestedOffset = Number(req.query.offset || 0);
   const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), 1000) : 200;
   const offset = Number.isFinite(requestedOffset) ? Math.max(requestedOffset, 0) : 0;
+  const showAll = req.query.all === 'true' || req.query.limit === 'all';
 
   try {
     if (req.query.format === 'csv') {
@@ -1320,6 +1321,20 @@ app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (re
       res.setHeader('X-Exported-Count', String(registrations.length));
       res.setHeader('X-Total-Count', String(registrations.length));
       res.send(toCsv(registrations));
+      return;
+    }
+
+    if (showAll) {
+      const registrations = await listAllNombaRegistrations();
+
+      res.setHeader('Cache-Control', 'no-store');
+      res.json({
+        registrations,
+        limit: registrations.length,
+        offset: 0,
+        total: registrations.length,
+        all: true,
+      });
       return;
     }
 
