@@ -37,6 +37,9 @@ const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'DevCareerNomba Hackath
 const resendBatchSize = 100;
 const emailSenderName = 'DevCareerNomba Hackathon';
 const hackathonName = 'Nomba Forward Hackathon 2026';
+const nombaHackathonApplicationsOpen = process.env.NOMBA_HACKATHON_APPLICATIONS_OPEN === 'true';
+const nombaHackathonApplicationsClosedMessage =
+  'Applications for the Nomba Forward Hackathon are now closed because the hackathon is currently ongoing. You are free to take the Nomba Forward development course. If you applied before, please check your email or Slack for onboarding details.';
 const devCareerXUrl = process.env.DEVCAREER_X_URL || 'https://x.com/dev_careers';
 const devCareerInstagramUrl = process.env.DEVCAREER_INSTAGRAM_URL || 'https://www.instagram.com/dev_careers/';
 const devCareerWorkspaceUrl = process.env.DEVCAREER_WORKSPACE_URL || 'https://bit.ly/devcareerafrica';
@@ -984,6 +987,16 @@ app.get('/api/admin/me', requireAdminToken, (req, res) => {
 });
 
 app.post('/api/nomba-hackathon/registrations', async (req, res) => {
+  if (!nombaHackathonApplicationsOpen) {
+    res.status(410).json({
+      error: nombaHackathonApplicationsClosedMessage,
+      applicationsOpen: false,
+      status: 'ongoing',
+      courseUrl: '/programs/nomba-forward-training',
+    });
+    return;
+  }
+
   if (!requireDatabase(res)) {
     return;
   }

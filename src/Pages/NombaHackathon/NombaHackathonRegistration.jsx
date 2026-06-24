@@ -32,6 +32,8 @@ const FORM_ENDPOINT =
   import.meta.env.VITE_NOMBA_HACKATHON_FORM_URL ||
   '/api/nomba-hackathon/registrations';
 const VERIFY_ENDPOINT = `${FORM_ENDPOINT.replace(/\/$/, '')}/verify`;
+const APPLICATIONS_OPEN = import.meta.env.VITE_NOMBA_HACKATHON_APPLICATIONS_OPEN === 'true';
+const NOMBA_FORWARD_TRAINING_PATH = '/programs/nomba-forward-training';
 
 const ROLE_OPTIONS = [
   'Frontend Engineer',
@@ -133,7 +135,7 @@ const NombaHackathonRegistration = () => {
     { scope: rootRef }
   );
 
-  if (isSubmitted) {
+  if (APPLICATIONS_OPEN && isSubmitted) {
     return <SuccessScreen name={submittedName} navigate={navigate} />;
   }
 
@@ -144,26 +146,55 @@ const NombaHackathonRegistration = () => {
           <Link to="/programs/nomba-hackathon" style={{ textDecoration: 'none' }}>
             <Button className="nmr-back-btn">← Back to Nomba Hackathon</Button>
           </Link>
-          <Typography className="nmr-hero__title">Register For Nomba Forward Hackathon 2026</Typography>
+          <Typography className="nmr-hero__title">
+            {APPLICATIONS_OPEN ? 'Register For Nomba Forward Hackathon 2026' : 'Nomba Forward Hackathon Is Ongoing'}
+          </Typography>
           <Typography className="nmr-hero__subtitle nmr-reveal">
-            Registration closes on June 23, 2026. Choose your primary track and focus area to secure
-            onboarding and training access.
+            {APPLICATIONS_OPEN
+              ? 'Registration closes on June 23, 2026. Choose your primary track and focus area to secure onboarding and training access.'
+              : 'Applications are now closed because the hackathon is currently underway.'}
           </Typography>
         </Box>
       </Box>
 
       <Box className="nmr-form-wrap nmr-reveal">
-        <RegistrationForm
-          prefilledSelection={prefilledSelection}
-          onSuccess={(name) => {
-            setSubmittedName(name);
-            setIsSubmitted(true);
-          }}
-        />
+        {APPLICATIONS_OPEN ? (
+          <RegistrationForm
+            prefilledSelection={prefilledSelection}
+            onSuccess={(name) => {
+              setSubmittedName(name);
+              setIsSubmitted(true);
+            }}
+          />
+        ) : (
+          <ClosedApplicationsNotice />
+        )}
       </Box>
     </Box>
   );
 };
+
+const ClosedApplicationsNotice = () => (
+  <Box className="nmr-form nmr-closed">
+    <Typography className="nmr-form__title">Applications Are Closed</Typography>
+    <Typography className="nmr-closed__copy">
+      The Nomba Forward Hackathon is currently ongoing, so we are no longer accepting new applications.
+      You are free to take the Nomba Forward development course while the hackathon continues.
+    </Typography>
+    <Typography className="nmr-closed__copy">
+      If you applied before, please check your email or Slack for onboarding details, announcements, and
+      next steps from the DevCareer team.
+    </Typography>
+    <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
+      <Button component={Link} to={NOMBA_FORWARD_TRAINING_PATH} className="nmr-closed__primary">
+        Take Nomba Forward Course
+      </Button>
+      <Button component={Link} to="/programs/nomba-hackathon" className="nmr-closed__secondary">
+        Back To Hackathon Page
+      </Button>
+    </Stack>
+  </Box>
+);
 
 const RegistrationForm = ({ onSuccess, prefilledSelection }) => {
   const [isSubmitting, setIsSubmitting] = useState(false);

@@ -4,7 +4,7 @@ import nombaMark from '../../assets/Images/nomba-hackathon/nomba-mark.png';
 import raenestLogo from '../../assets/Images/Raenest_Cobalt_.png';
 import tbdLogo from '../../assets/Images/TBD-Logo.png';
 
-const ACTIVE_HACKATHONS = [
+const ONGOING_HACKATHONS = [
   {
     name: 'Nomba Hackathon 2026',
     link: '/programs/nomba-hackathon',
@@ -14,6 +14,19 @@ const ACTIVE_HACKATHONS = [
     note: 'Includes free Nomba Forward Training + certification track.',
   },
 ];
+
+const STATUS_STYLES = {
+  ongoing: {
+    label: 'Ongoing',
+    backgroundColor: '#E8F6EE',
+    color: '#17633B',
+  },
+  past: {
+    label: 'Past',
+    backgroundColor: '#F1F1F1',
+    color: '#5A5A5A',
+  },
+};
 
 const PAST_HACKATHONS = [
   {
@@ -40,8 +53,11 @@ const ProgramCard = () => {
     textDecoration: 'none',
   };
 
-  const renderHackathonCard = (hackathon, status) => (
-    <Link key={hackathon.name} style={menuStyle} to={hackathon.link}>
+  const renderHackathonCard = (hackathon, status) => {
+    const statusStyle = STATUS_STYLES[status] || STATUS_STYLES.past;
+
+    return (
+      <Link key={hackathon.name} style={menuStyle} to={hackathon.link}>
       <Box
         sx={{
           borderRadius: '12px',
@@ -95,14 +111,14 @@ const ProgramCard = () => {
               px: '8px',
               py: '3px',
               borderRadius: '999px',
-              backgroundColor: status === 'active' ? '#FFF3C2' : '#F1F1F1',
-              color: status === 'active' ? '#8A6F00' : '#5A5A5A',
+              backgroundColor: statusStyle.backgroundColor,
+              color: statusStyle.color,
               fontSize: '11px',
               fontWeight: 700,
-              textTransform: 'uppercase',
+              textTransform: 'none',
             }}
           >
-            {status}
+            {statusStyle.label}
           </Box>
         </Stack>
 
@@ -140,8 +156,9 @@ const ProgramCard = () => {
           {hackathon.note}
         </Typography>
       </Box>
-    </Link>
-  );
+      </Link>
+    );
+  };
 
   return (
     <Stack
@@ -178,9 +195,9 @@ const ProgramCard = () => {
               mb: '8px',
             }}
           >
-            Active Hackathons
+            Ongoing Hackathons
           </Typography>
-          <Stack gap={1}>{ACTIVE_HACKATHONS.map((hackathon) => renderHackathonCard(hackathon, 'active'))}</Stack>
+          <Stack gap={1}>{ONGOING_HACKATHONS.map((hackathon) => renderHackathonCard(hackathon, 'ongoing'))}</Stack>
         </Box>
 
         <Box sx={{ width: '100%' }}>

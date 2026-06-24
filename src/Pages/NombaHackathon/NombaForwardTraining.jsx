@@ -460,14 +460,14 @@ const NombaForwardTraining = () => {
               Ready to qualify for Nomba certification?
             </Typography>
             <Typography className="nft-copy">
-              Register for the hackathon to secure your training seat, complete the curriculum, and build a
-              certification-worthy solution.
+              The hackathon is already underway, but you can still take the Nomba Forward development course,
+              complete the curriculum, and sharpen your payment-integration skills.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.2}>
-            <Link to="/programs/nomba-hackathon/register" style={{ textDecoration: 'none' }}>
-              <Button className="nft-btn nft-btn--primary">Register Now</Button>
-            </Link>
+            <Button component="a" href={TRAINING_URL} className="nft-btn nft-btn--primary">
+              Start Training
+            </Button>
             <Link to="/programs/nomba-hackathon" style={{ textDecoration: 'none' }}>
               <Button className="nft-btn nft-btn--secondary nft-btn--dark-text">View Hackathon Page</Button>
             </Link>

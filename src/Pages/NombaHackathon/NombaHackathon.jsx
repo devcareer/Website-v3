@@ -902,14 +902,14 @@ const NombaHackathon = () => {
 
           <Typography className="nm-hero__subtitle">
             {
-              'Join the Nomba x DevCareer hackathon to build high-impact payment solutions, attend free Nomba Forward deployed engineer training, and earn certification in payment security and integration.'
+              'The Nomba x DevCareer hackathon is currently ongoing. You can still take the free Nomba Forward development course, and previous applicants should check their email or Slack for onboarding updates.'
             }
           </Typography>
 
           <Stack className="nm-hero__cta-row" direction={{ xs: 'column', sm: 'row' }}>
-            <Link to="/programs/nomba-hackathon/register" style={{ textDecoration: 'none' }}>
+            <Link to="/programs/nomba-forward-training" style={{ textDecoration: 'none' }}>
               <Button className="nm-btn-primary" disableElevation>
-                Register Now
+                Take Nomba Forward Course
               </Button>
             </Link>
             <Button className="nm-btn-secondary" onClick={() => scrollToSection('timeline')}>
@@ -1267,13 +1267,14 @@ const NombaHackathon = () => {
               Ready to build with Nomba?
             </Typography>
             <Typography className="nm-copy nm-copy--wide">
-              Register now, secure your onboarding slot, and start building toward Demo Day on July 19, 2026.
+              Applications are now closed because the hackathon is underway. If you applied before, check your
+              email or Slack for next steps; the Nomba Forward development course remains open.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
-            <Link to="/programs/nomba-hackathon/register" style={{ textDecoration: 'none' }}>
+            <Link to="/programs/nomba-forward-training" style={{ textDecoration: 'none' }}>
               <Button className="nm-btn-primary" disableElevation>
-                Register For Hackathon
+                Take Nomba Forward Course
               </Button>
             </Link>
             <Button className="nm-btn-secondary" onClick={() => scrollToSection('timeline')}>

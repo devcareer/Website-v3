@@ -36,7 +36,7 @@ const NombaHackathonTracks = () => {
               <Button className="nmt-btn nmt-btn--ghost">Back to Hackathon Page</Button>
             </Link>
             <Link to="/programs/nomba-hackathon/register" style={{ textDecoration: 'none' }}>
-              <Button className="nmt-btn nmt-btn--ghost">Go to Registration</Button>
+              <Button className="nmt-btn nmt-btn--ghost">Application Status</Button>
             </Link>
           </Stack>
 
@@ -45,7 +45,7 @@ const NombaHackathonTracks = () => {
             Nomba Hackathon Focus Areas
           </Typography>
           <Typography className="nmt-subtitle">
-            {`${TOTAL_TRACK_GROUPS} track categories, ${TOTAL_TRACK_FOCUS_AREAS} focus areas. Pick one focus area as your primary direction and register directly from any card below.`}
+            {`${TOTAL_TRACK_GROUPS} track categories, ${TOTAL_TRACK_FOCUS_AREAS} focus areas. Applications are now closed, but you can still review each focus area and visit the application status page from any card below.`}
           </Typography>
 
           <Stack className="nmt-stat-row" direction={{ xs: 'column', sm: 'row' }}>
@@ -128,7 +128,7 @@ const NombaHackathonTracks = () => {
                   </Box>
 
                   <Link to={buildTrackRegistrationLink(group.id, focus.id)} style={{ textDecoration: 'none' }}>
-                    <Button className="nmt-btn nmt-btn--primary">Register for this focus</Button>
+                    <Button className="nmt-btn nmt-btn--primary">View Application Status</Button>
                   </Link>
                 </Box>
               ))}

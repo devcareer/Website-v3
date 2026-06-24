@@ -67,10 +67,10 @@ const MobileNav = ({ menu }) => {
               variant="body2"
               sx={{ fontSize: '13px', fontWeight: 700, color: '#8A6F00', mt: 0.5 }}
             >
-              ACTIVE
+              ONGOING
             </Typography>
             <Link style={navStyle} to="programs/nomba-hackathon">
-              Nomba Hackathon - Prize Pool: USD $6,500
+              Nomba Hackathon - Ongoing - Prize Pool: USD $6,500
             </Link>
 
             <Typography
