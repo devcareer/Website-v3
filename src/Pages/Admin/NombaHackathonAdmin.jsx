@@ -10,6 +10,7 @@ import {
   Logout,
   Refresh,
   Search,
+  WorkspacePremium,
 } from '@mui/icons-material';
 import { LoadingButton } from '@mui/lab';
 import { Link, useLocation } from 'react-router-dom';
@@ -21,6 +22,7 @@ const ADMIN_EMAIL_KEY = 'devcareer_nomba_admin_email';
 const RESULTS_LIMIT = 50;
 const VERIFIED_ADMIN_PATH = '/hackathon/admin';
 const UNVERIFIED_ADMIN_PATH = '/hackathon/admin/unverified';
+const CERTIFICATES_ADMIN_PATH = '/hackathon/admin/certificates';
 
 const getTotalPages = (total) => Math.max(1, Math.ceil(total / RESULTS_LIMIT));
 const SHOW_ALL_PAGE_SIZE = 1000;
@@ -69,7 +71,12 @@ const buildRegistrationsUrl = ({ limit, offset, all = false }) => {
   return `/api/admin/nomba-hackathon/registrations?${params.toString()}`;
 };
 
-const fetchRegistrationsPage = async ({ authHeaders, limit, offset, all = false }) => {
+const fetchRegistrationsPage = async ({
+  authHeaders,
+  limit,
+  offset,
+  all = false,
+}) => {
   const response = await fetch(buildRegistrationsUrl({ limit, offset, all }), {
     cache: all ? 'no-store' : 'default',
     credentials: 'include',
@@ -79,6 +86,16 @@ const fetchRegistrationsPage = async ({ authHeaders, limit, offset, all = false 
 
   if (!response.ok) {
     throw new Error(data.error || 'Unable to load registrations.');
+  }
+
+  return data;
+};
+
+const parseJsonResponse = async (response, fallbackMessage) => {
+  const data = await response.json().catch(() => null);
+
+  if (!response.ok || !data) {
+    throw new Error(data?.error || fallbackMessage);
   }
 
   return data;
@@ -117,10 +134,15 @@ const escapeCsvValue = (value) => {
   return stringValue;
 };
 
-const registrationsToCsv = (rows) => [
-  registrationCsvColumns.join(','),
-  ...rows.map((row) => registrationCsvColumns.map((column) => escapeCsvValue(row[column])).join(',')),
-].join('\n');
+const registrationsToCsv = (rows) =>
+  [
+    registrationCsvColumns.join(','),
+    ...rows.map((row) =>
+      registrationCsvColumns
+        .map((column) => escapeCsvValue(row[column]))
+        .join(',')
+    ),
+  ].join('\n');
 
 const downloadBlob = ({ blob, filename }) => {
   const url = window.URL.createObjectURL(blob);
@@ -136,9 +158,14 @@ const downloadBlob = ({ blob, filename }) => {
 
 const NombaHackathonAdmin = () => {
   const location = useLocation();
-  const [token, setToken] = useState(() => localStorage.getItem(ADMIN_TOKEN_KEY) || '');
-  const [adminEmail, setAdminEmail] = useState(() => localStorage.getItem(ADMIN_EMAIL_KEY) || '');
+  const [token, setToken] = useState(
+    () => localStorage.getItem(ADMIN_TOKEN_KEY) || ''
+  );
+  const [adminEmail, setAdminEmail] = useState(
+    () => localStorage.getItem(ADMIN_EMAIL_KEY) || ''
+  );
   const isUnverifiedPage = location.pathname.includes('/unverified');
+  const isCertificatesPage = location.pathname.includes('/certificates');
 
   const handleAuthenticated = (nextToken, email) => {
     localStorage.setItem(ADMIN_TOKEN_KEY, nextToken);
@@ -152,7 +179,10 @@ const NombaHackathonAdmin = () => {
     localStorage.removeItem(ADMIN_EMAIL_KEY);
     setToken('');
     setAdminEmail('');
-    await fetch('/api/admin/logout', { method: 'POST', credentials: 'include' });
+    await fetch('/api/admin/logout', {
+      method: 'POST',
+      credentials: 'include',
+    });
   };
 
   if (!token) {
@@ -160,10 +190,32 @@ const NombaHackathonAdmin = () => {
   }
 
   if (isUnverifiedPage) {
-    return <UnverifiedDashboard adminEmail={adminEmail} token={token} onLogout={handleLogout} />;
+    return (
+      <UnverifiedDashboard
+        adminEmail={adminEmail}
+        token={token}
+        onLogout={handleLogout}
+      />
+    );
   }
 
-  return <VerifiedDashboard adminEmail={adminEmail} token={token} onLogout={handleLogout} />;
+  if (isCertificatesPage) {
+    return (
+      <CertificatesDashboard
+        adminEmail={adminEmail}
+        token={token}
+        onLogout={handleLogout}
+      />
+    );
+  }
+
+  return (
+    <VerifiedDashboard
+      adminEmail={adminEmail}
+      token={token}
+      onLogout={handleLogout}
+    />
+  );
 };
 
 const AdminLogin = ({ onAuthenticated }) => {
@@ -205,7 +257,10 @@ const AdminLogin = ({ onAuthenticated }) => {
       <section className="nha-login__panel">
         <div className="nha-login__eyebrow">DevCareer Admin</div>
         <h1 className="nha-login__title">Nomba Hackathon Results</h1>
-        <p className="nha-login__subtitle">Sign in to view registrations, search applicants, and export responses.</p>
+        <p className="nha-login__subtitle">
+          Sign in to view registrations, search applicants, and export
+          responses.
+        </p>
 
         <form className="nha-login__form" onSubmit={handleSubmit}>
           <TextField
@@ -248,14 +303,20 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
   const [totalRegistrations, setTotalRegistrations] = useState(0);
   const [currentPage, setCurrentPage] = useState(0);
   const [query, setQuery] = useState('');
-  const [sortConfig, setSortConfig] = useState({ key: 'submitted', direction: 'desc' });
+  const [sortConfig, setSortConfig] = useState({
+    key: 'submitted',
+    direction: 'desc',
+  });
   const [isLoading, setIsLoading] = useState(true);
   const [isDownloading, setIsDownloading] = useState(false);
   const [showAllRegistrations, setShowAllRegistrations] = useState(false);
   const [error, setError] = useState('');
   const [lastLoadedAt, setLastLoadedAt] = useState(null);
 
-  const authHeaders = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
+  const authHeaders = useMemo(
+    () => ({ Authorization: `Bearer ${token}` }),
+    [token]
+  );
 
   const loadRegistrations = useCallback(
     async ({ quiet = false } = {}) => {
@@ -280,10 +341,14 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
             });
             const pageRegistrations = data.registrations || [];
 
-            nextTotal = data.total ?? nextRegistrations.length + pageRegistrations.length;
+            nextTotal =
+              data.total ?? nextRegistrations.length + pageRegistrations.length;
             nextRegistrations = [...nextRegistrations, ...pageRegistrations];
 
-            if (pageRegistrations.length === 0 || nextRegistrations.length >= nextTotal) {
+            if (
+              pageRegistrations.length === 0 ||
+              nextRegistrations.length >= nextTotal
+            ) {
               break;
             }
 
@@ -301,7 +366,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
           nextTotal = data.total ?? nextRegistrations.length;
         }
 
-        const lastPage = showAllRegistrations ? 0 : Math.max(0, getTotalPages(nextTotal) - 1);
+        const lastPage = showAllRegistrations
+          ? 0
+          : Math.max(0, getTotalPages(nextTotal) - 1);
 
         if (!showAllRegistrations && currentPage > lastPage) {
           setCurrentPage(lastPage);
@@ -327,14 +394,21 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       return undefined;
     }
 
-    const intervalId = window.setInterval(() => loadRegistrations({ quiet: true }), 10000);
+    const intervalId = window.setInterval(
+      () => loadRegistrations({ quiet: true }),
+      10000
+    );
 
     return () => window.clearInterval(intervalId);
   }, [loadRegistrations, showAllRegistrations]);
 
   const stats = useMemo(() => {
-    const teamCount = registrations.filter((registration) => registration.participationMode === 'Team').length;
-    const soloCount = registrations.filter((registration) => registration.participationMode === 'Solo').length;
+    const teamCount = registrations.filter(
+      (registration) => registration.participationMode === 'Team'
+    ).length;
+    const soloCount = registrations.filter(
+      (registration) => registration.participationMode === 'Solo'
+    ).length;
 
     return {
       total: totalRegistrations,
@@ -344,13 +418,21 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
     };
   }, [registrations, totalRegistrations]);
 
-  const verifiedPageStart = registrations.length > 0 ? (showAllRegistrations ? 1 : currentPage * RESULTS_LIMIT + 1) : 0;
-  const verifiedPageEnd = registrations.length > 0
-    ? showAllRegistrations
-      ? registrations.length
-      : currentPage * RESULTS_LIMIT + registrations.length
-    : 0;
-  const verifiedRowOffset = showAllRegistrations ? 0 : currentPage * RESULTS_LIMIT;
+  const verifiedPageStart =
+    registrations.length > 0
+      ? showAllRegistrations
+        ? 1
+        : currentPage * RESULTS_LIMIT + 1
+      : 0;
+  const verifiedPageEnd =
+    registrations.length > 0
+      ? showAllRegistrations
+        ? registrations.length
+        : currentPage * RESULTS_LIMIT + registrations.length
+      : 0;
+  const verifiedRowOffset = showAllRegistrations
+    ? 0
+    : currentPage * RESULTS_LIMIT;
 
   const normalizedQuery = query.trim().toLowerCase();
   const filteredRegistrations = useMemo(() => {
@@ -358,7 +440,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       return registrations;
     }
 
-    return registrations.filter((registration) => registrationMatchesQuery(registration, normalizedQuery));
+    return registrations.filter((registration) =>
+      registrationMatchesQuery(registration, normalizedQuery)
+    );
   }, [normalizedQuery, registrations]);
 
   const sortedRegistrations = useMemo(() => {
@@ -372,7 +456,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       }
 
       if (key === 'submitted') {
-        return new Date(registration.createdAt || registration.submittedAt || 0).getTime();
+        return new Date(
+          registration.createdAt || registration.submittedAt || 0
+        ).getTime();
       }
 
       return registration[key] || '';
@@ -387,7 +473,11 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
         return (leftValue - rightValue) * direction;
       }
 
-      return String(leftValue).localeCompare(String(rightValue), undefined, { sensitivity: 'base' }) * direction;
+      return (
+        String(leftValue).localeCompare(String(rightValue), undefined, {
+          sensitivity: 'base',
+        }) * direction
+      );
     });
   }, [filteredRegistrations, sortConfig]);
 
@@ -415,7 +505,9 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
   const downloadCsv = async () => {
     const expectedCount = totalRegistrations || registrations.length;
     const confirmed = window.confirm(
-      `Download CSV for ${expectedCount} verified registration${expectedCount === 1 ? '' : 's'}?`
+      `Download CSV for ${expectedCount} verified registration${
+        expectedCount === 1 ? '' : 's'
+      }?`
     );
 
     if (!confirmed) {
@@ -427,18 +519,27 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
     try {
       if (showAllRegistrations && registrations.length >= expectedCount) {
         downloadBlob({
-          blob: new Blob([registrationsToCsv(registrations)], { type: 'text/csv;charset=utf-8' }),
+          blob: new Blob([registrationsToCsv(registrations)], {
+            type: 'text/csv;charset=utf-8',
+          }),
           filename: 'nomba-hackathon-registrations.csv',
         });
-        toast.success(`Downloaded ${registrations.length} verified registration${registrations.length === 1 ? '' : 's'}.`);
+        toast.success(
+          `Downloaded ${registrations.length} verified registration${
+            registrations.length === 1 ? '' : 's'
+          }.`
+        );
         return;
       }
 
-      const response = await fetch(`/api/admin/nomba-hackathon/registrations?format=csv&all=true&ts=${Date.now()}`, {
-        cache: 'no-store',
-        credentials: 'include',
-        headers: authHeaders,
-      });
+      const response = await fetch(
+        `/api/admin/nomba-hackathon/registrations?format=csv&all=true&ts=${Date.now()}`,
+        {
+          cache: 'no-store',
+          credentials: 'include',
+          headers: authHeaders,
+        }
+      );
 
       if (!response.ok) {
         throw new Error('Unable to export registrations.');
@@ -450,7 +551,11 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
       const exportedCount = response.headers.get('X-Exported-Count');
 
       if (exportedCount) {
-        toast.success(`Downloaded ${exportedCount} verified registration${exportedCount === '1' ? '' : 's'}.`);
+        toast.success(
+          `Downloaded ${exportedCount} verified registration${
+            exportedCount === '1' ? '' : 's'
+          }.`
+        );
       }
     } catch (downloadError) {
       toast.error(downloadError.message);
@@ -466,13 +571,27 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
           <div>
             <div className="nha-eyebrow">Nomba Forward Hackathon 2026</div>
             <h1 className="nha-title">Verified Registration Admin</h1>
-            <p className="nha-subtitle">Signed in as {adminEmail || 'admin'}. Verified results refresh every 10 seconds.</p>
+            <p className="nha-subtitle">
+              Signed in as {adminEmail || 'admin'}. Verified results refresh
+              every 10 seconds.
+            </p>
           </div>
 
           <div className="nha-header__actions">
             <span className="nha-status">
-              {lastLoadedAt ? `Updated ${formatDate(lastLoadedAt)}` : 'Waiting for data'}
+              {lastLoadedAt
+                ? `Updated ${formatDate(lastLoadedAt)}`
+                : 'Waiting for data'}
             </span>
+            <Button
+              className="nha-icon-action"
+              variant="outlined"
+              component={Link}
+              to={CERTIFICATES_ADMIN_PATH}
+              startIcon={<WorkspacePremium />}
+            >
+              Certificates
+            </Button>
             <Button
               className="nha-icon-action"
               variant="outlined"
@@ -485,7 +604,13 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
             <Button
               className="nha-icon-action"
               variant="outlined"
-              startIcon={showAllRegistrations ? <KeyboardArrowUp /> : <KeyboardArrowDown />}
+              startIcon={
+                showAllRegistrations ? (
+                  <KeyboardArrowUp />
+                ) : (
+                  <KeyboardArrowDown />
+                )
+              }
               onClick={toggleShowAllRegistrations}
               disabled={isLoading || isDownloading}
             >
@@ -510,7 +635,12 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
             >
               CSV
             </LoadingButton>
-            <Button className="nha-icon-action" variant="text" startIcon={<Logout />} onClick={onLogout}>
+            <Button
+              className="nha-icon-action"
+              variant="text"
+              startIcon={<Logout />}
+              onClick={onLogout}
+            >
               Logout
             </Button>
           </div>
@@ -518,9 +648,18 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
         <section className="nha-stats" aria-label="Registration summary">
           <Stat label="Total Responses" value={stats.total} />
-          <Stat label={showAllRegistrations ? 'Solo Total' : 'Solo On Page'} value={stats.soloCount} />
-          <Stat label={showAllRegistrations ? 'Team Total' : 'Team On Page'} value={stats.teamCount} />
-          <Stat label={showAllRegistrations ? 'Newest Loaded' : 'Newest On Page'} value={stats.latest ? formatDate(stats.latest) : '-'} />
+          <Stat
+            label={showAllRegistrations ? 'Solo Total' : 'Solo On Page'}
+            value={stats.soloCount}
+          />
+          <Stat
+            label={showAllRegistrations ? 'Team Total' : 'Team On Page'}
+            value={stats.teamCount}
+          />
+          <Stat
+            label={showAllRegistrations ? 'Newest Loaded' : 'Newest On Page'}
+            value={stats.latest ? formatDate(stats.latest) : '-'}
+          />
         </section>
 
         <section className="nha-toolbar">
@@ -531,13 +670,24 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             InputProps={{
-              startAdornment: <Search fontSize="small" style={{ marginRight: 8, color: '#617089' }} />,
+              startAdornment: (
+                <Search
+                  fontSize="small"
+                  style={{ marginRight: 8, color: '#617089' }}
+                />
+              ),
             }}
           />
           <span className="nha-status">
             {normalizedQuery
-              ? `${sortedRegistrations.length} match${sortedRegistrations.length === 1 ? '' : 'es'} ${showAllRegistrations ? 'across all records' : 'on this page'}`
-              : `Showing ${showAllRegistrations ? 'all ' : ''}${verifiedPageStart}-${verifiedPageEnd} of ${totalRegistrations}`}
+              ? `${sortedRegistrations.length} match${
+                  sortedRegistrations.length === 1 ? '' : 'es'
+                } ${
+                  showAllRegistrations ? 'across all records' : 'on this page'
+                }`
+              : `Showing ${
+                  showAllRegistrations ? 'all ' : ''
+                }${verifiedPageStart}-${verifiedPageEnd} of ${totalRegistrations}`}
           </span>
         </section>
 
@@ -546,7 +696,10 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
         <div className="nha-section-heading">
           <div>
             <h2>Verified Registrations</h2>
-            <p>Applicants who completed OTP verification and were saved to the admin database.</p>
+            <p>
+              Applicants who completed OTP verification and were saved to the
+              admin database.
+            </p>
           </div>
         </div>
         <section className="nha-table-wrap">
@@ -554,21 +707,68 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
             <thead>
               <tr>
                 <th className="nha-table__serial">#</th>
-                <SortableHeader label="Applicant" sortKey="applicant" sortConfig={sortConfig} onSort={handleSort} />
-                <SortableHeader label="Contact" sortKey="contact" sortConfig={sortConfig} onSort={handleSort} />
-                <SortableHeader label="State" sortKey="state" sortConfig={sortConfig} onSort={handleSort} />
-                <SortableHeader label="Mode" sortKey="participationMode" sortConfig={sortConfig} onSort={handleSort} />
-                <SortableHeader label="Track" sortKey="track" sortConfig={sortConfig} onSort={handleSort} />
-                <SortableHeader label="Focus Area" sortKey="focusArea" sortConfig={sortConfig} onSort={handleSort} />
-                <SortableHeader label="Role" sortKey="role" sortConfig={sortConfig} onSort={handleSort} />
-                <SortableHeader label="Experience" sortKey="experienceLevel" sortConfig={sortConfig} onSort={handleSort} />
-                <SortableHeader label="Submitted" sortKey="submitted" sortConfig={sortConfig} onSort={handleSort} />
+                <SortableHeader
+                  label="Applicant"
+                  sortKey="applicant"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label="Contact"
+                  sortKey="contact"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label="State"
+                  sortKey="state"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label="Mode"
+                  sortKey="participationMode"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label="Track"
+                  sortKey="track"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label="Focus Area"
+                  sortKey="focusArea"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label="Role"
+                  sortKey="role"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label="Experience"
+                  sortKey="experienceLevel"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
+                <SortableHeader
+                  label="Submitted"
+                  sortKey="submitted"
+                  sortConfig={sortConfig}
+                  onSort={handleSort}
+                />
               </tr>
             </thead>
             <tbody>
               {sortedRegistrations.map((registration, index) => (
                 <tr key={registration.id}>
-                  <td className="nha-table__serial">{verifiedRowOffset + index + 1}</td>
+                  <td className="nha-table__serial">
+                    {verifiedRowOffset + index + 1}
+                  </td>
                   <td>
                     <div className="nha-person">
                       {registration.firstName} {registration.lastName}
@@ -576,32 +776,48 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
                     {registration.teamName && (
                       <div className="nha-muted">
                         {registration.teamName}
-                        {registration.teamSize ? ` - ${registration.teamSize} people` : ''}
+                        {registration.teamSize
+                          ? ` - ${registration.teamSize} people`
+                          : ''}
                       </div>
                     )}
                   </td>
                   <td>
                     <Stack gap={0.4}>
-                      <a href={`mailto:${registration.email}`}>{registration.email}</a>
-                      <a href={`tel:${registration.phone}`}>{registration.phone}</a>
+                      <a href={`mailto:${registration.email}`}>
+                        {registration.email}
+                      </a>
+                      <a href={`tel:${registration.phone}`}>
+                        {registration.phone}
+                      </a>
                     </Stack>
                   </td>
                   <td>{registration.state || '-'}</td>
                   <td>
-                    <span className="nha-pill">{registration.participationMode}</span>
+                    <span className="nha-pill">
+                      {registration.participationMode}
+                    </span>
                   </td>
                   <td>{registration.track}</td>
                   <td>{registration.focusArea}</td>
                   <td>{registration.role}</td>
                   <td>{registration.experienceLevel}</td>
-                  <td>{formatDate(registration.createdAt || registration.submittedAt)}</td>
+                  <td>
+                    {formatDate(
+                      registration.createdAt || registration.submittedAt
+                    )}
+                  </td>
                 </tr>
               ))}
             </tbody>
           </table>
 
           {!isLoading && sortedRegistrations.length === 0 && (
-            <div className="nha-empty">{query ? 'No registrations match this search.' : 'No registrations yet.'}</div>
+            <div className="nha-empty">
+              {query
+                ? 'No registrations match this search.'
+                : 'No registrations yet.'}
+            </div>
           )}
         </section>
 
@@ -619,6 +835,356 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
   );
 };
 
+const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
+  const [summary, setSummary] = useState(null);
+  const [seedStats, setSeedStats] = useState(null);
+  const [recipients, setRecipients] = useState([]);
+  const [claims, setClaims] = useState([]);
+  const [totalRecipients, setTotalRecipients] = useState(0);
+  const [totalClaims, setTotalClaims] = useState(0);
+  const [currentPage, setCurrentPage] = useState(0);
+  const [query, setQuery] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [lastLoadedAt, setLastLoadedAt] = useState(null);
+
+  const authHeaders = useMemo(
+    () => ({ Authorization: `Bearer ${token}` }),
+    [token]
+  );
+  const normalizedQuery = query.trim().toLowerCase();
+
+  const loadCertificates = useCallback(
+    async ({ quiet = false } = {}) => {
+      if (!quiet) {
+        setIsLoading(true);
+      }
+      setError('');
+
+      try {
+        const recipientParams = new URLSearchParams({
+          limit: String(RESULTS_LIMIT),
+          offset: String(currentPage * RESULTS_LIMIT),
+        });
+        const claimParams = new URLSearchParams({
+          limit: '50',
+          offset: '0',
+        });
+
+        if (normalizedQuery) {
+          recipientParams.set('query', normalizedQuery);
+          claimParams.set('query', normalizedQuery);
+        }
+
+        const [summaryResponse, recipientsResponse, claimsResponse] =
+          await Promise.all([
+            fetch('/api/admin/nomba-hackathon/certificates/summary', {
+              credentials: 'include',
+              headers: authHeaders,
+            }),
+            fetch(
+              `/api/admin/nomba-hackathon/certificates/recipients?${recipientParams.toString()}`,
+              {
+                credentials: 'include',
+                headers: authHeaders,
+              }
+            ),
+            fetch(
+              `/api/admin/nomba-hackathon/certificates/claims?${claimParams.toString()}`,
+              {
+                credentials: 'include',
+                headers: authHeaders,
+              }
+            ),
+          ]);
+
+        const [summaryData, recipientsData, claimsData] = await Promise.all([
+          parseJsonResponse(
+            summaryResponse,
+            'Unable to load certificate summary.'
+          ),
+          parseJsonResponse(
+            recipientsResponse,
+            'Unable to load certificate recipients.'
+          ),
+          parseJsonResponse(
+            claimsResponse,
+            'Unable to load certificate claims.'
+          ),
+        ]);
+
+        const nextRecipients = recipientsData.recipients || [];
+        const nextTotalRecipients =
+          recipientsData.total ?? nextRecipients.length;
+        const lastPage = Math.max(0, getTotalPages(nextTotalRecipients) - 1);
+
+        if (currentPage > lastPage) {
+          setCurrentPage(lastPage);
+          return;
+        }
+
+        setSummary(summaryData.summary || null);
+        setSeedStats(summaryData.seed || null);
+        setRecipients(nextRecipients);
+        setClaims(claimsData.claims || []);
+        setTotalRecipients(nextTotalRecipients);
+        setTotalClaims(claimsData.total ?? claimsData.claims?.length ?? 0);
+        setLastLoadedAt(new Date());
+      } catch (loadError) {
+        setError(loadError.message);
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    [authHeaders, currentPage, normalizedQuery]
+  );
+
+  useEffect(() => {
+    loadCertificates();
+    const intervalId = window.setInterval(
+      () => loadCertificates({ quiet: true }),
+      15000
+    );
+
+    return () => window.clearInterval(intervalId);
+  }, [loadCertificates]);
+
+  const handleQueryChange = (event) => {
+    setCurrentPage(0);
+    setQuery(event.target.value);
+  };
+
+  const recipientPageStart =
+    recipients.length > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
+  const recipientPageEnd =
+    recipients.length > 0 ? currentPage * RESULTS_LIMIT + recipients.length : 0;
+  const recipientRowOffset = currentPage * RESULTS_LIMIT;
+  const invalidSeedCount = seedStats?.invalidEntries?.length || 0;
+
+  return (
+    <main className="nha-page">
+      <div className="nha-shell">
+        <header className="nha-header">
+          <div>
+            <div className="nha-eyebrow">Nomba Forward Hackathon 2026</div>
+            <h1 className="nha-title">Certificate Admin</h1>
+            <p className="nha-subtitle">
+              Signed in as {adminEmail || 'admin'}. Manage eligible certificate
+              emails and verified certificate claims.
+            </p>
+          </div>
+
+          <div className="nha-header__actions">
+            <span className="nha-status">
+              {lastLoadedAt
+                ? `Updated ${formatDate(lastLoadedAt)}`
+                : 'Waiting for data'}
+            </span>
+            <Button
+              className="nha-icon-action"
+              variant="outlined"
+              component={Link}
+              to={VERIFIED_ADMIN_PATH}
+            >
+              Verified
+            </Button>
+            <Button
+              className="nha-icon-action"
+              variant="outlined"
+              component={Link}
+              to={UNVERIFIED_ADMIN_PATH}
+              startIcon={<Email />}
+            >
+              Unverified
+            </Button>
+            <Button
+              className="nha-icon-action"
+              variant="outlined"
+              startIcon={<Refresh />}
+              onClick={() => loadCertificates()}
+              disabled={isLoading}
+            >
+              Refresh
+            </Button>
+            <Button
+              className="nha-icon-action"
+              variant="text"
+              startIcon={<Logout />}
+              onClick={onLogout}
+            >
+              Logout
+            </Button>
+          </div>
+        </header>
+
+        <section className="nha-stats" aria-label="Certificate summary">
+          <Stat
+            label="Eligible Emails"
+            value={summary?.eligibleCount ?? totalRecipients}
+          />
+          <Stat
+            label="Issued Certificates"
+            value={summary?.issuedCount ?? totalClaims}
+          />
+          <Stat
+            label="Unique Issued Emails"
+            value={summary?.uniqueIssuedCount ?? 0}
+          />
+          <Stat label="Invalid Seed Rows" value={invalidSeedCount} />
+        </section>
+
+        <section className="nha-toolbar">
+          <TextField
+            className="nha-search"
+            size="small"
+            label="Search certificate emails or names"
+            value={query}
+            onChange={handleQueryChange}
+            InputProps={{
+              startAdornment: (
+                <Search
+                  fontSize="small"
+                  style={{ marginRight: 8, color: '#617089' }}
+                />
+              ),
+            }}
+          />
+          <span className="nha-status">
+            {normalizedQuery
+              ? `${totalRecipients} eligible match${
+                  totalRecipients === 1 ? '' : 'es'
+                }`
+              : `Showing eligible emails ${recipientPageStart}-${recipientPageEnd} of ${totalRecipients}`}
+          </span>
+        </section>
+
+        {error && <div className="nha-error">{error}</div>}
+
+        <div className="nha-section-heading">
+          <div>
+            <h2>Eligible Certificate Emails</h2>
+            <p>
+              Server-side qualified list seeded into the database. This list is
+              never shipped in the frontend bundle.
+            </p>
+          </div>
+        </div>
+
+        <section className="nha-table-wrap">
+          <table className="nha-table nha-table--certificates">
+            <thead>
+              <tr>
+                <th className="nha-table__serial">#</th>
+                <th>Email</th>
+                <th>Claims</th>
+                <th>Latest Name</th>
+                <th>Latest Issued</th>
+                <th>Source</th>
+              </tr>
+            </thead>
+            <tbody>
+              {recipients.map((recipient, index) => (
+                <tr key={recipient.email}>
+                  <td className="nha-table__serial">
+                    {recipientRowOffset + index + 1}
+                  </td>
+                  <td>
+                    <a href={`mailto:${recipient.email}`}>{recipient.email}</a>
+                  </td>
+                  <td>
+                    <span
+                      className={
+                        recipient.claimCount > 0
+                          ? 'nha-pill'
+                          : 'nha-pill nha-pill--neutral'
+                      }
+                    >
+                      {recipient.claimCount || 0}
+                    </span>
+                  </td>
+                  <td>{recipient.lastCertificateName || '-'}</td>
+                  <td>
+                    {recipient.lastIssuedAt
+                      ? formatDate(recipient.lastIssuedAt)
+                      : '-'}
+                  </td>
+                  <td>{recipient.source}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {!isLoading && recipients.length === 0 && (
+            <div className="nha-empty">
+              {query
+                ? 'No eligible certificate emails match this search.'
+                : 'No certificate recipients have been seeded yet.'}
+            </div>
+          )}
+        </section>
+
+        <PaginationControls
+          currentPage={currentPage}
+          loadedCount={recipients.length}
+          total={totalRecipients}
+          isLoading={isLoading}
+          onPageChange={setCurrentPage}
+        />
+
+        <div className="nha-section-heading">
+          <div>
+            <h2>Latest Issued Certificates</h2>
+            <p>
+              Successful OTP confirmations that unlocked a participant
+              certificate.
+            </p>
+          </div>
+          <span className="nha-status">
+            {totalClaims} issued certificate{totalClaims === 1 ? '' : 's'}
+          </span>
+        </div>
+
+        <section className="nha-table-wrap">
+          <table className="nha-table nha-table--certificates">
+            <thead>
+              <tr>
+                <th className="nha-table__serial">#</th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Issued</th>
+                <th>Verification</th>
+              </tr>
+            </thead>
+            <tbody>
+              {claims.map((claim, index) => (
+                <tr key={claim.id}>
+                  <td className="nha-table__serial">{index + 1}</td>
+                  <td>
+                    <div className="nha-person">{claim.certificateName}</div>
+                  </td>
+                  <td>
+                    <a href={`mailto:${claim.email}`}>{claim.email}</a>
+                  </td>
+                  <td>{formatDate(claim.issuedAt)}</td>
+                  <td>{claim.verificationId || '-'}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+
+          {!isLoading && claims.length === 0 && (
+            <div className="nha-empty">
+              {query
+                ? 'No issued certificates match this search.'
+                : 'No certificate has been issued yet.'}
+            </div>
+          )}
+        </section>
+      </div>
+    </main>
+  );
+};
+
 const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
   const [pendingVerifications, setPendingVerifications] = useState([]);
   const [totalPendingVerifications, setTotalPendingVerifications] = useState(0);
@@ -630,7 +1196,10 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
   const [error, setError] = useState('');
   const [lastLoadedAt, setLastLoadedAt] = useState(null);
 
-  const authHeaders = useMemo(() => ({ Authorization: `Bearer ${token}` }), [token]);
+  const authHeaders = useMemo(
+    () => ({ Authorization: `Bearer ${token}` }),
+    [token]
+  );
 
   const loadPendingVerifications = useCallback(
     async ({ quiet = false } = {}) => {
@@ -641,14 +1210,19 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
       try {
         const offset = currentPage * RESULTS_LIMIT;
-        const response = await fetch(`/api/admin/nomba-hackathon/verifications/pending?limit=${RESULTS_LIMIT}&offset=${offset}`, {
-          credentials: 'include',
-          headers: authHeaders,
-        });
+        const response = await fetch(
+          `/api/admin/nomba-hackathon/verifications/pending?limit=${RESULTS_LIMIT}&offset=${offset}`,
+          {
+            credentials: 'include',
+            headers: authHeaders,
+          }
+        );
         const data = await response.json();
 
         if (!response.ok) {
-          throw new Error(data.error || 'Unable to load unverified registrations.');
+          throw new Error(
+            data.error || 'Unable to load unverified registrations.'
+          );
         }
 
         const nextPendingVerifications = data.verifications || [];
@@ -674,7 +1248,10 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
   useEffect(() => {
     loadPendingVerifications();
-    const intervalId = window.setInterval(() => loadPendingVerifications({ quiet: true }), 10000);
+    const intervalId = window.setInterval(
+      () => loadPendingVerifications({ quiet: true }),
+      10000
+    );
 
     return () => window.clearInterval(intervalId);
   }, [loadPendingVerifications]);
@@ -685,12 +1262,18 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
       return pendingVerifications;
     }
 
-    return pendingVerifications.filter((verification) => registrationMatchesQuery(verification, normalizedQuery));
+    return pendingVerifications.filter((verification) =>
+      registrationMatchesQuery(verification, normalizedQuery)
+    );
   }, [normalizedQuery, pendingVerifications]);
 
   const pendingStats = useMemo(() => {
-    const eligibleLoaded = pendingVerifications.filter((verification) => verification.isValid).length;
-    const expiredLoaded = pendingVerifications.filter((verification) => verification.expired).length;
+    const eligibleLoaded = pendingVerifications.filter(
+      (verification) => verification.isValid
+    ).length;
+    const expiredLoaded = pendingVerifications.filter(
+      (verification) => verification.expired
+    ).length;
 
     return {
       total: totalPendingVerifications,
@@ -700,19 +1283,26 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
     };
   }, [pendingVerifications, totalPendingVerifications]);
 
-  const pendingPageStart = pendingVerifications.length > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
-  const pendingPageEnd = pendingVerifications.length > 0 ? currentPage * RESULTS_LIMIT + pendingVerifications.length : 0;
+  const pendingPageStart =
+    pendingVerifications.length > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
+  const pendingPageEnd =
+    pendingVerifications.length > 0
+      ? currentPage * RESULTS_LIMIT + pendingVerifications.length
+      : 0;
   const pendingRowOffset = currentPage * RESULTS_LIMIT;
 
   const sendReverificationLink = async (verification) => {
     setSendingLinkIds((current) => ({ ...current, [verification.id]: true }));
 
     try {
-      const response = await fetch(`/api/admin/nomba-hackathon/verifications/${verification.id}/reverification-link`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: authHeaders,
-      });
+      const response = await fetch(
+        `/api/admin/nomba-hackathon/verifications/${verification.id}/reverification-link`,
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: authHeaders,
+        }
+      );
       const data = await response.json().catch(() => null);
 
       if (!response.ok || !data?.success) {
@@ -724,7 +1314,10 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
     } catch (sendError) {
       toast.error(sendError.message);
     } finally {
-      setSendingLinkIds((current) => ({ ...current, [verification.id]: false }));
+      setSendingLinkIds((current) => ({
+        ...current,
+        [verification.id]: false,
+      }));
     }
   };
 
@@ -745,16 +1338,23 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
     setIsSendingAll(true);
 
     try {
-      const response = await fetch('/api/admin/nomba-hackathon/verifications/reverification-links/batch', {
-        method: 'POST',
-        credentials: 'include',
-        headers: authHeaders,
-      });
+      const response = await fetch(
+        '/api/admin/nomba-hackathon/verifications/reverification-links/batch',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: authHeaders,
+        }
+      );
       const data = await response.json().catch(() => null);
 
       if (!response.ok || !data?.success) {
         const detail = data?.detail ? ` ${data.detail}` : '';
-        throw new Error(`${data?.error || 'Unable to send batch re-verification links.'}${detail}`);
+        throw new Error(
+          `${
+            data?.error || 'Unable to send batch re-verification links.'
+          }${detail}`
+        );
       }
 
       const failedCount = data.failed || 0;
@@ -762,22 +1362,42 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
       if (failedCount > 0 || notAttemptedCount > 0) {
         toast.warn(
-          `Sent ${data.sent} re-verification link${data.sent === 1 ? '' : 's'}. ${failedCount} failed${notAttemptedCount ? ` and ${notAttemptedCount} were not attempted` : ''}.`
+          `Sent ${data.sent} re-verification link${
+            data.sent === 1 ? '' : 's'
+          }. ${failedCount} failed${
+            notAttemptedCount
+              ? ` and ${notAttemptedCount} were not attempted`
+              : ''
+          }.`
         );
 
         if (data.failures?.[0]) {
-          toast.info(`First failure: ${data.failures[0].email} - ${data.failures[0].error}`);
+          toast.info(
+            `First failure: ${data.failures[0].email} - ${data.failures[0].error}`
+          );
         }
       } else {
-        toast.success(`Sent ${data.sent} re-verification link${data.sent === 1 ? '' : 's'} in ${data.batches} batch${data.batches === 1 ? '' : 'es'}.`);
+        toast.success(
+          `Sent ${data.sent} re-verification link${
+            data.sent === 1 ? '' : 's'
+          } in ${data.batches} batch${data.batches === 1 ? '' : 'es'}.`
+        );
       }
 
       if (data.batchFallbacks > 0) {
-        toast.info(`${data.batchFallbacks} Resend batch${data.batchFallbacks === 1 ? '' : 'es'} were retried individually.`);
+        toast.info(
+          `${data.batchFallbacks} Resend batch${
+            data.batchFallbacks === 1 ? '' : 'es'
+          } were retried individually.`
+        );
       }
 
       if (data.skippedInvalid > 0) {
-        toast.info(`${data.skippedInvalid} pending registration${data.skippedInvalid === 1 ? '' : 's'} need a fresh form.`);
+        toast.info(
+          `${data.skippedInvalid} pending registration${
+            data.skippedInvalid === 1 ? '' : 's'
+          } need a fresh form.`
+        );
       }
 
       await loadPendingVerifications({ quiet: true });
@@ -795,13 +1415,27 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
           <div>
             <div className="nha-eyebrow">Nomba Forward Hackathon 2026</div>
             <h1 className="nha-title">Unverified Registration Admin</h1>
-            <p className="nha-subtitle">Signed in as {adminEmail || 'admin'}. Pending OTP records refresh every 10 seconds.</p>
+            <p className="nha-subtitle">
+              Signed in as {adminEmail || 'admin'}. Pending OTP records refresh
+              every 10 seconds.
+            </p>
           </div>
 
           <div className="nha-header__actions">
             <span className="nha-status">
-              {lastLoadedAt ? `Updated ${formatDate(lastLoadedAt)}` : 'Waiting for data'}
+              {lastLoadedAt
+                ? `Updated ${formatDate(lastLoadedAt)}`
+                : 'Waiting for data'}
             </span>
+            <Button
+              className="nha-icon-action"
+              variant="outlined"
+              component={Link}
+              to={CERTIFICATES_ADMIN_PATH}
+              startIcon={<WorkspacePremium />}
+            >
+              Certificates
+            </Button>
             <Button
               className="nha-icon-action"
               variant="outlined"
@@ -830,17 +1464,31 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
             >
               Send All Links
             </LoadingButton>
-            <Button className="nha-icon-action" variant="text" startIcon={<Logout />} onClick={onLogout}>
+            <Button
+              className="nha-icon-action"
+              variant="text"
+              startIcon={<Logout />}
+              onClick={onLogout}
+            >
               Logout
             </Button>
           </div>
         </header>
 
-        <section className="nha-stats" aria-label="Unverified registration summary">
+        <section
+          className="nha-stats"
+          aria-label="Unverified registration summary"
+        >
           <Stat label="Total Unverified" value={pendingStats.total} />
           <Stat label="Eligible On Page" value={pendingStats.eligibleLoaded} />
-          <Stat label="Expired OTP On Page" value={pendingStats.expiredLoaded} />
-          <Stat label="Needs Fresh Form On Page" value={pendingStats.needsFreshForm} />
+          <Stat
+            label="Expired OTP On Page"
+            value={pendingStats.expiredLoaded}
+          />
+          <Stat
+            label="Needs Fresh Form On Page"
+            value={pendingStats.needsFreshForm}
+          />
         </section>
 
         <section className="nha-toolbar">
@@ -851,12 +1499,19 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             InputProps={{
-              startAdornment: <Search fontSize="small" style={{ marginRight: 8, color: '#617089' }} />,
+              startAdornment: (
+                <Search
+                  fontSize="small"
+                  style={{ marginRight: 8, color: '#617089' }}
+                />
+              ),
             }}
           />
           <span className="nha-status">
             {normalizedQuery
-              ? `${filteredPendingVerifications.length} match${filteredPendingVerifications.length === 1 ? '' : 'es'} on this page`
+              ? `${filteredPendingVerifications.length} match${
+                  filteredPendingVerifications.length === 1 ? '' : 'es'
+                } on this page`
               : `Showing ${pendingPageStart}-${pendingPageEnd} of ${totalPendingVerifications}`}
           </span>
         </section>
@@ -866,7 +1521,10 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
         <div className="nha-section-heading">
           <div>
             <h2>Unverified Registrations</h2>
-            <p>Latest pending application per email where the OTP was not completed yet.</p>
+            <p>
+              Latest pending application per email where the OTP was not
+              completed yet.
+            </p>
           </div>
         </div>
 
@@ -888,7 +1546,9 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
             <tbody>
               {filteredPendingVerifications.map((verification, index) => (
                 <tr key={verification.id}>
-                  <td className="nha-table__serial">{pendingRowOffset + index + 1}</td>
+                  <td className="nha-table__serial">
+                    {pendingRowOffset + index + 1}
+                  </td>
                   <td>
                     <div className="nha-person">
                       {verification.firstName} {verification.lastName}
@@ -896,29 +1556,43 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
                     {verification.teamName && (
                       <div className="nha-muted">
                         {verification.teamName}
-                        {verification.teamSize ? ` - ${verification.teamSize} people` : ''}
+                        {verification.teamSize
+                          ? ` - ${verification.teamSize} people`
+                          : ''}
                       </div>
                     )}
                   </td>
                   <td>
                     <Stack gap={0.4}>
-                      <a href={`mailto:${verification.email}`}>{verification.email}</a>
-                      <a href={`tel:${verification.phone}`}>{verification.phone}</a>
+                      <a href={`mailto:${verification.email}`}>
+                        {verification.email}
+                      </a>
+                      <a href={`tel:${verification.phone}`}>
+                        {verification.phone}
+                      </a>
                     </Stack>
                   </td>
                   <td>{verification.state || '-'}</td>
                   <td>
-                    <span className="nha-pill">{verification.participationMode}</span>
+                    <span className="nha-pill">
+                      {verification.participationMode}
+                    </span>
                   </td>
                   <td>
                     {verification.track}
                     <div className="nha-muted">{verification.focusArea}</div>
                   </td>
                   <td>
-                    <span className={`nha-pill ${verification.expired ? 'nha-pill--warning' : ''}`}>
+                    <span
+                      className={`nha-pill ${
+                        verification.expired ? 'nha-pill--warning' : ''
+                      }`}
+                    >
                       {verification.expired ? 'OTP expired' : 'OTP active'}
                     </span>
-                    <div className="nha-muted">Attempts: {verification.attempts}</div>
+                    <div className="nha-muted">
+                      Attempts: {verification.attempts}
+                    </div>
                   </td>
                   <td>{formatDate(verification.createdAt)}</td>
                   <td>
@@ -933,7 +1607,9 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
                     >
                       Send Link
                     </LoadingButton>
-                    {!verification.isValid && <div className="nha-muted">Needs fresh form</div>}
+                    {!verification.isValid && (
+                      <div className="nha-muted">Needs fresh form</div>
+                    )}
                   </td>
                 </tr>
               ))}
@@ -942,7 +1618,9 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
 
           {!isLoading && filteredPendingVerifications.length === 0 && (
             <div className="nha-empty">
-              {query ? 'No unverified registrations match this search.' : 'No unverified registrations right now.'}
+              {query
+                ? 'No unverified registrations match this search.'
+                : 'No unverified registrations right now.'}
             </div>
           )}
         </section>
@@ -959,12 +1637,19 @@ const UnverifiedDashboard = ({ adminEmail, token, onLogout }) => {
   );
 };
 
-const PaginationControls = ({ currentPage, loadedCount, total, isLoading, onPageChange }) => {
+const PaginationControls = ({
+  currentPage,
+  loadedCount,
+  total,
+  isLoading,
+  onPageChange,
+}) => {
   const totalPages = getTotalPages(total);
   const isFirstPage = currentPage <= 0;
   const isLastPage = currentPage >= totalPages - 1 || total === 0;
   const pageStart = loadedCount > 0 ? currentPage * RESULTS_LIMIT + 1 : 0;
-  const pageEnd = loadedCount > 0 ? currentPage * RESULTS_LIMIT + loadedCount : 0;
+  const pageEnd =
+    loadedCount > 0 ? currentPage * RESULTS_LIMIT + loadedCount : 0;
 
   const goToPage = (nextPage) => {
     const clampedPage = Math.min(Math.max(nextPage, 0), totalPages - 1);
@@ -978,7 +1663,9 @@ const PaginationControls = ({ currentPage, loadedCount, total, isLoading, onPage
           Page {Math.min(currentPage + 1, totalPages)} of {totalPages}
         </span>
         <span>
-          {total > 0 ? `Records ${pageStart}-${pageEnd} of ${total}` : 'No records'}
+          {total > 0
+            ? `Records ${pageStart}-${pageEnd} of ${total}`
+            : 'No records'}
         </span>
       </div>
 
@@ -1008,11 +1695,16 @@ const PaginationControls = ({ currentPage, loadedCount, total, isLoading, onPage
 
 const SortableHeader = ({ label, sortKey, sortConfig, onSort }) => {
   const isActive = sortConfig.key === sortKey;
-  const SortIcon = sortConfig.direction === 'asc' ? KeyboardArrowUp : KeyboardArrowDown;
+  const SortIcon =
+    sortConfig.direction === 'asc' ? KeyboardArrowUp : KeyboardArrowDown;
 
   return (
     <th>
-      <button type="button" className={`nha-sort ${isActive ? 'nha-sort--active' : ''}`} onClick={() => onSort(sortKey)}>
+      <button
+        type="button"
+        className={`nha-sort ${isActive ? 'nha-sort--active' : ''}`}
+        onClick={() => onSort(sortKey)}
+      >
         <span>{label}</span>
         {isActive && <SortIcon fontSize="small" />}
       </button>

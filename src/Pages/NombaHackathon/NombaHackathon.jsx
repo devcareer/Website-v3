@@ -1,13 +1,23 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Button, Stack, Typography } from '@mui/material';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  Box,
+  Button,
+  Dialog,
+  IconButton,
+  Stack,
+  TextField,
+  Typography,
+} from '@mui/material';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import DownloadRoundedIcon from '@mui/icons-material/DownloadRounded';
 import { Link } from 'react-router-dom';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import { ScrollToPlugin } from 'gsap/ScrollToPlugin';
 import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import * as THREE from 'three';
 import './NombaHackathon.css';
+import devCareerLogo from '../../assets/Images/NewLogo.svg';
 import nombaMark from '../../assets/Images/nomba-hackathon/nomba-mark.png';
 import nombaSocial from '../../assets/Images/nomba-hackathon/nomba-social.jpg';
 import heroTeam from '../../assets/Images/nomba-hackathon/hero-team.jpg';
@@ -17,23 +27,36 @@ import buildIntegrationPluginsCardImg from '../../assets/Images/nomba-hackathon/
 import buildVirtualAccountsInfrastructureCardImg from '../../assets/Images/nomba-hackathon/Build - Virtual Accounts as Infrastructure.png';
 import infraSubscriptionsEngineCardImg from '../../assets/Images/nomba-hackathon/Infra - Subscriptions Engine.png';
 import infraDedicatedVirtualAccountsCardImg from '../../assets/Images/nomba-hackathon/Infra - dedicated Virtual Accounts.png';
-import { NOMBATRACK_GROUPS, TOTAL_TRACK_FOCUS_AREAS, TOTAL_TRACK_GROUPS } from './nombaTracksData';
+import {
+  NOMBATRACK_GROUPS,
+  TOTAL_TRACK_FOCUS_AREAS,
+  TOTAL_TRACK_GROUPS,
+} from './nombaTracksData';
 
-gsap.registerPlugin(useGSAP, ScrollTrigger, ScrollToPlugin, SplitText);
+gsap.registerPlugin(useGSAP, ScrollTrigger, SplitText);
 
 const TIMELINE_PHASES = [
   {
     phase: 'Registration',
     dates: '8 - 23 June 2026',
-    activities: 'Open registration and outreach across DevCareer and external channels.',
-    milestones: ['Applications open', 'Community outreach', 'Team matching support'],
+    activities:
+      'Open registration and outreach across DevCareer and external channels.',
+    milestones: [
+      'Applications open',
+      'Community outreach',
+      'Team matching support',
+    ],
   },
   {
     phase: 'Onboarding & Training',
     dates: '24 - 29 June 2026',
     activities:
       'Orientation, sandbox credentials, live API training, office hours, and challenge briefs.',
-    milestones: ['Kickoff orientation', 'Training labs', 'API key provisioning'],
+    milestones: [
+      'Kickoff orientation',
+      'Training labs',
+      'API key provisioning',
+    ],
   },
   {
     phase: 'Building',
@@ -82,9 +105,9 @@ const PRIZE_BREAKDOWN = [
 ];
 
 const PRIZE_PODIUM_ORDER = ['2nd', '1st', '3rd'];
-const PODIUM_PRIZES = PRIZE_PODIUM_ORDER.map((rank) => PRIZE_BREAKDOWN.find((prize) => prize.rank === rank)).filter(
-  Boolean
-);
+const PODIUM_PRIZES = PRIZE_PODIUM_ORDER.map((rank) =>
+  PRIZE_BREAKDOWN.find((prize) => prize.rank === rank)
+).filter(Boolean);
 
 const applyStaticCriteriaFallback = (host) => {
   host.classList.add('nm-criteria-static');
@@ -94,7 +117,8 @@ const applyStaticCriteriaFallback = (host) => {
 const browserSupportsWebGL = () => {
   try {
     const canvas = document.createElement('canvas');
-    const context = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    const context =
+      canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
 
     context?.getExtension('WEBGL_lose_context')?.loseContext();
 
@@ -105,11 +129,36 @@ const browserSupportsWebGL = () => {
 };
 
 const JUDGING_CRITERIA = [
-  { name: 'Problem Relevance', weight: 20, color: '#ff5f6d', colorSoft: '#ffc371' },
-  { name: 'Technical Execution', weight: 25, color: '#3a86ff', colorSoft: '#62d2ff' },
-  { name: 'Security & Reliability', weight: 20, color: '#06d6a0', colorSoft: '#90f7ec' },
-  { name: 'Product UX & Clarity', weight: 15, color: '#ff7f50', colorSoft: '#ffd166' },
-  { name: 'Nomba Integration Depth', weight: 20, color: '#9b5de5', colorSoft: '#f15bb5' },
+  {
+    name: 'Problem Relevance',
+    weight: 20,
+    color: '#ff5f6d',
+    colorSoft: '#ffc371',
+  },
+  {
+    name: 'Technical Execution',
+    weight: 25,
+    color: '#3a86ff',
+    colorSoft: '#62d2ff',
+  },
+  {
+    name: 'Security & Reliability',
+    weight: 20,
+    color: '#06d6a0',
+    colorSoft: '#90f7ec',
+  },
+  {
+    name: 'Product UX & Clarity',
+    weight: 15,
+    color: '#ff7f50',
+    colorSoft: '#ffd166',
+  },
+  {
+    name: 'Nomba Integration Depth',
+    weight: 20,
+    color: '#9b5de5',
+    colorSoft: '#f15bb5',
+  },
 ];
 
 const SUBMISSION_REQUIREMENTS = [
@@ -196,24 +245,424 @@ const FOCUS_VISUALS = {
   },
 };
 
+const CERTIFICATE_WIDTH = 1366;
+const CERTIFICATE_HEIGHT = 972;
+const CERTIFICATE_NAME_MAX_WIDTH = 544;
+const CERTIFICATE_NAME_MAX_FONT_SIZE = 72;
+const CERTIFICATE_NAME_WIDTH_RATIO = 0.62;
+
+const CERTIFICATE_EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const escapeXml = (value) =>
+  String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+const normalizeCertificateName = (value) => value.replace(/\s+/g, ' ').trim();
+
+const getCertificateNameMetrics = (name) => {
+  const characterCount = Math.max(normalizeCertificateName(name).length, 1);
+  const fontSize = Math.min(
+    CERTIFICATE_NAME_MAX_FONT_SIZE,
+    CERTIFICATE_NAME_MAX_WIDTH / (characterCount * CERTIFICATE_NAME_WIDTH_RATIO)
+  );
+  const roundedFontSize = Number(fontSize.toFixed(2));
+  const estimatedWidth =
+    characterCount * roundedFontSize * CERTIFICATE_NAME_WIDTH_RATIO;
+
+  return {
+    fontSize: roundedFontSize,
+    textLength: Math.round(
+      Math.min(CERTIFICATE_NAME_MAX_WIDTH, Math.max(220, estimatedWidth))
+    ),
+    y: roundedFontSize < 36 ? 382 : roundedFontSize < 56 ? 394 : 407,
+  };
+};
+
+const getCertificateFileName = (name) => {
+  const slug = name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
+  return `nomba-hackathon-certificate-${slug || 'participant'}.png`;
+};
+
+const toDataUrl = async (assetUrl) => {
+  const response = await fetch(assetUrl);
+  const blob = await response.blob();
+
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(reader.result);
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+};
+
+const buildCertificateBrandLockup = (brandAssets) => {
+  if (!brandAssets?.devCareer || !brandAssets?.nomba) {
+    return `
+    <g transform="translate(52 23)">
+      <path d="M0 20L20 0L32 12L12 32Z" fill="none" stroke="#23bf59" stroke-width="4"/>
+      <path d="M24 4L34 14M7 25L18 36" stroke="#23bf59" stroke-width="4" stroke-linecap="round"/>
+      <text x="44" y="18" class="body" font-size="16" font-weight="800" fill="#151515">Dev</text>
+      <text x="44" y="36" class="body" font-size="16" font-weight="800" fill="#151515">Career</text>
+      <path d="M122 -2V42" stroke="#151515" stroke-width="3"/>
+      <text x="148" y="26" class="body" font-size="21" font-weight="900" fill="#151515">nomba</text>
+    </g>`;
+  }
+
+  return `
+    <g transform="translate(52 24)">
+      <image href="${brandAssets.devCareer}" x="0" y="3" width="98" height="35" preserveAspectRatio="xMinYMid meet"/>
+      <path d="M122 -2V42" stroke="#151515" stroke-width="3"/>
+      <image href="${brandAssets.nomba}" x="148" y="5" width="26" height="26" preserveAspectRatio="xMidYMid meet"/>
+      <text x="180" y="26" class="body" font-size="21" font-weight="900" fill="#151515">nomba</text>
+    </g>`;
+};
+
+const buildCertificateSvg = (recipientName, brandAssets) => {
+  const displayName =
+    normalizeCertificateName(recipientName) || 'Participant Name';
+  const name = escapeXml(displayName);
+  const nameMetrics = getCertificateNameMetrics(displayName);
+
+  return `
+<svg xmlns="http://www.w3.org/2000/svg" width="${CERTIFICATE_WIDTH}" height="${CERTIFICATE_HEIGHT}" viewBox="0 0 ${CERTIFICATE_WIDTH} ${CERTIFICATE_HEIGHT}">
+  <defs>
+    <filter id="softShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#d5d9e6" flood-opacity="0.7"/>
+    </filter>
+    <pattern id="dotGrid" width="11" height="11" patternUnits="userSpaceOnUse">
+      <circle cx="2" cy="2" r="1.8" fill="#ffd94d"/>
+    </pattern>
+    <style>
+      .body { font-family: Arial, Helvetica, sans-serif; }
+      .display { font-family: Impact, Haettenschweiler, "Arial Narrow", sans-serif; font-stretch: condensed; }
+      .mono { font-family: "IBM Plex Mono", "Courier New", monospace; }
+      .badge-title { font-family: "IBM Plex Mono", "Courier New", monospace; font-weight: 500; }
+      .signature { font-family: "Snell Roundhand", "Zapfino", "SignPainter", "Segoe Script", "Brush Script MT", cursive; font-style: normal; font-weight: 100; }
+    </style>
+  </defs>
+
+  <rect width="${CERTIFICATE_WIDTH}" height="${CERTIFICATE_HEIGHT}" fill="#ffffff"/>
+  <rect x="1304" width="62" height="544" fill="#2bbf55"/>
+  <path d="M756 0H1304V710L1030 822L756 710Z" fill="#ffca05"/>
+
+  <g fill="none" stroke="#ffdf72" stroke-width="2" opacity="0.9">
+    <path d="M0 214V132L58 74H118"/>
+    <path d="M0 138L84 54H368"/>
+    <path d="M24 40C35 20 35 4 20 0"/>
+    <path d="M6 33C31 56 67 31 44 6"/>
+    <circle cx="25" cy="27" r="28"/>
+    <circle cx="25" cy="27" r="18"/>
+    <path d="M1320 706V790L1260 850H1194"/>
+    <path d="M1366 820L1286 900H978"/>
+    <path d="M1342 930C1328 952 1329 968 1348 972"/>
+    <path d="M1360 940C1334 915 1296 941 1321 966"/>
+    <circle cx="1328" cy="944" r="28"/>
+    <circle cx="1328" cy="944" r="18"/>
+    <path d="M1266 726V826M1282 712V810M1298 700V796"/>
+    <path d="M1012 18H1168M1040 26H1206M534 14H592M548 22H642"/>
+    <path d="M978 948H1198M1000 956H1284"/>
+  </g>
+
+  <rect x="98" y="72" width="68" height="42" fill="url(#dotGrid)" opacity="0.85"/>
+  <rect x="96" y="449" width="544" height="4" fill="#2bbf55"/>
+  <rect x="1010" y="20" width="74" height="14" fill="url(#dotGrid)" opacity="0.75"/>
+  <rect x="1102" y="948" width="78" height="10" fill="url(#dotGrid)" opacity="0.75"/>
+
+  <g class="body" fill="#111111">
+    <text x="96" y="214" font-size="30" font-weight="500">This certificate is proudly</text>
+    <text x="96" y="260" font-size="30" font-weight="500">presented to</text>
+
+    <text x="96" y="${nameMetrics.y}" class="badge-title" font-size="${
+    nameMetrics.fontSize
+  }" textLength="${
+    nameMetrics.textLength
+  }" lengthAdjust="spacingAndGlyphs" fill="#2bbf55">${name}</text>
+
+    <text x="96" y="508" font-size="24" font-weight="500">For Participating in the DevCareer x Nomba</text>
+    <text x="96" y="542" font-size="24" font-weight="500">Hackathon 2026 in recognition of your dedication,</text>
+    <text x="96" y="576" font-size="24" font-weight="500">creativity, and contribution to building innovative</text>
+    <text x="96" y="610" font-size="24" font-weight="500">payment solutions for Nigeria.</text>
+  </g>
+
+  <g fill="#5d5d5d" opacity="0.4">
+    <text x="92" y="796" class="signature" font-size="60" textLength="356" lengthAdjust="spacingAndGlyphs">Akintunde</text>
+    <text x="112" y="802" class="signature" font-size="60" textLength="186" lengthAdjust="spacingAndGlyphs">Sultan</text>
+  </g>
+  <path d="M96 822H474" stroke="#2f67ff" stroke-width="3"/>
+  <text x="96" y="866" class="body" font-size="30" font-weight="500" fill="#111111">Sultan Akintunde</text>
+  <text x="96" y="906" class="body" font-size="22" font-weight="500" fill="#4c4c4c">Founder of DevCareer</text>
+
+  <g transform="translate(858 78)" filter="url(#softShadow)">
+    <rect x="0" y="0" width="344" height="128" rx="7" fill="#f7e982" stroke="#29b85a" stroke-width="2.6"/>
+    ${buildCertificateBrandLockup(brandAssets)}
+    <text x="172" y="104" text-anchor="middle" class="badge-title" font-size="43" textLength="286" lengthAdjust="spacingAndGlyphs" fill="#111111">HACKATHON 2026</text>
+  </g>
+
+  <text x="804" y="406" class="badge-title" font-size="96" font-weight="900" textLength="486" lengthAdjust="spacingAndGlyphs" fill="#ffffff" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Certificate</text>
+  <text x="822" y="486" class="badge-title" font-size="46" textLength="466" lengthAdjust="spacingAndGlyphs" fill="#ffffff">OF PARTICIPATION</text>
+</svg>`;
+};
+
 const NombaHackathon = () => {
   const rootRef = useRef(null);
   const criteriaSectionRef = useRef(null);
   const criteriaCanvasRef = useRef(null);
   const [openFaq, setOpenFaq] = useState(null);
+  const [certificateModalOpen, setCertificateModalOpen] = useState(false);
+  const [certificateForm, setCertificateForm] = useState({
+    email: '',
+    name: '',
+  });
+  const [certificateOtp, setCertificateOtp] = useState('');
+  const [certificateOtpContext, setCertificateOtpContext] = useState(null);
+  const [certificateDetails, setCertificateDetails] = useState(null);
+  const [certificateError, setCertificateError] = useState('');
+  const [certificateMessage, setCertificateMessage] = useState('');
+  const [certificateIsSubmitting, setCertificateIsSubmitting] = useState(false);
+  const [certificateBrandAssets, setCertificateBrandAssets] = useState(null);
 
-  const scrollToSection = (id) => {
-    const target = document.getElementById(id);
-    if (!target) {
+  const certificatePreviewUrl = useMemo(() => {
+    if (!certificateDetails) {
+      return '';
+    }
+
+    return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
+      buildCertificateSvg(certificateDetails.name, certificateBrandAssets)
+    )}`;
+  }, [certificateBrandAssets, certificateDetails]);
+
+  const openCertificateModal = () => {
+    setCertificateModalOpen(true);
+    setCertificateError('');
+    setCertificateMessage('');
+  };
+
+  const closeCertificateModal = () => {
+    setCertificateModalOpen(false);
+    setCertificateError('');
+    setCertificateMessage('');
+  };
+
+  const updateCertificateField = (field) => (event) => {
+    setCertificateForm((currentForm) => ({
+      ...currentForm,
+      [field]: event.target.value,
+    }));
+    setCertificateError('');
+    setCertificateMessage('');
+  };
+
+  const updateCertificateOtp = (event) => {
+    setCertificateOtp(event.target.value.replace(/\D/g, '').slice(0, 6));
+    setCertificateError('');
+  };
+
+  const parseCertificateApiError = async (response, fallbackMessage) => {
+    const data = await response.json().catch(() => null);
+
+    if (response.ok) {
+      return data;
+    }
+
+    const fieldError = data?.fields
+      ? Object.values(data.fields).filter(Boolean)[0]
+      : '';
+
+    throw new Error(data?.error || fieldError || fallbackMessage);
+  };
+
+  const showCertificate = async (event) => {
+    event.preventDefault();
+
+    const email = certificateForm.email.trim().toLowerCase();
+    const name = normalizeCertificateName(certificateForm.name);
+
+    if (!CERTIFICATE_EMAIL_PATTERN.test(email)) {
+      setCertificateError('Enter a valid email address.');
       return;
     }
 
-    gsap.to(window, {
-      duration: 0.85,
-      ease: 'power2.out',
-      scrollTo: { y: target, offsetY: 90 },
-    });
+    if (name.length < 2) {
+      setCertificateError('Enter the name you want on your certificate.');
+      return;
+    }
+
+    setCertificateIsSubmitting(true);
+    setCertificateError('');
+    setCertificateMessage('');
+
+    try {
+      const response = await fetch(
+        '/api/nomba-hackathon/certificates/request',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ email, name }),
+        }
+      );
+      const data = await parseCertificateApiError(
+        response,
+        'Unable to send certificate verification code.'
+      );
+
+      setCertificateOtp('');
+      setCertificateOtpContext({
+        email: data.email || email,
+        maskedEmail: data.maskedEmail || email,
+        name,
+        expiresAt: data.expiresAt,
+      });
+      setCertificateMessage(
+        `We sent a 6-digit code to ${data.maskedEmail || email}.`
+      );
+    } catch (requestError) {
+      setCertificateError(requestError.message);
+    } finally {
+      setCertificateIsSubmitting(false);
+    }
   };
+
+  const verifyCertificateOtp = async (event) => {
+    event.preventDefault();
+
+    if (!certificateOtpContext) {
+      setCertificateError('Request a certificate verification code first.');
+      return;
+    }
+
+    if (!/^\d{6}$/.test(certificateOtp)) {
+      setCertificateError('Enter the 6-digit code sent to your email.');
+      return;
+    }
+
+    setCertificateIsSubmitting(true);
+    setCertificateError('');
+
+    try {
+      const response = await fetch('/api/nomba-hackathon/certificates/verify', {
+        method: 'POST',
+        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: certificateOtpContext.email,
+          code: certificateOtp,
+        }),
+      });
+      const data = await parseCertificateApiError(
+        response,
+        'Unable to verify certificate code.'
+      );
+
+      setCertificateDetails({
+        id: data.certificate?.id,
+        email: data.certificate?.email || certificateOtpContext.email,
+        name: data.certificate?.name || certificateOtpContext.name,
+        issuedAt: data.certificate?.issuedAt,
+      });
+      setCertificateOtpContext(null);
+      setCertificateOtp('');
+      setCertificateMessage('');
+    } catch (verifyError) {
+      setCertificateError(verifyError.message);
+    } finally {
+      setCertificateIsSubmitting(false);
+    }
+  };
+
+  const editCertificateDetails = () => {
+    setCertificateDetails(null);
+    setCertificateOtpContext(null);
+    setCertificateOtp('');
+    setCertificateError('');
+    setCertificateMessage('');
+  };
+
+  const downloadCertificate = () => {
+    if (!certificateDetails) {
+      return;
+    }
+
+    const svg = buildCertificateSvg(
+      certificateDetails.name,
+      certificateBrandAssets
+    );
+    const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
+    const svgUrl = URL.createObjectURL(svgBlob);
+    const image = new Image();
+
+    image.onload = () => {
+      const canvas = document.createElement('canvas');
+      const scale = 2;
+      canvas.width = CERTIFICATE_WIDTH * scale;
+      canvas.height = CERTIFICATE_HEIGHT * scale;
+
+      const context = canvas.getContext('2d');
+      context.fillStyle = '#ffffff';
+      context.fillRect(0, 0, canvas.width, canvas.height);
+      context.drawImage(image, 0, 0, canvas.width, canvas.height);
+
+      canvas.toBlob((blob) => {
+        URL.revokeObjectURL(svgUrl);
+
+        if (!blob) {
+          return;
+        }
+
+        const downloadUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = downloadUrl;
+        link.download = getCertificateFileName(certificateDetails.name);
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(downloadUrl);
+      }, 'image/png');
+    };
+
+    image.onerror = () => {
+      URL.revokeObjectURL(svgUrl);
+    };
+
+    image.src = svgUrl;
+  };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadCertificateAssets = async () => {
+      try {
+        const [devCareer, nomba] = await Promise.all([
+          toDataUrl(devCareerLogo),
+          toDataUrl(nombaMark),
+        ]);
+
+        if (!cancelled) {
+          setCertificateBrandAssets({ devCareer, nomba });
+        }
+      } catch (error) {
+        console.warn('Unable to load certificate logo assets.', error);
+      }
+    };
+
+    loadCertificateAssets();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     const host = criteriaSectionRef.current;
@@ -223,8 +672,12 @@ const NombaHackathon = () => {
       return undefined;
     }
 
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    const lowPowerDevice = window.matchMedia('(max-width: 1023px), (pointer: coarse)').matches;
+    const reducedMotion = window.matchMedia(
+      '(prefers-reduced-motion: reduce)'
+    ).matches;
+    const lowPowerDevice = window.matchMedia(
+      '(max-width: 1023px), (pointer: coarse)'
+    ).matches;
     if (reducedMotion || lowPowerDevice) {
       return applyStaticCriteriaFallback(host);
     }
@@ -248,12 +701,17 @@ const NombaHackathon = () => {
         powerPreference: 'high-performance',
       });
     } catch (error) {
-      console.warn('Unable to create Nomba criteria WebGL renderer; using static fallback.', error);
+      console.warn(
+        'Unable to create Nomba criteria WebGL renderer; using static fallback.',
+        error
+      );
       return applyStaticCriteriaFallback(host);
     }
 
     renderer.setClearColor(0x000000, 0);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, mobile ? 1.2 : 1.5));
+    renderer.setPixelRatio(
+      Math.min(window.devicePixelRatio || 1, mobile ? 1.2 : 1.5)
+    );
 
     const blobConfigs = [
       { color: 0xff5f6d, size: 1.35, x: -2.2, y: 1.15, z: -1.1, speed: 0.42 },
@@ -302,14 +760,22 @@ const NombaHackathon = () => {
       positions[i3 + 1] = Math.sin(angle) * radius * 0.42 + drift;
       positions[i3 + 2] = (Math.random() - 0.5) * 3.6;
 
-      const color = new THREE.Color(particlePalette[i % particlePalette.length]);
+      const color = new THREE.Color(
+        particlePalette[i % particlePalette.length]
+      );
       colors[i3] = color.r;
       colors[i3 + 1] = color.g;
       colors[i3 + 2] = color.b;
     }
 
-    particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-    particleGeometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+    particleGeometry.setAttribute(
+      'position',
+      new THREE.BufferAttribute(positions, 3)
+    );
+    particleGeometry.setAttribute(
+      'color',
+      new THREE.BufferAttribute(colors, 3)
+    );
 
     const particles = new THREE.Points(
       particleGeometry,
@@ -359,7 +825,10 @@ const NombaHackathon = () => {
         scrub: true,
       },
       onUpdate: () => {
-        host.style.setProperty('--nm-criteria-progress', scrollSignal.progress.toFixed(3));
+        host.style.setProperty(
+          '--nm-criteria-progress',
+          scrollSignal.progress.toFixed(3)
+        );
       },
     });
 
@@ -372,9 +841,14 @@ const NombaHackathon = () => {
 
       blobs.forEach((blob, index) => {
         const pulse = frame * blob.userData.speed + index;
-        blob.position.x = blob.userData.baseX + Math.cos(pulse) * (0.22 + scrollProgress * 0.5);
-        blob.position.y = blob.userData.baseY + Math.sin(pulse * 1.18) * (0.18 + scrollProgress * 0.38);
-        blob.scale.setScalar(1 + Math.sin(pulse * 1.4) * (0.08 + scrollProgress * 0.08));
+        blob.position.x =
+          blob.userData.baseX + Math.cos(pulse) * (0.22 + scrollProgress * 0.5);
+        blob.position.y =
+          blob.userData.baseY +
+          Math.sin(pulse * 1.18) * (0.18 + scrollProgress * 0.38);
+        blob.scale.setScalar(
+          1 + Math.sin(pulse * 1.4) * (0.08 + scrollProgress * 0.08)
+        );
       });
 
       const particlePositions = particleGeometry.attributes.position.array;
@@ -456,7 +930,11 @@ const NombaHackathon = () => {
                 }),
           });
 
-          gsap.set('.nm-focus-pop', { autoAlpha: 0, y: mobile ? 12 : 24, scale: 0.97 });
+          gsap.set('.nm-focus-pop', {
+            autoAlpha: 0,
+            y: mobile ? 12 : 24,
+            scale: 0.97,
+          });
           ScrollTrigger.batch('.nm-focus-pop', {
             start: mobile ? 'top 94%' : 'top 88%',
             once: true,
@@ -474,7 +952,9 @@ const NombaHackathon = () => {
 
           let splitTitle;
           let splitSubtitle;
-          const heroTimeline = gsap.timeline({ defaults: { ease: 'power3.out' } });
+          const heroTimeline = gsap.timeline({
+            defaults: { ease: 'power3.out' },
+          });
 
           if (desktop) {
             splitTitle = SplitText.create('.nm-hero__title', {
@@ -544,12 +1024,15 @@ const NombaHackathon = () => {
               );
           } else {
             heroTimeline
-              .from('.nm-hero__logos .nm-brand-chip, .nm-hero__logos .nm-brand-divider', {
-                y: 12,
-                autoAlpha: 0,
-                duration: 0.42,
-                stagger: 0.08,
-              })
+              .from(
+                '.nm-hero__logos .nm-brand-chip, .nm-hero__logos .nm-brand-divider',
+                {
+                  y: 12,
+                  autoAlpha: 0,
+                  duration: 0.42,
+                  stagger: 0.08,
+                }
+              )
               .from(
                 '.nm-hero__title, .nm-hero__subtitle',
                 {
@@ -596,7 +1079,9 @@ const NombaHackathon = () => {
                   onUpdate: () => {
                     const currentValue =
                       decimals > 0
-                        ? Number(valueProxy.value.toFixed(decimals)).toLocaleString(undefined, {
+                        ? Number(
+                            valueProxy.value.toFixed(decimals)
+                          ).toLocaleString(undefined, {
                             minimumFractionDigits: decimals,
                             maximumFractionDigits: decimals,
                           })
@@ -883,46 +1368,78 @@ const NombaHackathon = () => {
   return (
     <Box className="nm-page" ref={rootRef}>
       <Box className="nm-hero" component="section">
-        <Box className="nm-hero__bg" style={{ backgroundImage: `url(${heroTeam})` }} />
+        <Box
+          className="nm-hero__bg"
+          style={{ backgroundImage: `url(${heroTeam})` }}
+        />
         <Box className="nm-hero__overlay" />
         <Box className="nm-hero__glow" />
 
         <Box className="nm-hero__content">
-          <Stack className="nm-hero__logos" direction={{ xs: 'column', sm: 'row' }} alignItems="center">
+          <Stack
+            className="nm-hero__logos"
+            direction={{ xs: 'column', sm: 'row' }}
+            alignItems="center"
+          >
             <Box className="nm-brand-chip">
-              <img src={nombaMark} alt="Nomba logo" className="nm-brand-chip__mark" />
-              <Typography className="nm-brand-chip__text nm-brand-chip__text--nomba">nomba</Typography>
+              <img
+                src={nombaMark}
+                alt="Nomba logo"
+                className="nm-brand-chip__mark"
+              />
+              <Typography className="nm-brand-chip__text nm-brand-chip__text--nomba">
+                nomba
+              </Typography>
             </Box>
           </Stack>
 
           <Typography component="h1" className="nm-hero__title">
-            <span className="nm-hero__title-line">Build Payment Infrastructure Products</span>
-            <span className="nm-hero__title-line">for Nigeria&apos;s Next Growth Wave</span>
+            <span className="nm-hero__title-line">
+              Build Payment Infrastructure Products
+            </span>
+            <span className="nm-hero__title-line">
+              for Nigeria&apos;s Next Growth Wave
+            </span>
           </Typography>
 
           <Typography className="nm-hero__subtitle">
             {
-              'The Nomba x DevCareer hackathon is currently ongoing. You can still take the free Nomba Forward development course, and previous applicants should check their email or Slack for onboarding updates.'
+              'The Nomba x DevCareer Hackathon 2026 has concluded. Participants can now generate and download their certificate of completion while the free Nomba Forward development course remains available.'
             }
           </Typography>
 
-          <Stack className="nm-hero__cta-row" direction={{ xs: 'column', sm: 'row' }}>
-            <Link to="/programs/nomba-forward-training" style={{ textDecoration: 'none' }}>
+          <Stack
+            className="nm-hero__cta-row"
+            direction={{ xs: 'column', sm: 'row' }}
+          >
+            <Link
+              to="/programs/nomba-forward-training"
+              style={{ textDecoration: 'none' }}
+            >
               <Button className="nm-btn-primary" disableElevation>
                 Take Nomba Forward Course
               </Button>
             </Link>
-            <Button className="nm-btn-secondary" onClick={() => scrollToSection('timeline')}>
-              View Timeline
+            <Button className="nm-btn-secondary" onClick={openCertificateModal}>
+              Get Certificate
             </Button>
           </Stack>
 
-          <Stack className="nm-stat-row" direction={{ xs: 'column', md: 'row' }}>
+          <Stack
+            className="nm-stat-row"
+            direction={{ xs: 'column', md: 'row' }}
+          >
             <Box className="nm-stat">
-              <Typography className="nm-stat__number nm-countup" data-value="600" data-suffix="K+">
+              <Typography
+                className="nm-stat__number nm-countup"
+                data-value="600"
+                data-suffix="K+"
+              >
                 600K+
               </Typography>
-              <Typography className="nm-stat__label">Active Businesses Signal</Typography>
+              <Typography className="nm-stat__label">
+                Active Businesses Signal
+              </Typography>
             </Box>
             <Box className="nm-stat">
               <Typography
@@ -933,13 +1450,21 @@ const NombaHackathon = () => {
               >
                 99.9%
               </Typography>
-              <Typography className="nm-stat__label">Platform Uptime Positioning</Typography>
+              <Typography className="nm-stat__label">
+                Platform Uptime Positioning
+              </Typography>
             </Box>
             <Box className="nm-stat">
-              <Typography className="nm-stat__number nm-countup" data-prefix="$" data-value="6500">
+              <Typography
+                className="nm-stat__number nm-countup"
+                data-prefix="$"
+                data-value="6500"
+              >
                 $6,500
               </Typography>
-              <Typography className="nm-stat__label">Prize & Incentive Pool</Typography>
+              <Typography className="nm-stat__label">
+                Prize & Incentive Pool
+              </Typography>
             </Box>
           </Stack>
         </Box>
@@ -953,19 +1478,31 @@ const NombaHackathon = () => {
               Trusted rails for modern African payments
             </Typography>
             <Typography className="nm-copy">
-              Instant settlement, multi-channel payments, and production-grade APIs. All live, all
-              documented. Pick a real problem African businesses face and build something that works.
+              Instant settlement, multi-channel payments, and production-grade
+              APIs. All live, all documented. Pick a real problem African
+              businesses face and build something that works.
             </Typography>
-            <Stack className="nm-chip-row" direction="row" flexWrap="wrap" gap={1.2}>
+            <Stack
+              className="nm-chip-row"
+              direction="row"
+              flexWrap="wrap"
+              gap={1.2}
+            >
               <span className="nm-chip">Instant settlement</span>
               <span className="nm-chip">Multi-channel payments</span>
               <span className="nm-chip">Production-grade APIs</span>
               <span className="nm-chip">Live documentation</span>
-              <span className="nm-chip">Built for real African business use cases</span>
+              <span className="nm-chip">
+                Built for real African business use cases
+              </span>
             </Stack>
           </Box>
           <Box className="nm-brand__right">
-            <img src={nombaSocial} alt="Nomba brand preview" className="nm-brand__image" />
+            <img
+              src={nombaSocial}
+              alt="Nomba brand preview"
+              className="nm-brand__image"
+            />
           </Box>
         </Box>
       </Box>
@@ -977,19 +1514,23 @@ const NombaHackathon = () => {
             {`${TOTAL_TRACK_GROUPS} tracks, ${TOTAL_TRACK_FOCUS_AREAS} focus areas`}
           </Typography>
           <Typography className="nm-copy nm-copy--wide">
-            Choose one primary focus area under either the Build or Infrastructure track. You can
-            jump straight to registration from any focus below, or read full briefs on the dedicated
-            tracks page.
+            Choose one primary focus area under either the Build or
+            Infrastructure track. You can jump straight to registration from any
+            focus below, or read full briefs on the dedicated tracks page.
           </Typography>
 
           <Box className="nm-track-group-grid">
             {NOMBATRACK_GROUPS.map((group) => {
-              const trackVisual = TRACK_VISUALS[group.id] || TRACK_VISUALS.build;
+              const trackVisual =
+                TRACK_VISUALS[group.id] || TRACK_VISUALS.build;
 
               return (
                 <Box key={group.id} className="nm-track-group-card nm-reveal">
                   <Link
-                    to={{ pathname: '/programs/nomba-hackathon/tracks', hash: `#track-${group.id}` }}
+                    to={{
+                      pathname: '/programs/nomba-hackathon/tracks',
+                      hash: `#track-${group.id}`,
+                    }}
                     style={{ textDecoration: 'none' }}
                   >
                     <Box
@@ -999,13 +1540,25 @@ const NombaHackathon = () => {
                         '--nm-track-glow-b': trackVisual.glowB,
                       }}
                     >
-                      <img src={trackVisual.image} alt={`${group.label} track`} className="nm-track-cover__image" />
+                      <img
+                        src={trackVisual.image}
+                        alt={`${group.label} track`}
+                        className="nm-track-cover__image"
+                      />
                       <Box className="nm-track-cover__overlay" />
                       <Box className="nm-track-cover__content">
-                        <Typography className="nm-track-cover__badge">{trackVisual.badge}</Typography>
-                        <Typography className="nm-track-cover__title">{group.label} Track</Typography>
-                        <Typography className="nm-track-cover__copy">{group.headline}</Typography>
-                        <Button className="nm-track-open-btn">Open {group.label} Focus Area Page</Button>
+                        <Typography className="nm-track-cover__badge">
+                          {trackVisual.badge}
+                        </Typography>
+                        <Typography className="nm-track-cover__title">
+                          {group.label} Track
+                        </Typography>
+                        <Typography className="nm-track-cover__copy">
+                          {group.headline}
+                        </Typography>
+                        <Button className="nm-track-open-btn">
+                          Open {group.label} Focus Area Page
+                        </Button>
                       </Box>
                     </Box>
                   </Link>
@@ -1022,7 +1575,10 @@ const NombaHackathon = () => {
                       return (
                         <Link
                           key={focus.id}
-                          to={{ pathname: '/programs/nomba-hackathon/tracks', hash: `#focus-${focus.id}` }}
+                          to={{
+                            pathname: '/programs/nomba-hackathon/tracks',
+                            hash: `#focus-${focus.id}`,
+                          }}
                           className="nm-mini-focus-card-link nm-focus-pop"
                           style={{ textDecoration: 'none' }}
                         >
@@ -1034,13 +1590,22 @@ const NombaHackathon = () => {
                             }}
                           >
                             <Box className="nm-mini-focus-card__media">
-                              <img src={visual.image} alt={`${focus.title} preview`} className="nm-mini-focus-card__img" />
+                              <img
+                                src={visual.image}
+                                alt={`${focus.title} preview`}
+                                className="nm-mini-focus-card__img"
+                              />
                               <span className="nm-mini-focus-card__scrim" />
-                              <span className="nm-mini-focus-card__emoji" aria-hidden="true">
+                              <span
+                                className="nm-mini-focus-card__emoji"
+                                aria-hidden="true"
+                              >
                                 {visual.emoji}
                               </span>
                             </Box>
-                            <Typography className="nm-mini-focus-card__title">{focus.title}</Typography>
+                            <Typography className="nm-mini-focus-card__title">
+                              {focus.title}
+                            </Typography>
                             <Typography className="nm-mini-focus-card__meta">
                               {focus.keyApis.slice(0, 2).join(' • ')}
                             </Typography>
@@ -1059,31 +1624,46 @@ const NombaHackathon = () => {
       <Box className="nm-section nm-section--dark nm-reveal">
         <Box className="nm-container nm-training">
           <Box>
-            <Typography className="nm-kicker nm-kicker--lime">Free Training + Certification</Typography>
+            <Typography className="nm-kicker nm-kicker--lime">
+              Free Training + Certification
+            </Typography>
             <Typography className="nm-heading nm-heading--light" component="h2">
               Nomba Forward Deployed Engineer Training
             </Typography>
             <Typography className="nm-copy nm-copy--light">
-              During onboarding week, qualified participants join free learning sessions focused on secure
-              implementation patterns, production integration standards, and real-world payment operations.
+              During onboarding week, qualified participants join free learning
+              sessions focused on secure implementation patterns, production
+              integration standards, and real-world payment operations.
             </Typography>
             <Stack className="nm-cert-list">
               <Box className="nm-cert-item nm-reveal">
-                <strong>Certification Track 1:</strong> Payment Security Foundations
+                <strong>Certification Track 1:</strong> Payment Security
+                Foundations
               </Box>
               <Box className="nm-cert-item nm-reveal">
-                <strong>Certification Track 2:</strong> API Integration and Webhooks
+                <strong>Certification Track 2:</strong> API Integration and
+                Webhooks
               </Box>
               <Box className="nm-cert-item nm-reveal">
-                <strong>Certification Track 3:</strong> Production-grade Checkout Delivery
+                <strong>Certification Track 3:</strong> Production-grade
+                Checkout Delivery
               </Box>
             </Stack>
-            <Link to="/programs/nomba-forward-training" style={{ textDecoration: 'none' }}>
-              <Button className="nm-btn-training">View Full Training Curriculum</Button>
+            <Link
+              to="/programs/nomba-forward-training"
+              style={{ textDecoration: 'none' }}
+            >
+              <Button className="nm-btn-training">
+                View Full Training Curriculum
+              </Button>
             </Link>
           </Box>
           <Box className="nm-training__image-wrap">
-            <img src={codingTeam} alt="Hackathon builders collaborating" className="nm-parallax-image" />
+            <img
+              src={codingTeam}
+              alt="Hackathon builders collaborating"
+              className="nm-parallax-image"
+            />
           </Box>
         </Box>
       </Box>
@@ -1095,17 +1675,22 @@ const NombaHackathon = () => {
             Structured delivery from registration to Demo Day
           </Typography>
           <Typography className="nm-copy nm-copy--wide">
-            This timeline is intentionally paced to move teams from idea validation to secure implementation and
-            final pitch readiness.
+            This timeline is intentionally paced to move teams from idea
+            validation to secure implementation and final pitch readiness.
           </Typography>
 
           <Box className="nm-timeline-grid">
             <Box className="nm-timeline-intro nm-reveal">
-              <Typography className="nm-timeline-intro__window">June 8 - July 19, 2026</Typography>
-              <Typography className="nm-timeline-intro__headline">5 major phases. One decisive sprint.</Typography>
+              <Typography className="nm-timeline-intro__window">
+                June 8 - July 19, 2026
+              </Typography>
+              <Typography className="nm-timeline-intro__headline">
+                5 major phases. One decisive sprint.
+              </Typography>
               <Typography className="nm-timeline-intro__copy">
-                From onboarding to live awards, each phase has a clear objective to help teams ship with quality,
-                confidence, and deep Nomba integration.
+                From onboarding to live awards, each phase has a clear objective
+                to help teams ship with quality, confidence, and deep Nomba
+                integration.
               </Typography>
               <Box className="nm-timeline-rail">
                 <span className="nm-timeline-rail__fill" />
@@ -1115,11 +1700,19 @@ const NombaHackathon = () => {
             <Box className="nm-timeline-cards">
               {TIMELINE_PHASES.map((phase, index) => (
                 <Box key={phase.phase} className="nm-phase-card nm-reveal">
-                  <Typography className="nm-phase-card__index">{String(index + 1).padStart(2, '0')}</Typography>
+                  <Typography className="nm-phase-card__index">
+                    {String(index + 1).padStart(2, '0')}
+                  </Typography>
                   <Box className="nm-phase-card__body">
-                    <Typography className="nm-phase-card__phase">{phase.phase}</Typography>
-                    <Typography className="nm-phase-card__date">{phase.dates}</Typography>
-                    <Typography className="nm-phase-card__activity">{phase.activities}</Typography>
+                    <Typography className="nm-phase-card__phase">
+                      {phase.phase}
+                    </Typography>
+                    <Typography className="nm-phase-card__date">
+                      {phase.dates}
+                    </Typography>
+                    <Typography className="nm-phase-card__activity">
+                      {phase.activities}
+                    </Typography>
                     <Box className="nm-phase-card__milestones">
                       {phase.milestones.map((milestone) => (
                         <span key={milestone}>{milestone}</span>
@@ -1140,8 +1733,8 @@ const NombaHackathon = () => {
             Winner podium for the strongest teams
           </Typography>
           <Typography className="nm-copy nm-copy--wide">
-            Grand Prize takes center stage, with runner-up awards positioned beside it in a live winner-selection
-            reveal format.
+            Grand Prize takes center stage, with runner-up awards positioned
+            beside it in a live winner-selection reveal format.
           </Typography>
 
           <Box className="nm-prize-stage nm-reveal">
@@ -1150,34 +1743,58 @@ const NombaHackathon = () => {
 
             <Box className="nm-prize-podium">
               {PODIUM_PRIZES.map((prize) => (
-                <Box key={prize.rank} className={`nm-prize-slot nm-prize-slot--${prize.rank.toLowerCase()}`}>
+                <Box
+                  key={prize.rank}
+                  className={`nm-prize-slot nm-prize-slot--${prize.rank.toLowerCase()}`}
+                >
                   <span className="nm-prize-slot__ring" />
                   <span className="nm-prize-slot__trophy" aria-hidden="true">
                     {prize.rank === '1st' ? '🏆' : '🏅'}
                   </span>
                   {prize.rank === '1st' && (
-                    <Typography className="nm-prize-slot__winner-badge">Grand Prize Winner</Typography>
+                    <Typography className="nm-prize-slot__winner-badge">
+                      Grand Prize Winner
+                    </Typography>
                   )}
-                  <Typography className="nm-prize-slot__rank">{prize.rank} Place</Typography>
-                  <Typography className="nm-prize-slot__title">{prize.title}</Typography>
+                  <Typography className="nm-prize-slot__rank">
+                    {prize.rank} Place
+                  </Typography>
+                  <Typography className="nm-prize-slot__title">
+                    {prize.title}
+                  </Typography>
                   <Typography className="nm-prize-slot__amount">
-                    <span className="nm-countup" data-prefix="$" data-value={prize.amount}>
+                    <span
+                      className="nm-countup"
+                      data-prefix="$"
+                      data-value={prize.amount}
+                    >
                       {prize.label}
                     </span>
                   </Typography>
-                  <Typography className="nm-prize-slot__bonus">{prize.bonus}</Typography>
+                  <Typography className="nm-prize-slot__bonus">
+                    {prize.bonus}
+                  </Typography>
                 </Box>
               ))}
             </Box>
           </Box>
 
           <Box className="nm-prize-perks nm-reveal">
-            <Typography className="nm-prize-perks__title">Beyond cash awards</Typography>
+            <Typography className="nm-prize-perks__title">
+              Beyond cash awards
+            </Typography>
             <ul>
-              <li>Winner demo amplification across DevCareer and partner channels.</li>
+              <li>
+                Winner demo amplification across DevCareer and partner channels.
+              </li>
               <li>Fast-track access to Nomba engineering feedback sessions.</li>
-              <li>Post-hackathon product showcase opportunities for top teams.</li>
-              <li>Official participation and certification records for qualified trainees.</li>
+              <li>
+                Post-hackathon product showcase opportunities for top teams.
+              </li>
+              <li>
+                Official participation and certification records for qualified
+                trainees.
+              </li>
             </ul>
           </Box>
         </Box>
@@ -1191,7 +1808,11 @@ const NombaHackathon = () => {
           </Typography>
 
           <Box className="nm-criteria-showcase" ref={criteriaSectionRef}>
-            <canvas ref={criteriaCanvasRef} className="nm-criteria-canvas" aria-hidden="true" />
+            <canvas
+              ref={criteriaCanvasRef}
+              className="nm-criteria-canvas"
+              aria-hidden="true"
+            />
             <Box className="nm-criteria-veil" />
 
             <Box className="nm-criteria-grid">
@@ -1204,17 +1825,37 @@ const NombaHackathon = () => {
                     '--nm-criterion-color-soft': criterion.colorSoft,
                   }}
                 >
-                  <Stack direction="row" justifyContent="space-between" alignItems="center" gap={1.2}>
-                    <Typography className="nm-criteria-item__name">{criterion.name}</Typography>
-                    <Stack direction="row" alignItems="center" gap={0.6} className="nm-criteria-score-chip">
-                      <Typography className="nm-criteria-score" data-weight={criterion.weight}>
+                  <Stack
+                    direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    gap={1.2}
+                  >
+                    <Typography className="nm-criteria-item__name">
+                      {criterion.name}
+                    </Typography>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      gap={0.6}
+                      className="nm-criteria-score-chip"
+                    >
+                      <Typography
+                        className="nm-criteria-score"
+                        data-weight={criterion.weight}
+                      >
                         0
                       </Typography>
-                      <Typography className="nm-criteria-score__suffix">%</Typography>
+                      <Typography className="nm-criteria-score__suffix">
+                        %
+                      </Typography>
                     </Stack>
                   </Stack>
                   <Box className="nm-criteria-bar">
-                    <span className="nm-criteria-bar__fill" style={{ width: `${criterion.weight}%` }} />
+                    <span
+                      className="nm-criteria-bar__fill"
+                      style={{ width: `${criterion.weight}%` }}
+                    />
                     <span className="nm-criteria-shimmer" />
                   </Box>
                 </Box>
@@ -1223,7 +1864,9 @@ const NombaHackathon = () => {
           </Box>
 
           <Box className="nm-submissions">
-            <Typography className="nm-submissions__title">Submission Requirements</Typography>
+            <Typography className="nm-submissions__title">
+              Submission Requirements
+            </Typography>
             <ul>
               {SUBMISSION_REQUIREMENTS.map((item) => (
                 <li key={item}>{item}</li>
@@ -1242,7 +1885,10 @@ const NombaHackathon = () => {
 
           <Box className="nm-faq-list">
             {FAQS.map((faq, index) => (
-              <Box key={faq.question} className={`nm-faq-item ${openFaq === index ? 'is-open' : ''}`}>
+              <Box
+                key={faq.question}
+                className={`nm-faq-item ${openFaq === index ? 'is-open' : ''}`}
+              >
                 <button
                   type="button"
                   className="nm-faq-item__question"
@@ -1264,26 +1910,178 @@ const NombaHackathon = () => {
         <Box className="nm-container nm-cta">
           <Box className="nm-cta__copy">
             <Typography className="nm-heading" component="h2">
-              Ready to build with Nomba?
+              Hackathon complete. Certificates are ready.
             </Typography>
             <Typography className="nm-copy nm-copy--wide">
-              Applications are now closed because the hackathon is underway. If you applied before, check your
-              email or Slack for next steps; the Nomba Forward development course remains open.
+              The Nomba x DevCareer Hackathon 2026 has ended. Participants can
+              generate a completion certificate and continue learning through
+              the Nomba Forward development course.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} gap={1.5}>
-            <Link to="/programs/nomba-forward-training" style={{ textDecoration: 'none' }}>
+            <Link
+              to="/programs/nomba-forward-training"
+              style={{ textDecoration: 'none' }}
+            >
               <Button className="nm-btn-primary" disableElevation>
                 Take Nomba Forward Course
               </Button>
             </Link>
-            <Button className="nm-btn-secondary" onClick={() => scrollToSection('timeline')}>
-              Revisit Timeline
+            <Button className="nm-btn-secondary" onClick={openCertificateModal}>
+              Get Certificate
             </Button>
           </Stack>
         </Box>
       </Box>
 
+      <Dialog
+        open={certificateModalOpen}
+        onClose={closeCertificateModal}
+        maxWidth="lg"
+        fullWidth
+        PaperProps={{ className: 'nm-certificate-modal' }}
+      >
+        <Box className="nm-certificate-modal__header">
+          <Box>
+            <Typography className="nm-certificate-modal__eyebrow">
+              Nomba Hackathon 2026
+            </Typography>
+            <Typography className="nm-certificate-modal__title" component="h2">
+              Get your certificate
+            </Typography>
+          </Box>
+          <IconButton
+            className="nm-certificate-modal__close"
+            onClick={closeCertificateModal}
+            aria-label="Close"
+          >
+            <CloseRoundedIcon />
+          </IconButton>
+        </Box>
+
+        {!certificateDetails && !certificateOtpContext ? (
+          <Box
+            component="form"
+            className="nm-certificate-form"
+            onSubmit={showCertificate}
+            noValidate
+          >
+            <TextField
+              className="nm-certificate-field"
+              label="Email address"
+              type="email"
+              value={certificateForm.email}
+              onChange={updateCertificateField('email')}
+              autoComplete="email"
+              fullWidth
+              required
+            />
+            <TextField
+              className="nm-certificate-field"
+              label="Name on certificate"
+              value={certificateForm.name}
+              onChange={updateCertificateField('name')}
+              autoComplete="name"
+              fullWidth
+              required
+            />
+            {certificateError && (
+              <Typography className="nm-certificate-form__error">
+                {certificateError}
+              </Typography>
+            )}
+            <Button
+              type="submit"
+              className="nm-btn-primary nm-certificate-form__submit"
+              disableElevation
+              disabled={certificateIsSubmitting}
+            >
+              {certificateIsSubmitting ? 'Sending Code...' : 'Send Code'}
+            </Button>
+          </Box>
+        ) : certificateOtpContext ? (
+          <Box
+            component="form"
+            className="nm-certificate-form"
+            onSubmit={verifyCertificateOtp}
+            noValidate
+          >
+            <Typography className="nm-certificate-form__hint">
+              {certificateMessage ||
+                `We sent a 6-digit code to ${certificateOtpContext.maskedEmail}.`}
+            </Typography>
+            <TextField
+              className="nm-certificate-field"
+              label="Verification code"
+              value={certificateOtp}
+              onChange={updateCertificateOtp}
+              autoComplete="one-time-code"
+              inputProps={{
+                inputMode: 'numeric',
+                pattern: '[0-9]*',
+                maxLength: 6,
+              }}
+              fullWidth
+              required
+            />
+            {certificateError && (
+              <Typography className="nm-certificate-form__error">
+                {certificateError}
+              </Typography>
+            )}
+            <Stack
+              className="nm-certificate-form__actions"
+              direction={{ xs: 'column', sm: 'row' }}
+            >
+              <Button
+                type="button"
+                className="nm-btn-secondary nm-certificate-actions__edit"
+                onClick={editCertificateDetails}
+                disabled={certificateIsSubmitting}
+              >
+                Change Details
+              </Button>
+              <Button
+                type="submit"
+                className="nm-btn-primary nm-certificate-form__submit"
+                disableElevation
+                disabled={certificateIsSubmitting}
+              >
+                {certificateIsSubmitting ? 'Verifying...' : 'Verify Code'}
+              </Button>
+            </Stack>
+          </Box>
+        ) : (
+          <Box className="nm-certificate-result">
+            <Stack
+              className="nm-certificate-actions"
+              direction={{ xs: 'column', sm: 'row' }}
+            >
+              <Button
+                className="nm-btn-secondary nm-certificate-actions__edit"
+                onClick={editCertificateDetails}
+              >
+                Edit Details
+              </Button>
+              <Button
+                className="nm-btn-primary nm-certificate-actions__download"
+                onClick={downloadCertificate}
+                startIcon={<DownloadRoundedIcon />}
+                disableElevation
+              >
+                Download Certificate
+              </Button>
+            </Stack>
+            <Box className="nm-certificate-preview-wrap">
+              <img
+                className="nm-certificate-preview"
+                src={certificatePreviewUrl}
+                alt={`Nomba Hackathon certificate for ${certificateDetails.name}`}
+              />
+            </Box>
+          </Box>
+        )}
+      </Dialog>
     </Box>
   );
 };

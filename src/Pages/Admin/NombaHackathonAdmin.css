@@ -175,6 +175,10 @@
   min-width: 980px;
 }
 
+.nha-table--certificates {
+  min-width: 860px;
+}
+
 .nha-table th,
 .nha-table td {
   padding: 14px 12px;
@@ -248,6 +252,11 @@
 .nha-pill--warning {
   background: #fff4d8;
   color: #8a5b00;
+}
+
+.nha-pill--neutral {
+  background: #eef2f7;
+  color: #617089;
 }
 
 .nha-action--compact {

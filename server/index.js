@@ -6,47 +6,89 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
 import {
+  completeNombaCertificateVerification,
   completeNombaEmailVerification,
   consumeNombaEmailVerification,
+  countNombaCertificateClaims,
+  countNombaCertificateRecipients,
   countNombaPendingVerifications,
   countNombaRegistrations,
+  createNombaCertificateVerification,
   createNombaEmailVerification,
+  getActiveNombaCertificateVerification,
   getActiveNombaEmailVerification,
+  getNombaCertificateRecipientByEmail,
+  getNombaCertificateSummary,
   getNombaEmailVerificationById,
   hasDatabase,
   initializeDatabase,
+  incrementNombaCertificateVerificationAttempts,
   incrementNombaEmailVerificationAttempts,
   listAllNombaRegistrations,
+  listNombaCertificateClaims,
+  listNombaCertificateRecipients,
   listNombaPendingVerifications,
   listNombaRegistrations,
   pool,
 } from './database.js';
+import { nombaCertificateEmailSeedStats } from './nombaCertificateEligibleEmails.js';
 
 dotenv.config();
 dotenv.config({ path: '.env.local', override: true });
 
 const app = express();
 const port = process.env.PORT || 3001;
-const projectRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
+const projectRoot = path.resolve(
+  path.dirname(fileURLToPath(import.meta.url)),
+  '..'
+);
 const distPath = path.join(projectRoot, 'dist');
 const adminCookieName = 'dc_nomba_admin';
-const adminSessionTtlMs = Number(process.env.ADMIN_SESSION_TTL_MS || 12 * 60 * 60 * 1000);
-const emailVerificationTtlMs = Number(process.env.EMAIL_VERIFICATION_TTL_MS || 10 * 60 * 1000);
-const emailVerificationMaxAttempts = Number(process.env.EMAIL_VERIFICATION_MAX_ATTEMPTS || 5);
-const reverificationLinkTtlMs = Number(process.env.REVERIFICATION_LINK_TTL_MS || 7 * 24 * 60 * 60 * 1000);
-const resendFromEmail = process.env.RESEND_FROM_EMAIL || 'DevCareerNomba Hackathon <message@hack.devcareer.io>';
+const adminSessionTtlMs = Number(
+  process.env.ADMIN_SESSION_TTL_MS || 12 * 60 * 60 * 1000
+);
+const emailVerificationTtlMs = Number(
+  process.env.EMAIL_VERIFICATION_TTL_MS || 10 * 60 * 1000
+);
+const emailVerificationMaxAttempts = Number(
+  process.env.EMAIL_VERIFICATION_MAX_ATTEMPTS || 5
+);
+const certificateVerificationTtlMs = Number(
+  process.env.CERTIFICATE_VERIFICATION_TTL_MS || emailVerificationTtlMs
+);
+const certificateVerificationMaxAttempts = Number(
+  process.env.CERTIFICATE_VERIFICATION_MAX_ATTEMPTS ||
+    emailVerificationMaxAttempts
+);
+const reverificationLinkTtlMs = Number(
+  process.env.REVERIFICATION_LINK_TTL_MS || 7 * 24 * 60 * 60 * 1000
+);
+const resendFromEmail =
+  process.env.RESEND_FROM_EMAIL ||
+  'DevCareerNomba Hackathon <notif@send.devcareer.io>';
 const resendBatchSize = 100;
 const emailSenderName = 'DevCareerNomba Hackathon';
 const hackathonName = 'Nomba Forward Hackathon 2026';
-const nombaHackathonApplicationsOpen = process.env.NOMBA_HACKATHON_APPLICATIONS_OPEN === 'true';
+const nombaHackathonApplicationsOpen =
+  process.env.NOMBA_HACKATHON_APPLICATIONS_OPEN === 'true';
 const nombaHackathonApplicationsClosedMessage =
   'Applications for the Nomba Forward Hackathon are now closed because the hackathon is currently ongoing. You are free to take the Nomba Forward development course. If you applied before, please check your email or Slack for onboarding details.';
-const devCareerXUrl = process.env.DEVCAREER_X_URL || 'https://x.com/dev_careers';
-const devCareerInstagramUrl = process.env.DEVCAREER_INSTAGRAM_URL || 'https://www.instagram.com/dev_careers/';
-const devCareerWorkspaceUrl = process.env.DEVCAREER_WORKSPACE_URL || 'https://bit.ly/devcareerafrica';
-const hackathonPageUrl = process.env.NOMBA_HACKATHON_URL || 'https://devcareer.io/programs/nomba-hackathon';
+const devCareerXUrl =
+  process.env.DEVCAREER_X_URL || 'https://x.com/dev_careers';
+const devCareerInstagramUrl =
+  process.env.DEVCAREER_INSTAGRAM_URL ||
+  'https://www.instagram.com/dev_careers/';
+const devCareerWorkspaceUrl =
+  process.env.DEVCAREER_WORKSPACE_URL || 'https://bit.ly/devcareerafrica';
+const hackathonPageUrl =
+  process.env.NOMBA_HACKATHON_URL ||
+  'https://devcareer.io/programs/nomba-hackathon';
 
-const allowedOrigins = (process.env.CORS_ORIGIN || process.env.CORS_ORIGINS || '')
+const allowedOrigins = (
+  process.env.CORS_ORIGIN ||
+  process.env.CORS_ORIGINS ||
+  ''
+)
   .split(',')
   .map((origin) => origin.trim())
   .filter(Boolean);
@@ -89,12 +131,18 @@ const nigerianStates = [
   'Yobe',
   'Zamfara',
 ];
-const nigerianStateSet = new Set(nigerianStates.map((state) => state.toLowerCase()));
+const nigerianStateSet = new Set(
+  nigerianStates.map((state) => state.toLowerCase())
+);
 
 app.use(
   cors({
     origin(origin, callback) {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      if (
+        !origin ||
+        allowedOrigins.length === 0 ||
+        allowedOrigins.includes(origin)
+      ) {
         callback(null, true);
         return;
       }
@@ -106,9 +154,19 @@ app.use(
 app.use(express.json({ limit: '64kb' }));
 app.use(express.urlencoded({ extended: false, limit: '64kb' }));
 
-const textValue = (body, key) => (typeof body[key] === 'string' ? body[key].trim() : '');
+const textValue = (body, key) =>
+  typeof body[key] === 'string' ? body[key].trim() : '';
 const booleanValue = (body, key) => body[key] === true || body[key] === 'true';
 const maskEmail = (email) => email.replace(/^(.).+(@.+)$/, '$1***$2');
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const normalizeEmail = (value) =>
+  String(value || '')
+    .trim()
+    .toLowerCase();
+const normalizeCertificateName = (value) =>
+  String(value || '')
+    .replace(/\s+/g, ' ')
+    .trim();
 const stateValue = (body) => {
   const state = textValue(body, 'state');
   const legacyCountry = textValue(body, 'country');
@@ -131,7 +189,9 @@ const normalizeRegistration = (body) => ({
   state: stateValue(body),
   participationMode: textValue(body, 'participationMode'),
   teamName: textValue(body, 'teamName'),
-  teamSize: textValue(body, 'teamSize') ? Number(textValue(body, 'teamSize')) : null,
+  teamSize: textValue(body, 'teamSize')
+    ? Number(textValue(body, 'teamSize'))
+    : null,
   track: textValue(body, 'track'),
   focusArea: textValue(body, 'focusArea'),
   role: textValue(body, 'role'),
@@ -141,7 +201,33 @@ const normalizeRegistration = (body) => ({
   rawPayload: body,
 });
 
-const validateRegistration = (registration, { allowMissingTeamSize = false } = {}) => {
+const normalizeCertificateRequest = (body) => ({
+  email: normalizeEmail(body?.email),
+  certificateName: normalizeCertificateName(
+    body?.name || body?.certificateName
+  ),
+});
+
+const validateCertificateRequest = ({ email, certificateName }) => {
+  const errors = {};
+
+  if (!email || !emailPattern.test(email)) {
+    errors.email = 'Enter a valid email address.';
+  }
+
+  if (!certificateName) {
+    errors.name = 'Enter the name you want on your certificate.';
+  } else if (certificateName.length > 120) {
+    errors.name = 'Certificate name cannot exceed 120 characters.';
+  }
+
+  return errors;
+};
+
+const validateRegistration = (
+  registration,
+  { allowMissingTeamSize = false } = {}
+) => {
   const errors = {};
   const requiredFields = [
     'firstName',
@@ -162,11 +248,14 @@ const validateRegistration = (registration, { allowMissingTeamSize = false } = {
     }
   });
 
-  if (registration.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(registration.email)) {
+  if (registration.email && !emailPattern.test(registration.email)) {
     errors.email = 'Invalid email address';
   }
 
-  if (registration.state && !nigerianStateSet.has(registration.state.toLowerCase())) {
+  if (
+    registration.state &&
+    !nigerianStateSet.has(registration.state.toLowerCase())
+  ) {
     errors.state = 'Select a valid Nigerian state';
   }
 
@@ -179,9 +268,13 @@ const validateRegistration = (registration, { allowMissingTeamSize = false } = {
       errors.teamName = 'Required for team participation';
     }
 
-    const teamSizeIsMissing = registration.teamSize === null || registration.teamSize === undefined;
+    const teamSizeIsMissing =
+      registration.teamSize === null || registration.teamSize === undefined;
 
-    if (![2, 3, 4].includes(registration.teamSize) && !(allowMissingTeamSize && teamSizeIsMissing)) {
+    if (
+      ![2, 3, 4].includes(registration.teamSize) &&
+      !(allowMissingTeamSize && teamSizeIsMissing)
+    ) {
       errors.teamSize = 'Invalid team size';
     }
   }
@@ -193,16 +286,36 @@ const validateRegistration = (registration, { allowMissingTeamSize = false } = {
   return errors;
 };
 
-const validateStoredRegistration = (registration) => validateRegistration(registration, { allowMissingTeamSize: true });
+const validateStoredRegistration = (registration) =>
+  validateRegistration(registration, { allowMissingTeamSize: true });
 
 const getEmailVerificationSecret = () =>
   process.env.EMAIL_VERIFICATION_SECRET ||
   process.env.ADMIN_SESSION_SECRET ||
   process.env.ADMIN_API_KEY ||
-  process.env.NOMBA_ADMIN_API_KEY ||
-  process.env.RESEND_API_KEY;
+  process.env.NOMBA_ADMIN_API_KEY;
 
-const createVerificationCode = () => crypto.randomInt(0, 1000000).toString().padStart(6, '0');
+const getConfigurationStatus = () => {
+  const emailProviderConfigured = Boolean(
+    process.env.RESEND_API_KEY && resendFromEmail
+  );
+  const emailVerificationConfigured = Boolean(getEmailVerificationSecret());
+
+  return {
+    database: hasDatabase ? 'configured' : 'missing',
+    emailProvider: emailProviderConfigured ? 'configured' : 'missing',
+    emailVerificationSecret: emailVerificationConfigured
+      ? 'configured'
+      : 'missing',
+    certificateVerification:
+      hasDatabase && emailProviderConfigured && emailVerificationConfigured
+        ? 'configured'
+        : 'missing',
+  };
+};
+
+const createVerificationCode = () =>
+  crypto.randomInt(0, 1000000).toString().padStart(6, '0');
 
 const hashVerificationCode = (email, code) => {
   const secret = getEmailVerificationSecret();
@@ -211,11 +324,18 @@ const hashVerificationCode = (email, code) => {
     return '';
   }
 
-  return crypto.createHmac('sha256', secret).update(`${email.toLowerCase()}:${code}`).digest('hex');
+  return crypto
+    .createHmac('sha256', secret)
+    .update(`${email.toLowerCase()}:${code}`)
+    .digest('hex');
 };
 
 const getPublicOrigin = () => {
-  const configuredUrl = process.env.PUBLIC_BASE_URL || process.env.SITE_URL || process.env.NOMBA_PUBLIC_URL || hackathonPageUrl;
+  const configuredUrl =
+    process.env.PUBLIC_BASE_URL ||
+    process.env.SITE_URL ||
+    process.env.NOMBA_PUBLIC_URL ||
+    hackathonPageUrl;
 
   try {
     return new URL(configuredUrl).origin;
@@ -231,17 +351,24 @@ const signReverificationPayload = (encodedPayload) => {
     return '';
   }
 
-  return crypto.createHmac('sha256', secret).update(`nomba-reverify:${encodedPayload}`).digest('base64url');
+  return crypto
+    .createHmac('sha256', secret)
+    .update(`nomba-reverify:${encodedPayload}`)
+    .digest('base64url');
 };
 
 const createReverificationToken = ({ verificationId, email }) => {
   const payload = {
     purpose: 'nomba-reverify',
     verificationId: Number(verificationId),
-    email: String(email || '').trim().toLowerCase(),
+    email: String(email || '')
+      .trim()
+      .toLowerCase(),
     exp: Date.now() + reverificationLinkTtlMs,
   };
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString(
+    'base64url'
+  );
   const signature = signReverificationPayload(encodedPayload);
 
   return `${encodedPayload}.${signature}`;
@@ -261,9 +388,16 @@ const verifyReverificationToken = (token) => {
   }
 
   try {
-    const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString('utf8'));
+    const payload = JSON.parse(
+      Buffer.from(encodedPayload, 'base64url').toString('utf8')
+    );
 
-    if (payload.purpose !== 'nomba-reverify' || !payload.verificationId || !payload.email || Date.now() > payload.exp) {
+    if (
+      payload.purpose !== 'nomba-reverify' ||
+      !payload.verificationId ||
+      !payload.email ||
+      Date.now() > payload.exp
+    ) {
       return null;
     }
 
@@ -319,7 +453,10 @@ const postJson = (url, { headers = {}, payload = {} }) =>
     request.end();
   });
 
-const getProviderErrorMessage = (response, fallback = 'The email provider rejected the request.') => {
+const getProviderErrorMessage = (
+  response,
+  fallback = 'The email provider rejected the request.'
+) => {
   const data = response?.data;
   const message =
     data?.message ||
@@ -328,7 +465,9 @@ const getProviderErrorMessage = (response, fallback = 'The email provider reject
     response?.statusText ||
     fallback;
 
-  return typeof message === 'string' && message.trim() ? message.trim() : fallback;
+  return typeof message === 'string' && message.trim()
+    ? message.trim()
+    : fallback;
 };
 
 const createEmailProviderError = (message, response) => {
@@ -341,7 +480,12 @@ const createEmailProviderError = (message, response) => {
 const getEmailErrorDetail = (error) =>
   error?.providerMessage || error?.message || 'Unable to send email.';
 
-const emailButton = ({ href, label, background = '#ffcc00', color = '#181818' }) => `
+const emailButton = ({
+  href,
+  label,
+  background = '#ffcc00',
+  color = '#181818',
+}) => `
   <a href="${escapeHtml(href)}" target="_blank" rel="noopener noreferrer"
     style="display: inline-block; background: ${background}; color: ${color}; text-decoration: none; font-size: 14px; font-weight: 800; padding: 13px 18px; border-radius: 999px;">
     ${escapeHtml(label)}
@@ -358,8 +502,18 @@ const renderSocialLinks = () => `
         </p>
         <table role="presentation" cellspacing="0" cellpadding="0">
           <tr>
-            <td style="padding-right: 10px;">${emailButton({ href: devCareerXUrl, label: 'Follow on X', background: '#181818', color: '#ffffff' })}</td>
-            <td>${emailButton({ href: devCareerInstagramUrl, label: 'Follow on Instagram', background: '#e94883', color: '#ffffff' })}</td>
+            <td style="padding-right: 10px;">${emailButton({
+              href: devCareerXUrl,
+              label: 'Follow on X',
+              background: '#181818',
+              color: '#ffffff',
+            })}</td>
+            <td>${emailButton({
+              href: devCareerInstagramUrl,
+              label: 'Follow on Instagram',
+              background: '#e94883',
+              color: '#ffffff',
+            })}</td>
           </tr>
         </table>
       </td>
@@ -376,15 +530,21 @@ const renderEmailShell = ({ previewText, eyebrow, title, children }) => `
       <title>${escapeHtml(title)}</title>
     </head>
     <body style="margin: 0; padding: 0; background: #f6f3e8; font-family: Arial, Helvetica, sans-serif;">
-      <div style="display: none; max-height: 0; overflow: hidden; opacity: 0;">${escapeHtml(previewText)}</div>
+      <div style="display: none; max-height: 0; overflow: hidden; opacity: 0;">${escapeHtml(
+        previewText
+      )}</div>
       <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="background: #f6f3e8; padding: 28px 14px;">
         <tr>
           <td align="center">
             <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="max-width: 640px; background: #ffffff; border-radius: 24px; overflow: hidden; border: 1px solid #ece4bd;">
               <tr>
                 <td style="background: #171713; padding: 28px 28px 32px;">
-                  <p style="margin: 0 0 10px; color: #ffcc00; font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;">${escapeHtml(eyebrow)}</p>
-                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; line-height: 1.2; font-weight: 900;">${escapeHtml(title)}</h1>
+                  <p style="margin: 0 0 10px; color: #ffcc00; font-size: 12px; font-weight: 800; letter-spacing: 1.2px; text-transform: uppercase;">${escapeHtml(
+                    eyebrow
+                  )}</p>
+                  <h1 style="margin: 0; color: #ffffff; font-size: 28px; line-height: 1.2; font-weight: 900;">${escapeHtml(
+                    title
+                  )}</h1>
                 </td>
               </tr>
               <tr>
@@ -401,7 +561,9 @@ const renderEmailShell = ({ previewText, eyebrow, title, children }) => `
               </tr>
             </table>
             <p style="max-width: 640px; margin: 14px auto 0; color: #7a7355; font-size: 12px; line-height: 1.6;">
-              You received this email because you registered for ${escapeHtml(hackathonName)}.
+              You received this email because you registered for ${escapeHtml(
+                hackathonName
+              )}.
             </p>
           </td>
         </tr>
@@ -430,11 +592,11 @@ const sendEmail = async ({ to, subject, text, html }) => {
   const { data } = response;
 
   if (!response.ok) {
-    const providerMessage = getProviderErrorMessage(response, 'Unable to send email.');
-    console.error(
-      'Unable to send Nomba email:',
-      providerMessage
+    const providerMessage = getProviderErrorMessage(
+      response,
+      'Unable to send email.'
     );
+    console.error('Unable to send Nomba email:', providerMessage);
     throw createEmailProviderError('Unable to send email.', response);
   }
 
@@ -451,7 +613,9 @@ const sendEmailBatch = async (emails, { idempotencyKey } = {}) => {
   }
 
   if (emails.length > resendBatchSize) {
-    throw new Error(`Resend batch email payload cannot exceed ${resendBatchSize} emails.`);
+    throw new Error(
+      `Resend batch email payload cannot exceed ${resendBatchSize} emails.`
+    );
   }
 
   const response = await postJson('https://api.resend.com/emails/batch', {
@@ -470,11 +634,11 @@ const sendEmailBatch = async (emails, { idempotencyKey } = {}) => {
   const { data } = response;
 
   if (!response.ok) {
-    const providerMessage = getProviderErrorMessage(response, 'Unable to send email batch.');
-    console.error(
-      'Unable to send Nomba email batch:',
-      providerMessage
+    const providerMessage = getProviderErrorMessage(
+      response,
+      'Unable to send email batch.'
     );
+    console.error('Unable to send Nomba email batch:', providerMessage);
     throw createEmailProviderError('Unable to send email batch.', response);
   }
 
@@ -482,7 +646,10 @@ const sendEmailBatch = async (emails, { idempotencyKey } = {}) => {
 };
 
 const sendVerificationEmail = async ({ email, firstName, code }) => {
-  const verificationMinutes = Math.max(1, Math.round(emailVerificationTtlMs / 60000));
+  const verificationMinutes = Math.max(
+    1,
+    Math.round(emailVerificationTtlMs / 60000)
+  );
   const displayName = escapeHtml(firstName || 'there');
 
   return sendEmail({
@@ -508,7 +675,9 @@ const sendVerificationEmail = async ({ email, firstName, code }) => {
       children: `
         <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
-          Use the code below to confirm your email and complete your registration for <strong>${escapeHtml(hackathonName)}</strong>.
+          Use the code below to confirm your email and complete your registration for <strong>${escapeHtml(
+            hackathonName
+          )}</strong>.
         </p>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
           <tr>
@@ -527,8 +696,64 @@ const sendVerificationEmail = async ({ email, firstName, code }) => {
   });
 };
 
+const sendCertificateVerificationEmail = async ({
+  email,
+  certificateName,
+  code,
+}) => {
+  const verificationMinutes = Math.max(
+    1,
+    Math.round(certificateVerificationTtlMs / 60000)
+  );
+  const displayName = escapeHtml(certificateName || 'there');
+
+  return sendEmail({
+    to: email,
+    subject: 'Your Nomba Hackathon certificate verification code',
+    text: [
+      `Hi ${certificateName || 'there'},`,
+      '',
+      `Your ${hackathonName} certificate verification code is ${code}.`,
+      `It expires in ${verificationMinutes} minutes.`,
+      '',
+      'Enter this code on the certificate modal to view and download your certificate.',
+      '',
+      'If you did not request this, you can ignore this email.',
+      '',
+      emailSenderName,
+    ].join('\n'),
+    html: renderEmailShell({
+      previewText: `Your ${hackathonName} certificate code is ${code}.`,
+      eyebrow: 'Certificate verification',
+      title: 'Confirm your certificate email',
+      children: `
+        <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          Use the code below to confirm this email address and unlock your <strong>${escapeHtml(
+            hackathonName
+          )}</strong> certificate.
+        </p>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
+          <tr>
+            <td align="center" style="background: #fff2ae; border: 1px solid #f2cc34; border-radius: 20px; padding: 24px;">
+              <p style="margin: 0 0 8px; color: #6c5700; font-size: 12px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">Your certificate code</p>
+              <p style="margin: 0; color: #151515; font-size: 40px; font-weight: 900; letter-spacing: 8px;">${code}</p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin: 0; color: #4a4631; font-size: 14px; line-height: 1.7;">
+          This code expires in <strong>${verificationMinutes} minutes</strong>. If you did not request a certificate, you can ignore this email.
+        </p>
+      `,
+    }),
+  });
+};
+
 const sendRegistrationConfirmationEmail = async ({ registration }) => {
-  const fullName = [registration.firstName, registration.lastName].filter(Boolean).join(' ') || registration.firstName || 'there';
+  const fullName =
+    [registration.firstName, registration.lastName].filter(Boolean).join(' ') ||
+    registration.firstName ||
+    'there';
   const displayName = escapeHtml(fullName);
 
   return sendEmail({
@@ -564,7 +789,8 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
       'The DevCareer Team',
     ].join('\n'),
     html: renderEmailShell({
-      previewText: 'You are registered for the Nomba x DevCareer Hackathon 2026.',
+      previewText:
+        'You are registered for the Nomba x DevCareer Hackathon 2026.',
       eyebrow: 'Registration confirmed',
       title: 'Welcome to the Nomba x DevCareer Hackathon',
       children: `
@@ -599,7 +825,9 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
         </table>
 
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
-          Need a refresher on what you need to do? <a href="${escapeHtml(hackathonPageUrl)}" target="_blank" rel="noopener noreferrer" style="color: #0d7a5f; font-weight: 800;">Check here</a>.
+          Need a refresher on what you need to do? <a href="${escapeHtml(
+            hackathonPageUrl
+          )}" target="_blank" rel="noopener noreferrer" style="color: #0d7a5f; font-weight: 800;">Check here</a>.
         </p>
 
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
@@ -608,7 +836,9 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
               <p style="margin: 0 0 14px; color: #191917; font-size: 15px; font-weight: 800;">Your Immediate Next Steps</p>
               <p style="margin: 0 0 12px; color: #4f4a33; font-size: 14px; line-height: 1.7;">
                 <strong>1. Join our official workspace:</strong>
-                <a href="${escapeHtml(devCareerWorkspaceUrl)}" target="_blank" rel="noopener noreferrer" style="color: #0d7a5f; font-weight: 800;">DevCareer Workspace</a>
+                <a href="${escapeHtml(
+                  devCareerWorkspaceUrl
+                )}" target="_blank" rel="noopener noreferrer" style="color: #0d7a5f; font-weight: 800;">DevCareer Workspace</a>
                 to connect with fellow participants.
               </p>
               <p style="margin: 0 0 12px; color: #4f4a33; font-size: 14px; line-height: 1.7;">
@@ -626,8 +856,16 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
 
         <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 24px 0;">
           <tr>
-            <td style="padding-right: 10px;">${emailButton({ href: devCareerWorkspaceUrl, label: 'Join DevCareer Workspace' })}</td>
-            <td>${emailButton({ href: hackathonPageUrl, label: 'Review Hackathon Brief', background: '#181818', color: '#ffffff' })}</td>
+            <td style="padding-right: 10px;">${emailButton({
+              href: devCareerWorkspaceUrl,
+              label: 'Join DevCareer Workspace',
+            })}</td>
+            <td>${emailButton({
+              href: hackathonPageUrl,
+              label: 'Review Hackathon Brief',
+              background: '#181818',
+              color: '#ffffff',
+            })}</td>
           </tr>
         </table>
 
@@ -645,7 +883,11 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
   });
 };
 
-const buildReverificationLinkEmailPayload = ({ registration, verificationUrl, linkExpiresAt }) => {
+const buildReverificationLinkEmailPayload = ({
+  registration,
+  verificationUrl,
+  linkExpiresAt,
+}) => {
   const displayName = escapeHtml(registration.firstName || 'there');
   const linkExpiry = new Intl.DateTimeFormat('en-GB', {
     dateStyle: 'medium',
@@ -675,16 +917,23 @@ const buildReverificationLinkEmailPayload = ({ registration, verificationUrl, li
       children: `
         <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
-          We noticed your <strong>${escapeHtml(hackathonName)}</strong> registration was started but not confirmed.
+          We noticed your <strong>${escapeHtml(
+            hackathonName
+          )}</strong> registration was started but not confirmed.
           Click the button below once to verify your application.
         </p>
         <table role="presentation" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
           <tr>
-            <td>${emailButton({ href: verificationUrl, label: 'Confirm My Registration' })}</td>
+            <td>${emailButton({
+              href: verificationUrl,
+              label: 'Confirm My Registration',
+            })}</td>
           </tr>
         </table>
         <p style="margin: 0 0 10px; color: #4a4631; font-size: 14px; line-height: 1.7;">
-          This link expires on <strong>${escapeHtml(linkExpiry)} WAT</strong>. If you already completed registration, you can ignore this email.
+          This link expires on <strong>${escapeHtml(
+            linkExpiry
+          )} WAT</strong>. If you already completed registration, you can ignore this email.
         </p>
         ${renderSocialLinks()}
       `,
@@ -692,8 +941,18 @@ const buildReverificationLinkEmailPayload = ({ registration, verificationUrl, li
   };
 };
 
-const sendReverificationLinkEmail = async ({ registration, verificationUrl, linkExpiresAt }) =>
-  sendEmail(buildReverificationLinkEmailPayload({ registration, verificationUrl, linkExpiresAt }));
+const sendReverificationLinkEmail = async ({
+  registration,
+  verificationUrl,
+  linkExpiresAt,
+}) =>
+  sendEmail(
+    buildReverificationLinkEmailPayload({
+      registration,
+      verificationUrl,
+      linkExpiresAt,
+    })
+  );
 
 const renderOneClickResultPage = ({ title, message, tone = 'success' }) => {
   const isSuccess = tone === 'success';
@@ -709,10 +968,18 @@ const renderOneClickResultPage = ({ title, message, tone = 'success' }) => {
       </head>
       <body style="margin:0; min-height:100vh; display:grid; place-items:center; background:#f6f3e8; font-family:Arial, Helvetica, sans-serif; color:#181818;">
         <main style="width:min(100% - 32px, 560px); background:#fff; border:1px solid #ece4bd; border-radius:24px; padding:32px; box-shadow:0 18px 42px rgba(0,0,0,0.08);">
-          <p style="margin:0 0 10px; color:${accent}; font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">${escapeHtml(hackathonName)}</p>
-          <h1 style="margin:0 0 14px; font-size:28px; line-height:1.2;">${escapeHtml(title)}</h1>
-          <p style="margin:0 0 22px; color:#4a4631; font-size:16px; line-height:1.7;">${escapeHtml(message)}</p>
-          <a href="${escapeHtml(hackathonPageUrl)}" style="display:inline-block; background:#ffcc00; color:#181818; text-decoration:none; font-weight:800; padding:13px 18px; border-radius:999px;">View Hackathon Page</a>
+          <p style="margin:0 0 10px; color:${accent}; font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">${escapeHtml(
+    hackathonName
+  )}</p>
+          <h1 style="margin:0 0 14px; font-size:28px; line-height:1.2;">${escapeHtml(
+            title
+          )}</h1>
+          <p style="margin:0 0 22px; color:#4a4631; font-size:16px; line-height:1.7;">${escapeHtml(
+            message
+          )}</p>
+          <a href="${escapeHtml(
+            hackathonPageUrl
+          )}" style="display:inline-block; background:#ffcc00; color:#181818; text-decoration:none; font-weight:800; padding:13px 18px; border-radius:999px;">View Hackathon Page</a>
         </main>
       </body>
     </html>
@@ -720,14 +987,22 @@ const renderOneClickResultPage = ({ title, message, tone = 'success' }) => {
 };
 
 const getAdminToken = (req) => {
-  const bearerToken = req.get('authorization')?.replace(/^Bearer\s+/i, '').trim();
+  const bearerToken = req
+    .get('authorization')
+    ?.replace(/^Bearer\s+/i, '')
+    .trim();
   const cookieToken = req.headers.cookie
     ?.split(';')
     .map((cookie) => cookie.trim())
     .find((cookie) => cookie.startsWith(`${adminCookieName}=`))
     ?.slice(adminCookieName.length + 1);
 
-  return req.get('x-admin-token') || bearerToken || (cookieToken ? decodeURIComponent(cookieToken) : '') || '';
+  return (
+    req.get('x-admin-token') ||
+    bearerToken ||
+    (cookieToken ? decodeURIComponent(cookieToken) : '') ||
+    ''
+  );
 };
 
 const tokensMatch = (actual, expected) => {
@@ -738,7 +1013,10 @@ const tokensMatch = (actual, expected) => {
   const actualBuffer = Buffer.from(actual);
   const expectedBuffer = Buffer.from(expected);
 
-  return actualBuffer.length === expectedBuffer.length && crypto.timingSafeEqual(actualBuffer, expectedBuffer);
+  return (
+    actualBuffer.length === expectedBuffer.length &&
+    crypto.timingSafeEqual(actualBuffer, expectedBuffer)
+  );
 };
 
 const getAdminEmails = () => {
@@ -749,18 +1027,29 @@ const getAdminEmails = () => {
       .filter(Boolean),
     process.env.ADMIN_EMAIL || process.env.ADMIN_USERNAME,
   ].filter(Boolean);
-  const uniqueEmails = [...new Set(configuredEmails.map((email) => email.toLowerCase()))];
+  const uniqueEmails = [
+    ...new Set(configuredEmails.map((email) => email.toLowerCase())),
+  ];
 
   return uniqueEmails.length > 0 ? uniqueEmails : ['admin'];
 };
 
 const findAdminEmail = (email) => {
-  const normalizedEmail = String(email || '').trim().toLowerCase();
+  const normalizedEmail = String(email || '')
+    .trim()
+    .toLowerCase();
 
-  return getAdminEmails().find((adminEmail) => tokensMatch(normalizedEmail, adminEmail)) || '';
+  return (
+    getAdminEmails().find((adminEmail) =>
+      tokensMatch(normalizedEmail, adminEmail)
+    ) || ''
+  );
 };
 
-const getAdminSessionSecret = () => process.env.ADMIN_SESSION_SECRET || process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
+const getAdminSessionSecret = () =>
+  process.env.ADMIN_SESSION_SECRET ||
+  process.env.ADMIN_API_KEY ||
+  process.env.NOMBA_ADMIN_API_KEY;
 
 const signAdminPayload = (encodedPayload) => {
   const secret = getAdminSessionSecret();
@@ -769,7 +1058,10 @@ const signAdminPayload = (encodedPayload) => {
     return '';
   }
 
-  return crypto.createHmac('sha256', secret).update(encodedPayload).digest('base64url');
+  return crypto
+    .createHmac('sha256', secret)
+    .update(encodedPayload)
+    .digest('base64url');
 };
 
 const createAdminSessionToken = (email) => {
@@ -777,7 +1069,9 @@ const createAdminSessionToken = (email) => {
     email,
     exp: Date.now() + adminSessionTtlMs,
   };
-  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString('base64url');
+  const encodedPayload = Buffer.from(JSON.stringify(payload)).toString(
+    'base64url'
+  );
   const signature = signAdminPayload(encodedPayload);
 
   return `${encodedPayload}.${signature}`;
@@ -797,7 +1091,9 @@ const verifyAdminSessionToken = (token) => {
   }
 
   try {
-    const payload = JSON.parse(Buffer.from(encodedPayload, 'base64url').toString('utf8'));
+    const payload = JSON.parse(
+      Buffer.from(encodedPayload, 'base64url').toString('utf8')
+    );
 
     if (!payload.exp || Date.now() > payload.exp) {
       return null;
@@ -810,7 +1106,8 @@ const verifyAdminSessionToken = (token) => {
 };
 
 const requireAdminToken = (req, res, next) => {
-  const expectedToken = process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
+  const expectedToken =
+    process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
   const token = getAdminToken(req);
   const session = verifyAdminSessionToken(token);
 
@@ -848,7 +1145,9 @@ const escapeCsvValue = (value) => {
   }
 
   const stringValue = String(value);
-  return /[",\n]/.test(stringValue) ? `"${stringValue.replace(/"/g, '""')}"` : stringValue;
+  return /[",\n]/.test(stringValue)
+    ? `"${stringValue.replace(/"/g, '""')}"`
+    : stringValue;
 };
 
 const escapeHtml = (value) =>
@@ -880,7 +1179,9 @@ const toCsv = (rows) => {
 
   return [
     columns.join(','),
-    ...rows.map((row) => columns.map((column) => escapeCsvValue(row[column])).join(',')),
+    ...rows.map((row) =>
+      columns.map((column) => escapeCsvValue(row[column])).join(',')
+    ),
   ].join('\n');
 };
 
@@ -906,7 +1207,8 @@ const extractEmailIds = (data) => {
   return data ? [data] : [];
 };
 
-const shouldRetryBatchIndividually = (error) => [400, 422].includes(Number(error?.status));
+const shouldRetryBatchIndividually = (error) =>
+  [400, 422].includes(Number(error?.status));
 
 const sendEmailItemsIndividually = async (items) => {
   const emailIds = [];
@@ -927,7 +1229,10 @@ const sendEmailItemsIndividually = async (items) => {
       }
 
       const detail = getEmailErrorDetail(result.reason);
-      console.error(`Unable to send Nomba reverification link to ${item.email}:`, detail);
+      console.error(
+        `Unable to send Nomba reverification link to ${item.email}:`,
+        detail
+      );
       failures.push({
         verificationId: item.verificationId,
         email: item.email,
@@ -950,7 +1255,10 @@ const listAllNombaPendingVerifications = async () => {
   let total = null;
 
   while (total === null || rows.length < total) {
-    const page = await listNombaPendingVerifications({ limit: pageSize, offset });
+    const page = await listNombaPendingVerifications({
+      limit: pageSize,
+      offset,
+    });
 
     if (total === null) {
       total = page[0]?.totalCount || 0;
@@ -997,26 +1305,45 @@ const serializePendingVerification = (row) => {
   };
 };
 
+const getPaginatedRequest = (req, defaultLimit = 50) => {
+  const requestedLimit = Number(req.query.limit || defaultLimit);
+  const requestedOffset = Number(req.query.offset || 0);
+
+  return {
+    limit: Number.isFinite(requestedLimit)
+      ? Math.min(Math.max(requestedLimit, 1), 1000)
+      : defaultLimit,
+    offset: Number.isFinite(requestedOffset) ? Math.max(requestedOffset, 0) : 0,
+    query: textValue(req.query, 'query'),
+  };
+};
+
 const buildReverificationLinkForVerification = (verification) => {
   const token = createReverificationToken({
     verificationId: verification.id,
     email: verification.email,
   });
 
-  return `${getPublicOrigin()}/api/nomba-hackathon/registrations/reverify?token=${encodeURIComponent(token)}`;
+  return `${getPublicOrigin()}/api/nomba-hackathon/registrations/reverify?token=${encodeURIComponent(
+    token
+  )}`;
 };
 
 app.get('/api/health', async (_req, res) => {
   res.json({
     ok: true,
-    database: hasDatabase ? 'configured' : 'missing',
+    ...getConfigurationStatus(),
   });
 });
 
 app.post('/api/admin/login', (req, res) => {
-  const expectedPassword = process.env.ADMIN_PASSWORD || process.env.ADMIN_API_KEY || process.env.NOMBA_ADMIN_API_KEY;
+  const expectedPassword =
+    process.env.ADMIN_PASSWORD ||
+    process.env.ADMIN_API_KEY ||
+    process.env.NOMBA_ADMIN_API_KEY;
   const email = textValue(req.body, 'email');
-  const password = typeof req.body.password === 'string' ? req.body.password : '';
+  const password =
+    typeof req.body.password === 'string' ? req.body.password : '';
   const matchedEmail = findAdminEmail(email);
 
   if (!expectedPassword || !getAdminSessionSecret()) {
@@ -1030,11 +1357,17 @@ app.post('/api/admin/login', (req, res) => {
   }
 
   const token = createAdminSessionToken(matchedEmail);
-  const secureCookie = process.env.NODE_ENV === 'production' || req.get('x-forwarded-proto') === 'https' ? '; Secure' : '';
+  const secureCookie =
+    process.env.NODE_ENV === 'production' ||
+    req.get('x-forwarded-proto') === 'https'
+      ? '; Secure'
+      : '';
 
   res.setHeader(
     'Set-Cookie',
-    `${adminCookieName}=${encodeURIComponent(token)}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${Math.floor(
+    `${adminCookieName}=${encodeURIComponent(
+      token
+    )}; HttpOnly; SameSite=Lax; Path=/; Max-Age=${Math.floor(
       adminSessionTtlMs / 1000
     )}${secureCookie}`
   );
@@ -1048,7 +1381,10 @@ app.post('/api/admin/login', (req, res) => {
 });
 
 app.post('/api/admin/logout', (_req, res) => {
-  res.setHeader('Set-Cookie', `${adminCookieName}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`);
+  res.setHeader(
+    'Set-Cookie',
+    `${adminCookieName}=; HttpOnly; SameSite=Lax; Path=/; Max-Age=0`
+  );
   res.json({ success: true });
 });
 
@@ -1084,13 +1420,17 @@ app.post('/api/nomba-hackathon/registrations', async (req, res) => {
   const errors = validateRegistration(registration);
 
   if (Object.keys(errors).length > 0) {
-    res.status(400).json({ error: 'Invalid registration payload.', fields: errors });
+    res
+      .status(400)
+      .json({ error: 'Invalid registration payload.', fields: errors });
     return;
   }
 
   try {
     const code = createVerificationCode();
-    const expiresAt = new Date(Date.now() + emailVerificationTtlMs).toISOString();
+    const expiresAt = new Date(
+      Date.now() + emailVerificationTtlMs
+    ).toISOString();
     const verification = await createNombaEmailVerification({
       email: registration.email,
       codeHash: hashVerificationCode(registration.email, code),
@@ -1124,42 +1464,59 @@ app.post('/api/nomba-hackathon/registrations/verify', async (req, res) => {
   const email = textValue(req.body, 'email').toLowerCase();
   const code = textValue(req.body, 'code');
 
-  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email) || !/^\d{6}$/.test(code)) {
-    res.status(400).json({ error: 'Enter the 6-digit code sent to your email.' });
+  if (!email || !emailPattern.test(email) || !/^\d{6}$/.test(code)) {
+    res
+      .status(400)
+      .json({ error: 'Enter the 6-digit code sent to your email.' });
     return;
   }
 
   try {
     const verification = await getActiveNombaEmailVerification(email);
 
-    if (!verification || new Date(verification.expiresAt).getTime() < Date.now()) {
-      res.status(400).json({ error: 'Verification code has expired. Please request a new code.' });
+    if (
+      !verification ||
+      new Date(verification.expiresAt).getTime() < Date.now()
+    ) {
+      res.status(400).json({
+        error: 'Verification code has expired. Please request a new code.',
+      });
       return;
     }
 
     if (verification.attempts >= emailVerificationMaxAttempts) {
-      res.status(429).json({ error: 'Too many code attempts. Please request a new code.' });
+      res
+        .status(429)
+        .json({ error: 'Too many code attempts. Please request a new code.' });
       return;
     }
 
-    if (!tokensMatch(hashVerificationCode(email, code), verification.codeHash)) {
+    if (
+      !tokensMatch(hashVerificationCode(email, code), verification.codeHash)
+    ) {
       await incrementNombaEmailVerificationAttempts(verification.id);
       res.status(400).json({ error: 'Invalid verification code.' });
       return;
     }
 
-    const registration = normalizeRegistration(verification.registrationPayload || {});
+    const registration = normalizeRegistration(
+      verification.registrationPayload || {}
+    );
     const errors = validateStoredRegistration(registration);
 
     if (Object.keys(errors).length > 0) {
       await consumeNombaEmailVerification(verification.id);
-      console.warn('Invalid stored Nomba registration payload during verification:', {
-        verificationId: verification.id,
-        email: maskEmail(email),
-        fields: Object.keys(errors),
-      });
+      console.warn(
+        'Invalid stored Nomba registration payload during verification:',
+        {
+          verificationId: verification.id,
+          email: maskEmail(email),
+          fields: Object.keys(errors),
+        }
+      );
       res.status(400).json({
-        error: 'This verification session is outdated. Please submit the registration form again to get a fresh code.',
+        error:
+          'This verification session is outdated. Please submit the registration form again to get a fresh code.',
         fields: errors,
         requiresNewRegistration: true,
       });
@@ -1176,7 +1533,10 @@ app.post('/api/nomba-hackathon/registrations/verify', async (req, res) => {
       await sendRegistrationConfirmationEmail({ registration });
     } catch (emailError) {
       confirmationEmailSent = false;
-      console.error('Unable to send Nomba registration confirmation email:', emailError);
+      console.error(
+        'Unable to send Nomba registration confirmation email:',
+        emailError
+      );
     }
 
     res.status(201).json({
@@ -1200,63 +1560,68 @@ app.get('/api/nomba-hackathon/registrations/reverify', async (req, res) => {
   const payload = verifyReverificationToken(token);
 
   if (!payload) {
-    res
-      .status(400)
-      .send(
-        renderOneClickResultPage({
-          title: 'Verification link is invalid',
-          message: 'This confirmation link is invalid or has expired. Please return to the registration page to request a new code.',
-          tone: 'error',
-        })
-      );
+    res.status(400).send(
+      renderOneClickResultPage({
+        title: 'Verification link is invalid',
+        message:
+          'This confirmation link is invalid or has expired. Please return to the registration page to request a new code.',
+        tone: 'error',
+      })
+    );
     return;
   }
 
   try {
-    const verification = await getNombaEmailVerificationById(payload.verificationId);
+    const verification = await getNombaEmailVerificationById(
+      payload.verificationId
+    );
 
     if (!verification || verification.consumedAt) {
       res.send(
         renderOneClickResultPage({
           title: 'Registration already handled',
-          message: 'This confirmation link has already been used or the registration is no longer pending.',
+          message:
+            'This confirmation link has already been used or the registration is no longer pending.',
         })
       );
       return;
     }
 
     if (String(verification.email || '').toLowerCase() !== payload.email) {
-      res
-        .status(400)
-        .send(
-          renderOneClickResultPage({
-            title: 'Verification link is invalid',
-            message: 'This confirmation link does not match the pending registration.',
-            tone: 'error',
-          })
-        );
+      res.status(400).send(
+        renderOneClickResultPage({
+          title: 'Verification link is invalid',
+          message:
+            'This confirmation link does not match the pending registration.',
+          tone: 'error',
+        })
+      );
       return;
     }
 
-    const registration = normalizeRegistration(verification.registrationPayload || {});
+    const registration = normalizeRegistration(
+      verification.registrationPayload || {}
+    );
     const errors = validateStoredRegistration(registration);
 
     if (Object.keys(errors).length > 0) {
       await consumeNombaEmailVerification(verification.id);
-      console.warn('Invalid stored Nomba registration payload during one-click verification:', {
-        verificationId: verification.id,
-        email: maskEmail(payload.email),
-        fields: Object.keys(errors),
-      });
-      res
-        .status(400)
-        .send(
-          renderOneClickResultPage({
-            title: 'Registration needs to be resubmitted',
-            message: 'This pending registration is missing required information. Please submit the registration form again.',
-            tone: 'error',
-          })
-        );
+      console.warn(
+        'Invalid stored Nomba registration payload during one-click verification:',
+        {
+          verificationId: verification.id,
+          email: maskEmail(payload.email),
+          fields: Object.keys(errors),
+        }
+      );
+      res.status(400).send(
+        renderOneClickResultPage({
+          title: 'Registration needs to be resubmitted',
+          message:
+            'This pending registration is missing required information. Please submit the registration form again.',
+          tone: 'error',
+        })
+      );
       return;
     }
 
@@ -1272,297 +1637,581 @@ app.get('/api/nomba-hackathon/registrations/reverify', async (req, res) => {
         await sendRegistrationConfirmationEmail({ registration });
         confirmationEmailSent = true;
       } catch (emailError) {
-        console.error('Unable to send Nomba registration confirmation email after one-click verification:', emailError);
+        console.error(
+          'Unable to send Nomba registration confirmation email after one-click verification:',
+          emailError
+        );
       }
     }
 
     res.send(
       renderOneClickResultPage({
-        title: savedRegistration.alreadyRegistered ? 'Registration already confirmed' : 'Registration confirmed',
+        title: savedRegistration.alreadyRegistered
+          ? 'Registration already confirmed'
+          : 'Registration confirmed',
         message: savedRegistration.alreadyRegistered
           ? 'Your Nomba Forward Hackathon registration was already confirmed. Watch your inbox for hackathon updates.'
           : confirmationEmailSent
-            ? 'Your Nomba Forward Hackathon registration is now confirmed. We have sent your confirmation email.'
-            : 'Your Nomba Forward Hackathon registration is now confirmed. We could not send the confirmation email right now, but your application has been saved.',
+          ? 'Your Nomba Forward Hackathon registration is now confirmed. We have sent your confirmation email.'
+          : 'Your Nomba Forward Hackathon registration is now confirmed. We could not send the confirmation email right now, but your application has been saved.',
       })
     );
   } catch (error) {
-    console.error('Unable to complete one-click Nomba hackathon verification:', error);
-    res
-      .status(500)
-      .send(
-        renderOneClickResultPage({
-          title: 'Unable to confirm registration',
-          message: 'We could not confirm this registration right now. Please try again or contact the DevCareer team.',
-          tone: 'error',
-        })
-      );
+    console.error(
+      'Unable to complete one-click Nomba hackathon verification:',
+      error
+    );
+    res.status(500).send(
+      renderOneClickResultPage({
+        title: 'Unable to confirm registration',
+        message:
+          'We could not confirm this registration right now. Please try again or contact the DevCareer team.',
+        tone: 'error',
+      })
+    );
   }
 });
 
-app.get('/api/admin/nomba-hackathon/registrations', requireAdminToken, async (req, res) => {
+app.post('/api/nomba-hackathon/certificates/request', async (req, res) => {
   if (!requireDatabase(res)) {
     return;
   }
 
-  const requestedLimit = Number(req.query.limit || 200);
-  const requestedOffset = Number(req.query.offset || 0);
-  const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), 1000) : 200;
-  const offset = Number.isFinite(requestedOffset) ? Math.max(requestedOffset, 0) : 0;
-  const showAll = req.query.all === 'true' || req.query.limit === 'all';
+  if (!process.env.RESEND_API_KEY || !getEmailVerificationSecret()) {
+    res
+      .status(503)
+      .json({ error: 'Certificate email verification is not configured.' });
+    return;
+  }
+
+  const certificateRequest = normalizeCertificateRequest(req.body);
+  const errors = validateCertificateRequest(certificateRequest);
+
+  if (Object.keys(errors).length > 0) {
+    res
+      .status(400)
+      .json({ error: 'Invalid certificate request.', fields: errors });
+    return;
+  }
 
   try {
-    if (req.query.format === 'csv') {
-      const registrations = await listAllNombaRegistrations();
+    const recipient = await getNombaCertificateRecipientByEmail(
+      certificateRequest.email
+    );
 
-      res.setHeader('Content-Type', 'text/csv; charset=utf-8');
-      res.setHeader('Content-Disposition', 'attachment; filename="nomba-hackathon-registrations.csv"');
-      res.setHeader('Cache-Control', 'no-store');
-      res.setHeader('X-Exported-Count', String(registrations.length));
-      res.setHeader('X-Total-Count', String(registrations.length));
-      res.send(toCsv(registrations));
-      return;
-    }
-
-    if (showAll) {
-      const registrations = await listAllNombaRegistrations();
-
-      res.setHeader('Cache-Control', 'no-store');
-      res.json({
-        registrations,
-        limit: registrations.length,
-        offset: 0,
-        total: registrations.length,
-        all: true,
+    if (!recipient) {
+      res.status(403).json({
+        error: 'This email is not on the qualified certificate list.',
+        qualified: false,
       });
       return;
     }
 
-    const rows = await listNombaRegistrations({ limit, offset });
-    const total = rows[0]?.totalCount ?? (offset > 0 ? await countNombaRegistrations() : 0);
-    const registrations = rows.map(({ totalCount: _totalCount, ...registration }) => registration);
+    const code = createVerificationCode();
+    const expiresAt = new Date(
+      Date.now() + certificateVerificationTtlMs
+    ).toISOString();
+    const verification = await createNombaCertificateVerification({
+      email: certificateRequest.email,
+      certificateName: certificateRequest.certificateName,
+      codeHash: hashVerificationCode(certificateRequest.email, code),
+      expiresAt,
+    });
 
-    res.json({ registrations, limit, offset, total });
+    await sendCertificateVerificationEmail({
+      email: certificateRequest.email,
+      certificateName: certificateRequest.certificateName,
+      code,
+    });
+
+    res.status(202).json({
+      success: true,
+      verificationRequired: true,
+      email: certificateRequest.email,
+      maskedEmail: maskEmail(certificateRequest.email),
+      expiresAt: verification.expiresAt,
+    });
   } catch (error) {
-    console.error('Unable to list Nomba hackathon registrations:', error);
-    res.status(500).json({ error: 'Unable to load registrations.' });
+    console.error('Unable to start Nomba certificate verification:', error);
+    res
+      .status(500)
+      .json({ error: 'Unable to send certificate verification code.' });
   }
 });
 
-app.get('/api/admin/nomba-hackathon/verifications/pending', requireAdminToken, async (req, res) => {
+app.post('/api/nomba-hackathon/certificates/verify', async (req, res) => {
   if (!requireDatabase(res)) {
     return;
   }
 
-  const requestedLimit = Number(req.query.limit || 50);
-  const requestedOffset = Number(req.query.offset || 0);
-  const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), 1000) : 50;
-  const offset = Number.isFinite(requestedOffset) ? Math.max(requestedOffset, 0) : 0;
+  const email = normalizeEmail(req.body?.email);
+  const code = textValue(req.body, 'code');
 
-  try {
-    const rows = await listNombaPendingVerifications({ limit, offset });
-    const total = rows[0]?.totalCount ?? (offset > 0 ? await countNombaPendingVerifications() : 0);
-    const verifications = rows.map(serializePendingVerification);
-
-    res.json({ verifications, limit, offset, total });
-  } catch (error) {
-    console.error('Unable to list pending Nomba hackathon verifications:', error);
-    res.status(500).json({ error: 'Unable to load unverified registrations.' });
-  }
-});
-
-app.post('/api/admin/nomba-hackathon/verifications/reverification-links/batch', requireAdminToken, async (_req, res) => {
-  if (!requireDatabase(res)) {
+  if (!email || !emailPattern.test(email) || !/^\d{6}$/.test(code)) {
+    res
+      .status(400)
+      .json({ error: 'Enter the 6-digit code sent to your email.' });
     return;
   }
 
   try {
-    const { rows, total } = await listAllNombaPendingVerifications();
-    const linkExpiresAt = new Date(Date.now() + reverificationLinkTtlMs).toISOString();
-    const skippedInvalid = [];
-    const batchItems = [];
+    const verification = await getActiveNombaCertificateVerification(email);
 
-    rows.forEach((verification) => {
-      const registration = normalizeRegistration(verification.registrationPayload || {});
-      const errors = validateStoredRegistration(registration);
+    if (
+      !verification ||
+      new Date(verification.expiresAt).getTime() < Date.now()
+    ) {
+      res.status(400).json({
+        error:
+          'Certificate verification code has expired. Please request a new code.',
+      });
+      return;
+    }
 
-      if (Object.keys(errors).length > 0) {
-        skippedInvalid.push({
-          id: verification.id,
-          fields: Object.keys(errors),
+    if (verification.attempts >= certificateVerificationMaxAttempts) {
+      res
+        .status(429)
+        .json({ error: 'Too many code attempts. Please request a new code.' });
+      return;
+    }
+
+    if (
+      !tokensMatch(hashVerificationCode(email, code), verification.codeHash)
+    ) {
+      await incrementNombaCertificateVerificationAttempts(verification.id);
+      res.status(400).json({ error: 'Invalid certificate verification code.' });
+      return;
+    }
+
+    const claim = await completeNombaCertificateVerification({
+      id: verification.id,
+      email,
+    });
+
+    res.status(201).json({
+      success: true,
+      certificate: {
+        id: claim.id,
+        email: claim.email,
+        name: claim.certificateName,
+        issuedAt: claim.issuedAt,
+      },
+    });
+  } catch (error) {
+    console.error('Unable to verify Nomba certificate request:', error);
+    res.status(500).json({ error: 'Unable to verify certificate request.' });
+  }
+});
+
+app.get(
+  '/api/admin/nomba-hackathon/certificates/summary',
+  requireAdminToken,
+  async (_req, res) => {
+    if (!requireDatabase(res)) {
+      return;
+    }
+
+    try {
+      const summary = await getNombaCertificateSummary();
+
+      res.json({
+        summary,
+        seed: nombaCertificateEmailSeedStats,
+      });
+    } catch (error) {
+      console.error('Unable to load Nomba certificate summary:', error);
+      res.status(500).json({ error: 'Unable to load certificate summary.' });
+    }
+  }
+);
+
+app.get(
+  '/api/admin/nomba-hackathon/certificates/recipients',
+  requireAdminToken,
+  async (req, res) => {
+    if (!requireDatabase(res)) {
+      return;
+    }
+
+    const { limit, offset, query } = getPaginatedRequest(req);
+
+    try {
+      const rows = await listNombaCertificateRecipients({
+        limit,
+        offset,
+        query,
+      });
+      const total =
+        rows[0]?.totalCount ??
+        (offset > 0 || query
+          ? await countNombaCertificateRecipients({ query })
+          : 0);
+      const recipients = rows.map(
+        ({ totalCount: _totalCount, ...recipient }) => recipient
+      );
+
+      res.json({ recipients, limit, offset, total, query });
+    } catch (error) {
+      console.error('Unable to list Nomba certificate recipients:', error);
+      res.status(500).json({ error: 'Unable to load certificate recipients.' });
+    }
+  }
+);
+
+app.get(
+  '/api/admin/nomba-hackathon/certificates/claims',
+  requireAdminToken,
+  async (req, res) => {
+    if (!requireDatabase(res)) {
+      return;
+    }
+
+    const { limit, offset, query } = getPaginatedRequest(req);
+
+    try {
+      const rows = await listNombaCertificateClaims({ limit, offset, query });
+      const total =
+        rows[0]?.totalCount ??
+        (offset > 0 || query
+          ? await countNombaCertificateClaims({ query })
+          : 0);
+      const claims = rows.map(({ totalCount: _totalCount, ...claim }) => claim);
+
+      res.json({ claims, limit, offset, total, query });
+    } catch (error) {
+      console.error('Unable to list Nomba certificate claims:', error);
+      res.status(500).json({ error: 'Unable to load certificate claims.' });
+    }
+  }
+);
+
+app.get(
+  '/api/admin/nomba-hackathon/registrations',
+  requireAdminToken,
+  async (req, res) => {
+    if (!requireDatabase(res)) {
+      return;
+    }
+
+    const requestedLimit = Number(req.query.limit || 200);
+    const requestedOffset = Number(req.query.offset || 0);
+    const limit = Number.isFinite(requestedLimit)
+      ? Math.min(Math.max(requestedLimit, 1), 1000)
+      : 200;
+    const offset = Number.isFinite(requestedOffset)
+      ? Math.max(requestedOffset, 0)
+      : 0;
+    const showAll = req.query.all === 'true' || req.query.limit === 'all';
+
+    try {
+      if (req.query.format === 'csv') {
+        const registrations = await listAllNombaRegistrations();
+
+        res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+        res.setHeader(
+          'Content-Disposition',
+          'attachment; filename="nomba-hackathon-registrations.csv"'
+        );
+        res.setHeader('Cache-Control', 'no-store');
+        res.setHeader('X-Exported-Count', String(registrations.length));
+        res.setHeader('X-Total-Count', String(registrations.length));
+        res.send(toCsv(registrations));
+        return;
+      }
+
+      if (showAll) {
+        const registrations = await listAllNombaRegistrations();
+
+        res.setHeader('Cache-Control', 'no-store');
+        res.json({
+          registrations,
+          limit: registrations.length,
+          offset: 0,
+          total: registrations.length,
+          all: true,
         });
         return;
       }
 
-      const verificationUrl = buildReverificationLinkForVerification(verification);
+      const rows = await listNombaRegistrations({ limit, offset });
+      const total =
+        rows[0]?.totalCount ??
+        (offset > 0 ? await countNombaRegistrations() : 0);
+      const registrations = rows.map(
+        ({ totalCount: _totalCount, ...registration }) => registration
+      );
 
-      batchItems.push({
-        verificationId: verification.id,
-        email: registration.email,
-        emailPayload: buildReverificationLinkEmailPayload({
-          registration,
-          verificationUrl,
-          linkExpiresAt,
-        }),
-      });
-    });
+      res.json({ registrations, limit, offset, total });
+    } catch (error) {
+      console.error('Unable to list Nomba hackathon registrations:', error);
+      res.status(500).json({ error: 'Unable to load registrations.' });
+    }
+  }
+);
 
-    if (batchItems.length === 0) {
-      res.json({
-        success: true,
-        sent: 0,
-        total,
-        eligible: 0,
-        skippedInvalid: skippedInvalid.length,
-        batches: 0,
-        linkExpiresAt,
-      });
+app.get(
+  '/api/admin/nomba-hackathon/verifications/pending',
+  requireAdminToken,
+  async (req, res) => {
+    if (!requireDatabase(res)) {
       return;
     }
 
-    const emailIds = [];
-    const failures = [];
-    const batchFailures = [];
-    let sent = 0;
-    let batchFallbacks = 0;
-    let stoppedEarly = false;
-    const chunks = chunkArray(batchItems, resendBatchSize);
+    const requestedLimit = Number(req.query.limit || 50);
+    const requestedOffset = Number(req.query.offset || 0);
+    const limit = Number.isFinite(requestedLimit)
+      ? Math.min(Math.max(requestedLimit, 1), 1000)
+      : 50;
+    const offset = Number.isFinite(requestedOffset)
+      ? Math.max(requestedOffset, 0)
+      : 0;
 
-    for (let index = 0; index < chunks.length; index += 1) {
-      const chunk = chunks[index];
-      const idempotencyHash = crypto
-        .createHash('sha256')
-        .update(chunk.map((item) => item.verificationId).join(','))
-        .digest('hex')
-        .slice(0, 32);
-      const idempotencyKey = `nomba-reverify-${Math.floor(Date.now() / 86400000)}-${index + 1}-${idempotencyHash}`;
-      try {
-        const data = await sendEmailBatch(
-          chunk.map((item) => item.emailPayload),
-          { idempotencyKey }
+    try {
+      const rows = await listNombaPendingVerifications({ limit, offset });
+      const total =
+        rows[0]?.totalCount ??
+        (offset > 0 ? await countNombaPendingVerifications() : 0);
+      const verifications = rows.map(serializePendingVerification);
+
+      res.json({ verifications, limit, offset, total });
+    } catch (error) {
+      console.error(
+        'Unable to list pending Nomba hackathon verifications:',
+        error
+      );
+      res
+        .status(500)
+        .json({ error: 'Unable to load unverified registrations.' });
+    }
+  }
+);
+
+app.post(
+  '/api/admin/nomba-hackathon/verifications/reverification-links/batch',
+  requireAdminToken,
+  async (_req, res) => {
+    if (!requireDatabase(res)) {
+      return;
+    }
+
+    try {
+      const { rows, total } = await listAllNombaPendingVerifications();
+      const linkExpiresAt = new Date(
+        Date.now() + reverificationLinkTtlMs
+      ).toISOString();
+      const skippedInvalid = [];
+      const batchItems = [];
+
+      rows.forEach((verification) => {
+        const registration = normalizeRegistration(
+          verification.registrationPayload || {}
         );
+        const errors = validateStoredRegistration(registration);
 
-        sent += chunk.length;
-        emailIds.push(...extractEmailIds(data));
-      } catch (error) {
-        const detail = getEmailErrorDetail(error);
-        batchFailures.push({
-          batch: index + 1,
-          error: detail,
-        });
-
-        if (!shouldRetryBatchIndividually(error)) {
-          stoppedEarly = true;
-          failures.push(
-            ...chunk.map((item) => ({
-              verificationId: item.verificationId,
-              email: item.email,
-              error: detail,
-            }))
-          );
-          break;
+        if (Object.keys(errors).length > 0) {
+          skippedInvalid.push({
+            id: verification.id,
+            fields: Object.keys(errors),
+          });
+          return;
         }
 
-        batchFallbacks += 1;
-        const fallbackResult = await sendEmailItemsIndividually(chunk);
-        sent += fallbackResult.sent;
-        emailIds.push(...fallbackResult.emailIds);
-        failures.push(...fallbackResult.failures);
+        const verificationUrl =
+          buildReverificationLinkForVerification(verification);
+
+        batchItems.push({
+          verificationId: verification.id,
+          email: registration.email,
+          emailPayload: buildReverificationLinkEmailPayload({
+            registration,
+            verificationUrl,
+            linkExpiresAt,
+          }),
+        });
+      });
+
+      if (batchItems.length === 0) {
+        res.json({
+          success: true,
+          sent: 0,
+          total,
+          eligible: 0,
+          skippedInvalid: skippedInvalid.length,
+          batches: 0,
+          linkExpiresAt,
+        });
+        return;
       }
-    }
 
-    const notAttempted = stoppedEarly ? Math.max(0, batchItems.length - sent - failures.length) : 0;
+      const emailIds = [];
+      const failures = [];
+      const batchFailures = [];
+      let sent = 0;
+      let batchFallbacks = 0;
+      let stoppedEarly = false;
+      const chunks = chunkArray(batchItems, resendBatchSize);
 
-    if (sent === 0 && (failures.length > 0 || batchFailures.length > 0)) {
-      res.status(502).json({
-        success: false,
-        error: 'Unable to send batch re-verification links.',
-        detail: failures[0]?.error || batchFailures[0]?.error || 'The email provider rejected the request.',
+      for (let index = 0; index < chunks.length; index += 1) {
+        const chunk = chunks[index];
+        const idempotencyHash = crypto
+          .createHash('sha256')
+          .update(chunk.map((item) => item.verificationId).join(','))
+          .digest('hex')
+          .slice(0, 32);
+        const idempotencyKey = `nomba-reverify-${Math.floor(
+          Date.now() / 86400000
+        )}-${index + 1}-${idempotencyHash}`;
+        try {
+          const data = await sendEmailBatch(
+            chunk.map((item) => item.emailPayload),
+            { idempotencyKey }
+          );
+
+          sent += chunk.length;
+          emailIds.push(...extractEmailIds(data));
+        } catch (error) {
+          const detail = getEmailErrorDetail(error);
+          batchFailures.push({
+            batch: index + 1,
+            error: detail,
+          });
+
+          if (!shouldRetryBatchIndividually(error)) {
+            stoppedEarly = true;
+            failures.push(
+              ...chunk.map((item) => ({
+                verificationId: item.verificationId,
+                email: item.email,
+                error: detail,
+              }))
+            );
+            break;
+          }
+
+          batchFallbacks += 1;
+          const fallbackResult = await sendEmailItemsIndividually(chunk);
+          sent += fallbackResult.sent;
+          emailIds.push(...fallbackResult.emailIds);
+          failures.push(...fallbackResult.failures);
+        }
+      }
+
+      const notAttempted = stoppedEarly
+        ? Math.max(0, batchItems.length - sent - failures.length)
+        : 0;
+
+      if (sent === 0 && (failures.length > 0 || batchFailures.length > 0)) {
+        res.status(502).json({
+          success: false,
+          error: 'Unable to send batch re-verification links.',
+          detail:
+            failures[0]?.error ||
+            batchFailures[0]?.error ||
+            'The email provider rejected the request.',
+          total,
+          eligible: batchItems.length,
+          sent,
+          failed: failures.length,
+          notAttempted,
+          skippedInvalid: skippedInvalid.length,
+          batches: chunks.length,
+          batchFailures,
+          failures: failures.slice(0, 10),
+          linkExpiresAt,
+        });
+        return;
+      }
+
+      res.json({
+        success: true,
+        sent,
         total,
         eligible: batchItems.length,
-        sent,
+        skippedInvalid: skippedInvalid.length,
         failed: failures.length,
         notAttempted,
-        skippedInvalid: skippedInvalid.length,
         batches: chunks.length,
+        batchFallbacks,
         batchFailures,
         failures: failures.slice(0, 10),
+        emailIds,
         linkExpiresAt,
       });
+    } catch (error) {
+      console.error(
+        'Unable to send Nomba hackathon batch reverification links:',
+        error
+      );
+      res
+        .status(500)
+        .json({ error: 'Unable to send batch re-verification links.' });
+    }
+  }
+);
+
+app.post(
+  '/api/admin/nomba-hackathon/verifications/:id/reverification-link',
+  requireAdminToken,
+  async (req, res) => {
+    if (!requireDatabase(res)) {
       return;
     }
 
-    res.json({
-      success: true,
-      sent,
-      total,
-      eligible: batchItems.length,
-      skippedInvalid: skippedInvalid.length,
-      failed: failures.length,
-      notAttempted,
-      batches: chunks.length,
-      batchFallbacks,
-      batchFailures,
-      failures: failures.slice(0, 10),
-      emailIds,
-      linkExpiresAt,
-    });
-  } catch (error) {
-    console.error('Unable to send Nomba hackathon batch reverification links:', error);
-    res.status(500).json({ error: 'Unable to send batch re-verification links.' });
-  }
-});
+    const verificationId = Number(req.params.id);
 
-app.post('/api/admin/nomba-hackathon/verifications/:id/reverification-link', requireAdminToken, async (req, res) => {
-  if (!requireDatabase(res)) {
-    return;
-  }
-
-  const verificationId = Number(req.params.id);
-
-  if (!Number.isFinite(verificationId) || verificationId <= 0) {
-    res.status(400).json({ error: 'Invalid verification id.' });
-    return;
-  }
-
-  try {
-    const verification = await getNombaEmailVerificationById(verificationId);
-
-    if (!verification || verification.consumedAt) {
-      res.status(404).json({ error: 'Pending registration was not found.' });
+    if (!Number.isFinite(verificationId) || verificationId <= 0) {
+      res.status(400).json({ error: 'Invalid verification id.' });
       return;
     }
 
-    const registration = normalizeRegistration(verification.registrationPayload || {});
-    const errors = validateStoredRegistration(registration);
+    try {
+      const verification = await getNombaEmailVerificationById(verificationId);
 
-    if (Object.keys(errors).length > 0) {
-      res.status(400).json({
-        error: 'This pending registration is missing required information. Ask the applicant to submit the form again.',
-        fields: errors,
+      if (!verification || verification.consumedAt) {
+        res.status(404).json({ error: 'Pending registration was not found.' });
+        return;
+      }
+
+      const registration = normalizeRegistration(
+        verification.registrationPayload || {}
+      );
+      const errors = validateStoredRegistration(registration);
+
+      if (Object.keys(errors).length > 0) {
+        res.status(400).json({
+          error:
+            'This pending registration is missing required information. Ask the applicant to submit the form again.',
+          fields: errors,
+        });
+        return;
+      }
+
+      const linkExpiresAt = new Date(
+        Date.now() + reverificationLinkTtlMs
+      ).toISOString();
+      const verificationUrl =
+        buildReverificationLinkForVerification(verification);
+
+      await sendReverificationLinkEmail({
+        registration,
+        verificationUrl,
+        linkExpiresAt,
       });
-      return;
+
+      res.json({
+        success: true,
+        email: verification.email,
+        linkExpiresAt,
+      });
+    } catch (error) {
+      console.error(
+        'Unable to send Nomba hackathon reverification link:',
+        error
+      );
+      res.status(500).json({ error: 'Unable to send re-verification link.' });
     }
-
-    const linkExpiresAt = new Date(Date.now() + reverificationLinkTtlMs).toISOString();
-    const verificationUrl = buildReverificationLinkForVerification(verification);
-
-    await sendReverificationLinkEmail({
-      registration,
-      verificationUrl,
-      linkExpiresAt,
-    });
-
-    res.json({
-      success: true,
-      email: verification.email,
-      linkExpiresAt,
-    });
-  } catch (error) {
-    console.error('Unable to send Nomba hackathon reverification link:', error);
-    res.status(500).json({ error: 'Unable to send re-verification link.' });
   }
-});
+);
 
 app.use(express.static(distPath));
 

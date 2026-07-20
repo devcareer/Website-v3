@@ -22,8 +22,10 @@ Use a Render Web Service for this repo so the React build and API run from the s
 - `ADMIN_PASSWORD=<admin login password>`
 - `ADMIN_SESSION_SECRET=<long random secret used to sign browser admin sessions>`
 - `RESEND_API_KEY=<Resend API key used to send verification codes>`
-- `RESEND_FROM_EMAIL=DevCareerNomba Hackathon <message@hack.devcareer.io>`
+- `RESEND_FROM_EMAIL=DevCareerNomba Hackathon <notif@send.devcareer.io>`
 - `EMAIL_VERIFICATION_SECRET=<long random secret used to hash email codes>`
+- `CERTIFICATE_VERIFICATION_TTL_MS=600000`
+- `CERTIFICATE_VERIFICATION_MAX_ATTEMPTS=5`
 - `DEVCAREER_X_URL=https://x.com/dev_careers`
 - `DEVCAREER_INSTAGRAM_URL=https://www.instagram.com/dev_careers/`
 - `NOMBA_HACKATHON_URL=https://devcareer.io/programs/nomba-hackathon`
@@ -31,17 +33,32 @@ Use a Render Web Service for this repo so the React build and API run from the s
 - `DATABASE_SSL=true`
 - `CORS_ORIGIN=` can stay empty if the frontend and API are served by this same Web Service.
 
+The `RESEND_API_KEY` must be allowed to send from the domain in
+`RESEND_FROM_EMAIL`. If the key is domain-restricted, make sure the matching
+Resend domain is verified before testing certificate OTP delivery.
+The `resend.dev` sandbox sender is not suitable for this certificate flow
+because participant OTPs go to many external recipients.
+
+`GET /api/health` reports non-secret readiness flags for the database, Resend
+key presence, OTP signing secret presence, and certificate verification wiring.
+
 For local development, put these values in `.env.local`. That file is ignored by git and is loaded by the Node server after `.env`, so local values can override shared defaults without being committed.
 
 ## Endpoints
 
 - Public form submit / send code: `POST /api/nomba-hackathon/registrations`
 - Public code verification / save registration: `POST /api/nomba-hackathon/registrations/verify`
+- Public certificate OTP request: `POST /api/nomba-hackathon/certificates/request`
+- Public certificate OTP verification: `POST /api/nomba-hackathon/certificates/verify`
 - Admin login page: `/hackathon/admin`
+- Admin certificate page: `/hackathon/admin/certificates`
 - Admin fallback page: `/admin/nomba-hackathon`
 - Admin login API: `POST /api/admin/login`
 - Admin JSON export: `GET /api/admin/nomba-hackathon/registrations`
 - Admin CSV export: `GET /api/admin/nomba-hackathon/registrations?format=csv`
+- Admin certificate summary: `GET /api/admin/nomba-hackathon/certificates/summary`
+- Admin certificate recipients: `GET /api/admin/nomba-hackathon/certificates/recipients`
+- Admin certificate claims: `GET /api/admin/nomba-hackathon/certificates/claims`
 
 Pass the admin token with either header:
 
