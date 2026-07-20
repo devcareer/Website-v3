@@ -31,12 +31,37 @@ export const getCertificateNameMetrics = (name) => {
 
   return {
     fontSize: roundedFontSize,
-    textLength: Math.round(
-      Math.min(CERTIFICATE_NAME_MAX_WIDTH, Math.max(220, estimatedWidth))
-    ),
+    scaleX: getTextScale({
+      characterCount,
+      fontSize: roundedFontSize,
+      targetWidth: Math.min(
+        CERTIFICATE_NAME_MAX_WIDTH,
+        Math.max(220, estimatedWidth)
+      ),
+    }),
     y: roundedFontSize < 36 ? 382 : roundedFontSize < 56 ? 394 : 407,
   };
 };
+
+const getTextScale = ({
+  characterCount,
+  fontSize,
+  targetWidth,
+  widthRatio = CERTIFICATE_NAME_WIDTH_RATIO,
+}) =>
+  Number(
+    (targetWidth / Math.max(1, characterCount * fontSize * widthRatio)).toFixed(
+      4
+    )
+  );
+
+const textScale = (text, fontSize, targetWidth, widthRatio) =>
+  getTextScale({
+    characterCount: String(text).length,
+    fontSize,
+    targetWidth,
+    widthRatio,
+  });
 
 export const getCertificateFileName = (name, extension = 'png') => {
   const slug = normalizeCertificateName(name)
@@ -124,11 +149,13 @@ export const buildCertificateSvg = (recipientName, brandAssets) => {
     <text x="96" y="214" font-size="30" font-weight="500">This certificate is proudly</text>
     <text x="96" y="260" font-size="30" font-weight="500">presented to</text>
 
-    <text x="96" y="${nameMetrics.y}" class="badge-title" font-size="${
-    nameMetrics.fontSize
-  }" textLength="${
-    nameMetrics.textLength
-  }" lengthAdjust="spacingAndGlyphs" fill="#2bbf55">${name}</text>
+    <g transform="translate(96 ${nameMetrics.y}) scale(${
+    nameMetrics.scaleX
+  } 1)">
+      <text x="0" y="0" class="badge-title" font-size="${
+        nameMetrics.fontSize
+      }" fill="#2bbf55">${name}</text>
+    </g>
 
     <text x="96" y="508" font-size="24" font-weight="500">For Participating in the DevCareer x Nomba</text>
     <text x="96" y="542" font-size="24" font-weight="500">Hackathon 2026 in recognition of your dedication,</text>
@@ -147,10 +174,31 @@ export const buildCertificateSvg = (recipientName, brandAssets) => {
   <g transform="translate(858 78)" filter="url(#softShadow)">
     <rect x="0" y="0" width="344" height="128" rx="7" fill="#f7e982" stroke="#29b85a" stroke-width="2.6"/>
     ${buildCertificateBrandLockup(brandAssets)}
-    <text x="172" y="104" text-anchor="middle" class="badge-title" font-size="43" textLength="286" lengthAdjust="spacingAndGlyphs" fill="#111111">HACKATHON 2026</text>
+    <g transform="translate(172 104) scale(${textScale(
+      'HACKATHON 2026',
+      43,
+      286,
+      0.66
+    )} 1)">
+      <text x="0" y="0" text-anchor="middle" class="badge-title" font-size="43" fill="#111111">HACKATHON 2026</text>
+    </g>
   </g>
 
-  <text x="804" y="406" class="badge-title" font-size="96" font-weight="900" textLength="486" lengthAdjust="spacingAndGlyphs" fill="#ffffff" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Certificate</text>
-  <text x="822" y="486" class="badge-title" font-size="46" textLength="466" lengthAdjust="spacingAndGlyphs" fill="#ffffff">OF PARTICIPATION</text>
+  <g transform="translate(804 406) scale(${textScale(
+    'Certificate',
+    96,
+    486,
+    0.66
+  )} 1)">
+    <text x="0" y="0" class="badge-title" font-size="96" font-weight="900" fill="#ffffff" stroke="#ffffff" stroke-width="5" stroke-linejoin="round" paint-order="stroke">Certificate</text>
+  </g>
+  <g transform="translate(822 486) scale(${textScale(
+    'OF PARTICIPATION',
+    46,
+    466,
+    0.64
+  )} 1)">
+    <text x="0" y="0" class="badge-title" font-size="46" fill="#ffffff">OF PARTICIPATION</text>
+  </g>
 </svg>`;
 };

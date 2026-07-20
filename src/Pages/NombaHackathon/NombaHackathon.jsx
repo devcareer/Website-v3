@@ -1852,7 +1852,9 @@ const NombaHackathon = () => {
               disableElevation
               disabled={certificateIsSubmitting}
             >
-              {certificateIsSubmitting ? 'Sending Code...' : 'Send Code'}
+              {certificateIsSubmitting
+                ? 'Getting certificate...'
+                : 'Get certificate'}
             </Button>
           </Box>
         ) : certificateOtpContext ? (

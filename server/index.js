@@ -6,6 +6,7 @@ import { fileURLToPath } from 'node:url';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import express from 'express';
+import sharp from 'sharp';
 import {
   completeNombaCertificateVerification,
   completeNombaEmailVerification,
@@ -39,6 +40,8 @@ import {
 } from './database.js';
 import { nombaCertificateEmailSeedStats } from './nombaCertificateEligibleEmails.js';
 import {
+  CERTIFICATE_HEIGHT,
+  CERTIFICATE_WIDTH,
   buildCertificateSvg,
   getCertificateFileName,
 } from '../src/Pages/NombaHackathon/certificateTemplate.js';
@@ -985,10 +988,18 @@ const getCertificateBrandAssets = async () => {
 const buildCertificateAttachment = async (certificateName) => {
   const brandAssets = await getCertificateBrandAssets();
   const certificateSvg = buildCertificateSvg(certificateName, brandAssets);
+  const certificatePng = await sharp(Buffer.from(certificateSvg, 'utf8'))
+    .resize({
+      width: CERTIFICATE_WIDTH * 2,
+      height: CERTIFICATE_HEIGHT * 2,
+      fit: 'fill',
+    })
+    .png({ compressionLevel: 9 })
+    .toBuffer();
 
   return {
-    filename: getCertificateFileName(certificateName, 'svg'),
-    content: Buffer.from(certificateSvg, 'utf8').toString('base64'),
+    filename: getCertificateFileName(certificateName, 'png'),
+    content: certificatePng.toString('base64'),
   };
 };
 
