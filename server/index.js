@@ -116,6 +116,9 @@ const devCareerXUrl =
 const devCareerInstagramUrl =
   process.env.DEVCAREER_INSTAGRAM_URL ||
   'https://www.instagram.com/dev_careers/';
+const devCareerLinkedInUrl =
+  process.env.DEVCAREER_LINKEDIN_URL ||
+  'https://www.linkedin.com/company/devcareers/';
 const devCareerWorkspaceUrl =
   process.env.DEVCAREER_WORKSPACE_URL || 'https://bit.ly/devcareerafrica';
 const hackathonPageUrl =
@@ -1019,6 +1022,12 @@ const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
       '',
       'Your certificate is attached to this email as a PNG file. You can keep it for your records, add it to your portfolio, or share it with your network.',
       '',
+      'If you post your certificate on LinkedIn, X, or Instagram, please tag DevCareer and Nomba. We would be happy to celebrate and repost your participation with the community.',
+      '',
+      `DevCareer on LinkedIn: ${devCareerLinkedInUrl}`,
+      `DevCareer on X: ${devCareerXUrl}`,
+      `DevCareer on Instagram: ${devCareerInstagramUrl}`,
+      '',
       'You can also return to the hackathon page to verify your email and download it again.',
       '',
       'Thank you for building with us. We are excited to see what you keep creating next.',
@@ -1046,6 +1055,38 @@ const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
               <p style="margin: 0; color: #4f4a33; font-size: 14px; line-height: 1.7;">
                 We attached your certificate as a high-resolution PNG file. You can keep it for your records, add it to your portfolio, or share it with your network.
               </p>
+            </td>
+          </tr>
+        </table>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
+          <tr>
+            <td style="background: #e8f7f2; border: 1px solid #bde8da; border-radius: 18px; padding: 18px;">
+              <p style="margin: 0 0 10px; color: #0d7a5f; font-size: 15px; font-weight: 800;">Share your certificate</p>
+              <p style="margin: 0 0 16px; color: #31564a; font-size: 14px; line-height: 1.7;">
+                If you post your certificate on LinkedIn, X, or Instagram, please tag <strong>DevCareer</strong> and <strong>Nomba</strong>. We would be happy to celebrate and repost your participation with the community.
+              </p>
+              <table role="presentation" cellspacing="0" cellpadding="0">
+                <tr>
+                  <td style="padding-right: 10px;">${emailButton({
+                    href: devCareerLinkedInUrl,
+                    label: 'Tag us on LinkedIn',
+                    background: '#0a66c2',
+                    color: '#ffffff',
+                  })}</td>
+                  <td style="padding-right: 10px;">${emailButton({
+                    href: devCareerXUrl,
+                    label: 'Tag us on X',
+                    background: '#181818',
+                    color: '#ffffff',
+                  })}</td>
+                  <td>${emailButton({
+                    href: devCareerInstagramUrl,
+                    label: 'Tag us on Instagram',
+                    background: '#e94883',
+                    color: '#ffffff',
+                  })}</td>
+                </tr>
+              </table>
             </td>
           </tr>
         </table>

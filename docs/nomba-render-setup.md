@@ -36,6 +36,7 @@ Use a Render Web Service for this repo so the React build and API run from the s
 - `CERTIFICATE_CLAIM_EMAIL_DAILY_LIMIT=3`
 - `DEVCAREER_X_URL=https://x.com/dev_careers`
 - `DEVCAREER_INSTAGRAM_URL=https://www.instagram.com/dev_careers/`
+- `DEVCAREER_LINKEDIN_URL=https://www.linkedin.com/company/devcareers/`
 - `NOMBA_HACKATHON_URL=https://devcareer.io/programs/nomba-hackathon`
 - `NOMBA_DOCS_URL=https://developer.nomba.com`
 - `DATABASE_SSL=true`
