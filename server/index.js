@@ -40,8 +40,7 @@ import {
 } from './database.js';
 import { nombaCertificateEmailSeedStats } from './nombaCertificateEligibleEmails.js';
 import {
-  CERTIFICATE_HEIGHT,
-  CERTIFICATE_WIDTH,
+  CERTIFICATE_TEMPLATE_ASSET_PATH,
   buildCertificateSvg,
   getCertificateFileName,
 } from '../src/Pages/NombaHackathon/certificateTemplate.js';
@@ -983,7 +982,7 @@ const sendCertificateVerificationEmail = async ({
   });
 };
 
-let certificateBrandAssetsPromise = null;
+let certificateTemplateAssetPromise = null;
 let socialIconAttachmentsPromise = null;
 
 const socialIconAssets = [
@@ -1021,24 +1020,19 @@ const fileToDataUrl = async (relativePath, mimeType) => {
   return `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
 };
 
-const getCertificateBrandAssets = async () => {
-  if (!certificateBrandAssetsPromise) {
-    certificateBrandAssetsPromise = Promise.all([
-      fileToDataUrl('src/assets/Images/NewLogo.svg', 'image/svg+xml'),
-      fileToDataUrl(
-        'src/assets/Images/nomba-hackathon/nomba-mark.png',
-        'image/png'
-      ),
-    ])
-      .then(([devCareer, nomba]) => ({ devCareer, nomba }))
-      .catch((error) => {
-        certificateBrandAssetsPromise = null;
-        console.error('Unable to load certificate brand assets:', error);
-        return null;
-      });
+const getCertificateTemplateAsset = async () => {
+  if (!certificateTemplateAssetPromise) {
+    certificateTemplateAssetPromise = fileToDataUrl(
+      CERTIFICATE_TEMPLATE_ASSET_PATH,
+      'image/png'
+    ).catch((error) => {
+      certificateTemplateAssetPromise = null;
+      console.error('Unable to load certificate template asset:', error);
+      return null;
+    });
   }
 
-  return certificateBrandAssetsPromise;
+  return certificateTemplateAssetPromise;
 };
 
 const getSocialIconAttachments = async () => {
@@ -1063,14 +1057,12 @@ const getSocialIconAttachments = async () => {
 };
 
 const buildCertificateAttachment = async (certificateName) => {
-  const brandAssets = await getCertificateBrandAssets();
-  const certificateSvg = buildCertificateSvg(certificateName, brandAssets);
+  const certificateTemplateAsset = await getCertificateTemplateAsset();
+  const certificateSvg = buildCertificateSvg(
+    certificateName,
+    certificateTemplateAsset
+  );
   const certificatePng = await sharp(Buffer.from(certificateSvg, 'utf8'))
-    .resize({
-      width: CERTIFICATE_WIDTH * 2,
-      height: CERTIFICATE_HEIGHT * 2,
-      fit: 'fill',
-    })
     .png({ compressionLevel: 9 })
     .toBuffer();
 

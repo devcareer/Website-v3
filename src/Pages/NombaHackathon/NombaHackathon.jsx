@@ -17,8 +17,8 @@ import { SplitText } from 'gsap/SplitText';
 import { useGSAP } from '@gsap/react';
 import * as THREE from 'three';
 import './NombaHackathon.css';
-import devCareerLogo from '../../assets/Images/NewLogo.svg';
 import nombaMark from '../../assets/Images/nomba-hackathon/nomba-mark.png';
+import certificateTemplateImage from '../../assets/Images/nomba-hackathon/certificate-template.png';
 import nombaSocial from '../../assets/Images/nomba-hackathon/nomba-social.jpg';
 import heroTeam from '../../assets/Images/nomba-hackathon/hero-team.jpg';
 import codingTeam from '../../assets/Images/nomba-hackathon/coding-team.jpg';
@@ -281,7 +281,8 @@ const NombaHackathon = () => {
   const [certificateError, setCertificateError] = useState('');
   const [certificateMessage, setCertificateMessage] = useState('');
   const [certificateIsSubmitting, setCertificateIsSubmitting] = useState(false);
-  const [certificateBrandAssets, setCertificateBrandAssets] = useState(null);
+  const [certificateTemplateAsset, setCertificateTemplateAsset] =
+    useState(null);
 
   const certificatePreviewUrl = useMemo(() => {
     if (!certificateDetails) {
@@ -289,9 +290,9 @@ const NombaHackathon = () => {
     }
 
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(
-      buildCertificateSvg(certificateDetails.name, certificateBrandAssets)
+      buildCertificateSvg(certificateDetails.name, certificateTemplateAsset)
     )}`;
-  }, [certificateBrandAssets, certificateDetails]);
+  }, [certificateDetails, certificateTemplateAsset]);
 
   const openCertificateModal = () => {
     setCertificateModalOpen(true);
@@ -453,7 +454,7 @@ const NombaHackathon = () => {
 
     const svg = buildCertificateSvg(
       certificateDetails.name,
-      certificateBrandAssets
+      certificateTemplateAsset
     );
     const svgBlob = new Blob([svg], { type: 'image/svg+xml;charset=utf-8' });
     const svgUrl = URL.createObjectURL(svgBlob);
@@ -461,7 +462,7 @@ const NombaHackathon = () => {
 
     image.onload = () => {
       const canvas = document.createElement('canvas');
-      const scale = 2;
+      const scale = 1;
       canvas.width = CERTIFICATE_WIDTH * scale;
       canvas.height = CERTIFICATE_HEIGHT * scale;
 
@@ -498,22 +499,19 @@ const NombaHackathon = () => {
   useEffect(() => {
     let cancelled = false;
 
-    const loadCertificateAssets = async () => {
+    const loadCertificateTemplate = async () => {
       try {
-        const [devCareer, nomba] = await Promise.all([
-          toDataUrl(devCareerLogo),
-          toDataUrl(nombaMark),
-        ]);
+        const template = await toDataUrl(certificateTemplateImage);
 
         if (!cancelled) {
-          setCertificateBrandAssets({ devCareer, nomba });
+          setCertificateTemplateAsset(template);
         }
       } catch (error) {
-        console.warn('Unable to load certificate logo assets.', error);
+        console.warn('Unable to load certificate template asset.', error);
       }
     };
 
-    loadCertificateAssets();
+    loadCertificateTemplate();
 
     return () => {
       cancelled = true;
