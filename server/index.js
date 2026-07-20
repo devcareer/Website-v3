@@ -101,11 +101,20 @@ const certificateClaimEmailDailyLimit = Number(
 const reverificationLinkTtlMs = Number(
   process.env.REVERIFICATION_LINK_TTL_MS || 7 * 24 * 60 * 60 * 1000
 );
-const resendFromEmail =
-  process.env.RESEND_FROM_EMAIL ||
-  'DevCareerNomba Hackathon <notif@send.devcareer.io>';
 const resendBatchSize = 100;
-const emailSenderName = 'DevCareerNomba Hackathon';
+const emailHackathonName = 'DevCareer x Nomba Hackathon 2026';
+const emailSenderName = emailHackathonName;
+const getResendFromAddress = (configuredFromEmail) => {
+  const fallbackAddress = 'notif@send.devcareer.io';
+  const configured = String(configuredFromEmail || fallbackAddress).trim();
+  const bracketMatch = configured.match(/<([^>]+)>/);
+  const address = (bracketMatch?.[1] || configured).trim();
+
+  return address || fallbackAddress;
+};
+const resendFromEmail = `${emailHackathonName} <${getResendFromAddress(
+  process.env.RESEND_FROM_EMAIL
+)}>`;
 const hackathonName = 'Nomba Forward Hackathon 2026';
 const nombaHackathonApplicationsOpen =
   process.env.NOMBA_HACKATHON_APPLICATIONS_OPEN === 'true';
@@ -774,14 +783,14 @@ const renderEmailShell = ({ previewText, eyebrow, title, children }) => `
               <tr>
                 <td style="background: #181818; padding: 20px 28px;">
                   <p style="margin: 0; color: #f8f3d9; font-size: 13px; line-height: 1.7;">
-                    ${escapeHtml(emailSenderName)} | DevCareer
+                    ${escapeHtml(emailSenderName)}
                   </p>
                 </td>
               </tr>
             </table>
             <p style="max-width: 640px; margin: 14px auto 0; color: #7a7355; font-size: 12px; line-height: 1.6;">
               You received this email because you registered for ${escapeHtml(
-                hackathonName
+                emailHackathonName
               )}.
             </p>
           </td>
@@ -879,11 +888,11 @@ const sendVerificationEmail = async ({ email, firstName, code }) => {
 
   return sendEmail({
     to: email,
-    subject: 'Your Nomba Forward Hackathon verification code',
+    subject: `Your ${emailHackathonName} verification code`,
     text: [
       `Hi ${firstName || 'there'},`,
       '',
-      `Your ${hackathonName} verification code is ${code}.`,
+      `Your ${emailHackathonName} verification code is ${code}.`,
       `It expires in ${verificationMinutes} minutes.`,
       '',
       `Follow DevCareer on X: ${devCareerXUrl}`,
@@ -894,14 +903,14 @@ const sendVerificationEmail = async ({ email, firstName, code }) => {
       emailSenderName,
     ].join('\n'),
     html: renderEmailShell({
-      previewText: `Your ${hackathonName} verification code is ${code}.`,
+      previewText: `Your ${emailHackathonName} verification code is ${code}.`,
       eyebrow: 'Email verification',
       title: 'Confirm your hackathon registration',
       children: `
         <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
           Use the code below to confirm your email and complete your registration for <strong>${escapeHtml(
-            hackathonName
+            emailHackathonName
           )}</strong>.
         </p>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
@@ -934,11 +943,11 @@ const sendCertificateVerificationEmail = async ({
 
   return sendEmail({
     to: email,
-    subject: 'Your Nomba Hackathon certificate verification code',
+    subject: `Your ${emailHackathonName} certificate verification code`,
     text: [
       `Hi ${certificateName || 'there'},`,
       '',
-      `Your ${hackathonName} certificate verification code is ${code}.`,
+      `Your ${emailHackathonName} certificate verification code is ${code}.`,
       `It expires in ${verificationMinutes} minutes.`,
       '',
       'Enter this code on the certificate modal to view and download your certificate.',
@@ -948,14 +957,14 @@ const sendCertificateVerificationEmail = async ({
       emailSenderName,
     ].join('\n'),
     html: renderEmailShell({
-      previewText: `Your ${hackathonName} certificate code is ${code}.`,
+      previewText: `Your ${emailHackathonName} certificate code is ${code}.`,
       eyebrow: 'Certificate verification',
       title: 'Confirm your certificate email',
       children: `
         <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
           Use the code below to confirm this email address and unlock your <strong>${escapeHtml(
-            hackathonName
+            emailHackathonName
           )}</strong> certificate.
         </p>
         <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
@@ -1080,11 +1089,11 @@ const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
 
   return sendEmail({
     to: email,
-    subject: 'Congratulations - your Nomba Hackathon certificate is here',
+    subject: `Congratulations - your ${emailHackathonName} certificate is here`,
     text: [
       `Hi ${certificateName || 'there'},`,
       '',
-      `Congratulations on completing the ${hackathonName}. It was an honor to have you as part of this program, and we are grateful for the time, creativity, and energy you brought into the hackathon.`,
+      `Congratulations on completing the ${emailHackathonName}. It was an honor to have you as part of this program, and we are grateful for the time, creativity, and energy you brought into the hackathon.`,
       '',
       'This certificate recognizes your participation and contribution to building thoughtful payment solutions for Nigeria alongside the DevCareer and Nomba community.',
       '',
@@ -1103,14 +1112,14 @@ const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
       emailSenderName,
     ].join('\n'),
     html: renderEmailShell({
-      previewText: `Congratulations on completing the ${hackathonName}. Your certificate is attached.`,
+      previewText: `Congratulations on completing the ${emailHackathonName}. Your certificate is attached.`,
       eyebrow: 'Certificate ready',
       title: 'Congratulations on completing the hackathon',
       children: `
         <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
           Congratulations on completing the <strong>${escapeHtml(
-            hackathonName
+            emailHackathonName
           )}</strong>. It was an honor to have you as part of this program, and we are grateful for the time, creativity, and energy you brought into the hackathon.
         </p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
@@ -1181,11 +1190,11 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
 
   return sendEmail({
     to: registration.email,
-    subject: 'Welcome to the Nomba x DevCareer Hackathon',
+    subject: `Welcome to the ${emailHackathonName}`,
     text: [
       `Hey ${fullName},`,
       '',
-      'You are registered! Welcome to the Nomba X DevCareer Hackathon 2026.',
+      `You are registered! Welcome to the ${emailHackathonName}.`,
       'You are now in the running for the USD 4,000 first-place prize, USD 1,500 for 2nd, and USD 1,000 for 3rd.',
       'Importantly, you have taken the first step toward becoming a Nomba Partner.',
       '',
@@ -1194,7 +1203,7 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
       '',
       'Timeline Reminder',
       'June 8 - 23: Registration is live. Get your designer, PM, or dev friends to sign up before it closes!',
-      'June 24 - 29: Onboarding Week & Nomba Forward Deployed Engineer Training: Developer deep-dives, API walkthroughs, and AMA sessions.',
+      `June 24 - 29: Onboarding Week & ${emailHackathonName} Training: Developer deep-dives, API walkthroughs, and AMA sessions.`,
       'June 30 - July 7: Build Week: Development phase. Project submissions close on July 5, 2026.',
       'July 8 - 14: Judging Week: Expert panels review the code and implementation.',
       'July 19: Grand Demo Day & Awards!',
@@ -1212,14 +1221,15 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
       'The DevCareer Team',
     ].join('\n'),
     html: renderEmailShell({
-      previewText:
-        'You are registered for the Nomba x DevCareer Hackathon 2026.',
+      previewText: `You are registered for the ${emailHackathonName}.`,
       eyebrow: 'Registration confirmed',
-      title: 'Welcome to the Nomba x DevCareer Hackathon',
+      title: `Welcome to the ${emailHackathonName}`,
       children: `
         <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hey ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
-          <strong>You are registered!</strong> Welcome to the <strong>Nomba X DevCareer Hackathon 2026</strong>.
+          <strong>You are registered!</strong> Welcome to the <strong>${escapeHtml(
+            emailHackathonName
+          )}</strong>.
         </p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
           You are now in the running for the <strong>USD 4,000 first-place prize</strong>
@@ -1238,7 +1248,9 @@ const sendRegistrationConfirmationEmail = async ({ registration }) => {
               <p style="margin: 0 0 12px; color: #ffcc00; font-size: 13px; font-weight: 800; text-transform: uppercase;">Timeline Reminder</p>
               <p style="margin: 0; color: #ffffff; font-size: 14px; line-height: 1.8;">
                 <strong>June 8 - 23:</strong> Registration is live. Get your designer, PM, or dev friends to sign up before it closes!<br>
-                <strong>June 24 - 29:</strong> Onboarding Week &amp; Nomba Forward Deployed Engineer Training: Developer deep-dives, API walkthroughs, and AMA sessions.<br>
+                <strong>June 24 - 29:</strong> Onboarding Week &amp; ${escapeHtml(
+                  emailHackathonName
+                )} Training: Developer deep-dives, API walkthroughs, and AMA sessions.<br>
                 <strong>June 30 - July 7:</strong> Build Week: Development phase. Project submissions close on <strong>July 5, 2026</strong>.<br>
                 <strong>July 8 - 14:</strong> Judging Week: Expert panels review the code and implementation.<br>
                 <strong>July 19:</strong> Grand Demo Day &amp; Awards!
@@ -1320,11 +1332,11 @@ const buildReverificationLinkEmailPayload = ({
 
   return {
     to: registration.email,
-    subject: 'Confirm your Nomba Forward Hackathon registration',
+    subject: `Confirm your ${emailHackathonName} registration`,
     text: [
       `Hi ${registration.firstName || 'there'},`,
       '',
-      `We noticed your ${hackathonName} registration was started but not confirmed.`,
+      `We noticed your ${emailHackathonName} registration was started but not confirmed.`,
       'Click the link below once to confirm your application. We will send your registration confirmation email after it is verified.',
       '',
       verificationUrl,
@@ -1334,14 +1346,14 @@ const buildReverificationLinkEmailPayload = ({
       emailSenderName,
     ].join('\n'),
     html: renderEmailShell({
-      previewText: `Confirm your ${hackathonName} registration with one click.`,
+      previewText: `Confirm your ${emailHackathonName} registration with one click.`,
       eyebrow: 'Registration confirmation',
       title: 'Complete your hackathon registration',
       children: `
         <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
           We noticed your <strong>${escapeHtml(
-            hackathonName
+            emailHackathonName
           )}</strong> registration was started but not confirmed.
           Click the button below once to verify your application.
         </p>
@@ -1392,7 +1404,7 @@ const renderOneClickResultPage = ({ title, message, tone = 'success' }) => {
       <body style="margin:0; min-height:100vh; display:grid; place-items:center; background:#f6f3e8; font-family:Arial, Helvetica, sans-serif; color:#181818;">
         <main style="width:min(100% - 32px, 560px); background:#fff; border:1px solid #ece4bd; border-radius:24px; padding:32px; box-shadow:0 18px 42px rgba(0,0,0,0.08);">
           <p style="margin:0 0 10px; color:${accent}; font-size:12px; font-weight:800; letter-spacing:1px; text-transform:uppercase;">${escapeHtml(
-    hackathonName
+    emailHackathonName
   )}</p>
           <h1 style="margin:0 0 14px; font-size:28px; line-height:1.2;">${escapeHtml(
             title
@@ -2073,10 +2085,10 @@ app.get('/api/nomba-hackathon/registrations/reverify', async (req, res) => {
           ? 'Registration already confirmed'
           : 'Registration confirmed',
         message: savedRegistration.alreadyRegistered
-          ? 'Your Nomba Forward Hackathon registration was already confirmed. Watch your inbox for hackathon updates.'
+          ? `Your ${emailHackathonName} registration was already confirmed. Watch your inbox for hackathon updates.`
           : confirmationEmailSent
-          ? 'Your Nomba Forward Hackathon registration is now confirmed. We have sent your confirmation email.'
-          : 'Your Nomba Forward Hackathon registration is now confirmed. We could not send the confirmation email right now, but your application has been saved.',
+          ? `Your ${emailHackathonName} registration is now confirmed. We have sent your confirmation email.`
+          : `Your ${emailHackathonName} registration is now confirmed. We could not send the confirmation email right now, but your application has been saved.`,
       })
     );
   } catch (error) {
