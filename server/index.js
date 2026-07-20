@@ -698,6 +698,19 @@ const emailButton = ({
   </a>
 `;
 
+const socialIconButton = ({ href, label, background, contentId }) => {
+  const safeHref = escapeHtml(href);
+  const safeLabel = escapeHtml(label);
+  const safeContentId = escapeHtml(contentId);
+
+  return `
+    <a href="${safeHref}" target="_blank" rel="noopener noreferrer" aria-label="${safeLabel}" title="${safeLabel}"
+      style="display: inline-block; width: 44px; height: 44px; background: ${background}; border-radius: 999px; text-decoration: none; text-align: center;">
+      <img src="cid:${safeContentId}" width="22" height="22" alt="" style="display: block; width: 22px; height: 22px; margin: 11px auto; border: 0; outline: none; text-decoration: none;">
+    </a>
+  `;
+};
+
 const renderSocialLinks = () => `
   <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin-top: 20px;">
     <tr>
@@ -962,6 +975,37 @@ const sendCertificateVerificationEmail = async ({
 };
 
 let certificateBrandAssetsPromise = null;
+let socialIconAttachmentsPromise = null;
+
+const socialIconAssets = [
+  {
+    filename: 'devcareer-linkedin-icon.png',
+    contentId: 'devcareer-linkedin-icon',
+    svg: `
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ffffff" d="M20.45 20.45h-3.56v-5.57c0-1.33-.03-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28ZM5.34 7.43a2.06 2.06 0 1 1 0-4.12 2.06 2.06 0 0 1 0 4.12Zm1.78 13.02H3.56V9h3.56v11.45Z"/>
+      </svg>
+    `,
+  },
+  {
+    filename: 'devcareer-x-icon.png',
+    contentId: 'devcareer-x-icon',
+    svg: `
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ffffff" d="M14.62 10.62 21 3h-1.51l-5.54 6.62L9.52 3H4.43l6.69 10.02L4.43 21h1.51l5.85-6.99L16.48 21h5.09l-6.95-10.38Zm-2.07 2.47-.68-.99-5.39-7.94h2.31l4.35 6.4.68.99 5.66 8.34h-2.31l-4.62-6.8Z"/>
+      </svg>
+    `,
+  },
+  {
+    filename: 'devcareer-instagram-icon.png',
+    contentId: 'devcareer-instagram-icon',
+    svg: `
+      <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path fill="#ffffff" d="M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6Zm0-2a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm5.25-1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5ZM12 4c-2.47 0-2.88.01-4.03.06-.78.04-1.31.14-1.8.33-.4.15-.77.39-1.08.7-.31.3-.55.67-.7 1.08-.19.49-.3 1.02-.33 1.8C4.01 9.08 4 9.47 4 12c0 2.47.01 2.88.06 4.03.04.78.14 1.31.33 1.8.17.43.37.74.7 1.07.34.34.65.54 1.08.71.49.19 1.02.3 1.8.33 1.11.05 1.49.06 4.03.06 2.47 0 2.88-.01 4.03-.06.78-.04 1.31-.14 1.8-.33.4-.15.77-.39 1.07-.7.34-.34.54-.65.71-1.08.19-.49.3-1.02.33-1.8.05-1.1.06-1.49.06-4.03 0-2.47-.01-2.88-.06-4.03-.04-.78-.14-1.31-.33-1.8-.15-.4-.39-.77-.7-1.07-.3-.32-.67-.56-1.08-.71-.49-.19-1.02-.3-1.8-.33C14.93 4.01 14.54 4 12 4Zm0-2c2.72 0 3.06.01 4.12.06 1.07.05 1.79.22 2.43.47.66.25 1.22.6 1.77 1.15.51.5.9 1.1 1.15 1.77.25.64.42 1.36.47 2.43.05 1.06.06 1.4.06 4.12s-.01 3.06-.06 4.12c-.05 1.07-.22 1.79-.47 2.43-.25.67-.64 1.27-1.15 1.77-.5.51-1.1.9-1.77 1.15-.64.25-1.36.42-2.43.47-1.06.05-1.4.06-4.12.06s-3.06-.01-4.12-.06c-1.07-.05-1.79-.22-2.43-.47a5.37 5.37 0 0 1-1.77-1.15 5.37 5.37 0 0 1-1.15-1.77c-.25-.64-.42-1.36-.47-2.43C2.01 15.06 2 14.72 2 12s.01-3.06.06-4.12c.05-1.07.22-1.79.47-2.43.25-.67.64-1.27 1.15-1.77.5-.51 1.1-.9 1.77-1.15.64-.25 1.36-.42 2.43-.47C8.94 2.01 9.28 2 12 2Z"/>
+      </svg>
+    `,
+  },
+];
 
 const fileToDataUrl = async (relativePath, mimeType) => {
   const fileBuffer = await fs.readFile(path.join(projectRoot, relativePath));
@@ -988,6 +1032,27 @@ const getCertificateBrandAssets = async () => {
   return certificateBrandAssetsPromise;
 };
 
+const getSocialIconAttachments = async () => {
+  if (!socialIconAttachmentsPromise) {
+    socialIconAttachmentsPromise = Promise.all(
+      socialIconAssets.map(async ({ filename, contentId, svg }) => {
+        const iconPng = await sharp(Buffer.from(svg, 'utf8')).png().toBuffer();
+
+        return {
+          filename,
+          content: iconPng.toString('base64'),
+          content_id: contentId,
+        };
+      })
+    ).catch((error) => {
+      socialIconAttachmentsPromise = null;
+      throw error;
+    });
+  }
+
+  return socialIconAttachmentsPromise;
+};
+
 const buildCertificateAttachment = async (certificateName) => {
   const brandAssets = await getCertificateBrandAssets();
   const certificateSvg = buildCertificateSvg(certificateName, brandAssets);
@@ -1007,7 +1072,10 @@ const buildCertificateAttachment = async (certificateName) => {
 };
 
 const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
-  const attachment = await buildCertificateAttachment(certificateName);
+  const [attachment, socialIconAttachments] = await Promise.all([
+    buildCertificateAttachment(certificateName),
+    getSocialIconAttachments(),
+  ]);
   const displayName = escapeHtml(certificateName || 'there');
 
   return sendEmail({
@@ -1063,27 +1131,27 @@ const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
             <td style="background: #e8f7f2; border: 1px solid #bde8da; border-radius: 18px; padding: 18px;">
               <p style="margin: 0 0 10px; color: #0d7a5f; font-size: 15px; font-weight: 800;">Share your certificate</p>
               <p style="margin: 0 0 16px; color: #31564a; font-size: 14px; line-height: 1.7;">
-                If you post your certificate on LinkedIn, X, or Instagram, please tag <strong>DevCareer</strong> and <strong>Nomba</strong>. We would be happy to celebrate and repost your participation with the community.
+                If you post your certificate, please tag <strong>DevCareer</strong> and <strong>Nomba</strong>. We would be happy to celebrate and repost your participation with the community.
               </p>
               <table role="presentation" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td style="padding-right: 10px;">${emailButton({
+                  <td style="padding-right: 12px;">${socialIconButton({
                     href: devCareerLinkedInUrl,
-                    label: 'Tag us on LinkedIn',
+                    label: 'Tag DevCareer on LinkedIn',
                     background: '#0a66c2',
-                    color: '#ffffff',
+                    contentId: 'devcareer-linkedin-icon',
                   })}</td>
-                  <td style="padding-right: 10px;">${emailButton({
+                  <td style="padding-right: 12px;">${socialIconButton({
                     href: devCareerXUrl,
-                    label: 'Tag us on X',
+                    label: 'Tag DevCareer on X',
                     background: '#181818',
-                    color: '#ffffff',
+                    contentId: 'devcareer-x-icon',
                   })}</td>
-                  <td>${emailButton({
+                  <td>${socialIconButton({
                     href: devCareerInstagramUrl,
-                    label: 'Tag us on Instagram',
+                    label: 'Tag DevCareer on Instagram',
                     background: '#e94883',
-                    color: '#ffffff',
+                    contentId: 'devcareer-instagram-icon',
                   })}</td>
                 </tr>
               </table>
@@ -1098,10 +1166,9 @@ const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
           Thank you for building with us. We are excited to see what you keep creating next.
         </p>
-        ${renderSocialLinks()}
       `,
     }),
-    attachments: [attachment],
+    attachments: [attachment, ...socialIconAttachments],
   });
 };
 
