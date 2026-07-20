@@ -116,16 +116,33 @@ export const initializeDatabase = async () => {
       email TEXT NOT NULL REFERENCES nomba_hackathon_certificate_recipients(email) ON DELETE CASCADE,
       certificate_name TEXT NOT NULL,
       code_hash TEXT NOT NULL,
+      request_fingerprint TEXT,
       attempts INTEGER NOT NULL DEFAULT 0,
       expires_at TIMESTAMPTZ NOT NULL,
       consumed_at TIMESTAMPTZ,
+      sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
   `);
 
   await pool.query(`
+    ALTER TABLE nomba_hackathon_certificate_verifications
+    ADD COLUMN IF NOT EXISTS request_fingerprint TEXT;
+  `);
+
+  await pool.query(`
+    ALTER TABLE nomba_hackathon_certificate_verifications
+    ADD COLUMN IF NOT EXISTS sent_at TIMESTAMPTZ NOT NULL DEFAULT NOW();
+  `);
+
+  await pool.query(`
     CREATE INDEX IF NOT EXISTS idx_nomba_certificate_verifications_lookup
     ON nomba_hackathon_certificate_verifications (email, consumed_at, expires_at, created_at DESC);
+  `);
+
+  await pool.query(`
+    CREATE INDEX IF NOT EXISTS idx_nomba_certificate_verifications_fingerprint
+    ON nomba_hackathon_certificate_verifications (request_fingerprint, created_at DESC);
   `);
 
   await pool.query(`
@@ -135,8 +152,20 @@ export const initializeDatabase = async () => {
       certificate_name TEXT NOT NULL,
       verification_id BIGINT REFERENCES nomba_hackathon_certificate_verifications(id) ON DELETE SET NULL,
       issued_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+      email_sent_at TIMESTAMPTZ,
+      email_error TEXT,
       created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
     );
+  `);
+
+  await pool.query(`
+    ALTER TABLE nomba_hackathon_certificate_claims
+    ADD COLUMN IF NOT EXISTS email_sent_at TIMESTAMPTZ;
+  `);
+
+  await pool.query(`
+    ALTER TABLE nomba_hackathon_certificate_claims
+    ADD COLUMN IF NOT EXISTS email_error TEXT;
   `);
 
   await pool.query(`
@@ -543,6 +572,7 @@ export const createNombaCertificateVerification = async ({
   certificateName,
   codeHash,
   expiresAt,
+  requestFingerprint = null,
 }) => {
   const result = await pool.query(
     `
@@ -550,20 +580,81 @@ export const createNombaCertificateVerification = async ({
         email,
         certificate_name,
         code_hash,
-        expires_at
+        expires_at,
+        request_fingerprint
       )
-      VALUES (LOWER($1), $2, $3, $4::timestamptz)
+      VALUES (LOWER($1), $2, $3, $4::timestamptz, $5)
       RETURNING
         id,
         email,
         certificate_name AS "certificateName",
         expires_at AS "expiresAt",
+        request_fingerprint AS "requestFingerprint",
+        sent_at AS "sentAt",
         created_at AS "createdAt";
     `,
-    [email, certificateName, codeHash, expiresAt]
+    [email, certificateName, codeHash, expiresAt, requestFingerprint]
   );
 
   return result.rows[0];
+};
+
+export const getLatestNombaCertificateVerificationForEmail = async (email) => {
+  const result = await pool.query(
+    `
+      SELECT
+        id,
+        email,
+        certificate_name AS "certificateName",
+        sent_at AS "sentAt",
+        created_at AS "createdAt"
+      FROM nomba_hackathon_certificate_verifications
+      WHERE email = LOWER($1)
+      ORDER BY created_at DESC
+      LIMIT 1;
+    `,
+    [email]
+  );
+
+  return result.rows[0] || null;
+};
+
+export const countNombaCertificateVerificationsForEmailSince = async ({
+  email,
+  since,
+}) => {
+  const result = await pool.query(
+    `
+      SELECT COUNT(*)::int AS total
+      FROM nomba_hackathon_certificate_verifications
+      WHERE email = LOWER($1)
+        AND created_at >= $2::timestamptz;
+    `,
+    [email, since]
+  );
+
+  return result.rows[0]?.total || 0;
+};
+
+export const countNombaCertificateVerificationsForFingerprintSince = async ({
+  requestFingerprint,
+  since,
+}) => {
+  if (!requestFingerprint) {
+    return 0;
+  }
+
+  const result = await pool.query(
+    `
+      SELECT COUNT(*)::int AS total
+      FROM nomba_hackathon_certificate_verifications
+      WHERE request_fingerprint = $1
+        AND created_at >= $2::timestamptz;
+    `,
+    [requestFingerprint, since]
+  );
+
+  return result.rows[0]?.total || 0;
 };
 
 export const getActiveNombaCertificateVerification = async (email) => {
@@ -641,6 +732,8 @@ export const completeNombaCertificateVerification = async ({ id, email }) => {
           certificate_name AS "certificateName",
           verification_id AS "verificationId",
           issued_at AS "issuedAt",
+          email_sent_at AS "emailSentAt",
+          email_error AS "emailError",
           created_at AS "createdAt";
       `,
       [verification.email, verification.certificateName, verification.id]
@@ -655,6 +748,51 @@ export const completeNombaCertificateVerification = async ({ id, email }) => {
   } finally {
     client.release();
   }
+};
+
+export const countNombaCertificateClaimsForEmailSince = async ({
+  email,
+  since,
+}) => {
+  const result = await pool.query(
+    `
+      SELECT COUNT(*)::int AS total
+      FROM nomba_hackathon_certificate_claims
+      WHERE email = LOWER($1)
+        AND created_at >= $2::timestamptz;
+    `,
+    [email, since]
+  );
+
+  return result.rows[0]?.total || 0;
+};
+
+export const updateNombaCertificateClaimEmailDelivery = async ({
+  id,
+  emailSentAt = null,
+  emailError = null,
+}) => {
+  const result = await pool.query(
+    `
+      UPDATE nomba_hackathon_certificate_claims
+      SET
+        email_sent_at = $2::timestamptz,
+        email_error = NULLIF($3, '')
+      WHERE id = $1
+      RETURNING
+        id,
+        email,
+        certificate_name AS "certificateName",
+        verification_id AS "verificationId",
+        issued_at AS "issuedAt",
+        email_sent_at AS "emailSentAt",
+        email_error AS "emailError",
+        created_at AS "createdAt";
+    `,
+    [id, emailSentAt, emailError]
+  );
+
+  return result.rows[0] || null;
 };
 
 export const listNombaCertificateRecipients = async ({
@@ -732,6 +870,8 @@ export const listNombaCertificateClaims = async ({
         certificate_name AS "certificateName",
         verification_id AS "verificationId",
         issued_at AS "issuedAt",
+        email_sent_at AS "emailSentAt",
+        email_error AS "emailError",
         created_at AS "createdAt"
       FROM nomba_hackathon_certificate_claims
       WHERE (
@@ -774,6 +914,16 @@ export const getNombaCertificateSummary = async () => {
       (SELECT COUNT(*)::int FROM nomba_hackathon_certificate_recipients) AS "eligibleCount",
       (SELECT COUNT(*)::int FROM nomba_hackathon_certificate_claims) AS "issuedCount",
       (
+        SELECT COUNT(*)::int
+        FROM nomba_hackathon_certificate_claims
+        WHERE email_sent_at IS NOT NULL
+      ) AS "emailedCount",
+      (
+        SELECT COUNT(*)::int
+        FROM nomba_hackathon_certificate_claims
+        WHERE email_error IS NOT NULL
+      ) AS "emailFailedCount",
+      (
         SELECT COUNT(DISTINCT email)::int
         FROM nomba_hackathon_certificate_claims
       ) AS "uniqueIssuedCount",
@@ -789,6 +939,8 @@ export const getNombaCertificateSummary = async () => {
     result.rows[0] || {
       eligibleCount: 0,
       issuedCount: 0,
+      emailedCount: 0,
+      emailFailedCount: 0,
       uniqueIssuedCount: 0,
       latestIssuedAt: null,
     }

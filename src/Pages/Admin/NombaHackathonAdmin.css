@@ -117,6 +117,59 @@
   font-weight: 700;
 }
 
+.nha-guard-panel {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) 1fr;
+  gap: 16px;
+  margin-top: 16px;
+  padding: 16px;
+  border: 1px solid #d8e0ec;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.nha-guard-panel__eyebrow {
+  color: #0d7a5f;
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.nha-guard-panel h2 {
+  margin: 6px 0 0;
+  color: #172033;
+  font-family: Gilroy, 'IBM Plex Mono', sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.nha-guard-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.nha-guard {
+  min-height: 68px;
+  padding: 12px;
+  border: 1px solid #edf1f6;
+  border-radius: 8px;
+  background: #f9fbfd;
+}
+
+.nha-guard__label {
+  display: block;
+  color: #617089;
+  font-size: 11px;
+}
+
+.nha-guard__value {
+  display: block;
+  margin-top: 7px;
+  color: #172033;
+  font-size: 14px;
+}
+
 .nha-toolbar {
   display: flex;
   align-items: center;
@@ -176,7 +229,7 @@
 }
 
 .nha-table--certificates {
-  min-width: 860px;
+  min-width: 980px;
 }
 
 .nha-table th,
@@ -257,6 +310,11 @@
 .nha-pill--neutral {
   background: #eef2f7;
   color: #617089;
+}
+
+.nha-pill--danger {
+  background: #ffe6e6;
+  color: #a62626;
 }
 
 .nha-action--compact {

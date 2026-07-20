@@ -38,6 +38,23 @@ const formatDate = (value) => {
   }).format(new Date(value));
 };
 
+const formatDuration = (milliseconds) => {
+  const totalSeconds = Math.max(
+    0,
+    Math.round(Number(milliseconds || 0) / 1000)
+  );
+
+  if (totalSeconds >= 3600 && totalSeconds % 3600 === 0) {
+    return `${totalSeconds / 3600}h`;
+  }
+
+  if (totalSeconds >= 60 && totalSeconds % 60 === 0) {
+    return `${totalSeconds / 60}m`;
+  }
+
+  return `${totalSeconds}s`;
+};
+
 const registrationMatchesQuery = (registration, normalizedQuery) =>
   [
     registration.firstName,
@@ -838,6 +855,7 @@ const VerifiedDashboard = ({ adminEmail, token, onLogout }) => {
 const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
   const [summary, setSummary] = useState(null);
   const [seedStats, setSeedStats] = useState(null);
+  const [guardSettings, setGuardSettings] = useState(null);
   const [recipients, setRecipients] = useState([]);
   const [claims, setClaims] = useState([]);
   const [totalRecipients, setTotalRecipients] = useState(0);
@@ -925,6 +943,7 @@ const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
 
         setSummary(summaryData.summary || null);
         setSeedStats(summaryData.seed || null);
+        setGuardSettings(summaryData.guards || null);
         setRecipients(nextRecipients);
         setClaims(claimsData.claims || []);
         setTotalRecipients(nextTotalRecipients);
@@ -1030,8 +1049,55 @@ const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
             label="Unique Issued Emails"
             value={summary?.uniqueIssuedCount ?? 0}
           />
+          <Stat
+            label="Emailed Certificates"
+            value={summary?.emailedCount ?? 0}
+          />
+          <Stat label="Email Failures" value={summary?.emailFailedCount ?? 0} />
           <Stat label="Invalid Seed Rows" value={invalidSeedCount} />
         </section>
+
+        {guardSettings && (
+          <section
+            className="nha-guard-panel"
+            aria-label="Certificate request guards"
+          >
+            <div>
+              <div className="nha-guard-panel__eyebrow">Request Guards</div>
+              <h2>Certificate Abuse Protection</h2>
+            </div>
+            <div className="nha-guard-list">
+              <GuardItem
+                label="OTP Cooldown"
+                value={formatDuration(guardSettings.requestCooldownMs)}
+              />
+              <GuardItem
+                label="Email OTP Limit"
+                value={`${guardSettings.requestEmailHourlyLimit}/hr, ${guardSettings.requestEmailDailyLimit}/day`}
+              />
+              <GuardItem
+                label="Request Fingerprint"
+                value={`${guardSettings.requestIpLimit}/${formatDuration(
+                  guardSettings.requestIpWindowMs
+                )}`}
+              />
+              <GuardItem
+                label="OTP Attempts"
+                value={`${guardSettings.codeMaxAttempts}/code`}
+              />
+              <GuardItem
+                label="Verify Fingerprint"
+                value={`${guardSettings.verifyIpLimit}/${formatDuration(
+                  guardSettings.verifyIpWindowMs
+                )}`}
+              />
+              <GuardItem
+                label="Certificate Claims"
+                value={`${guardSettings.claimEmailDailyLimit}/day`}
+              />
+            </div>
+          </section>
+        )}
 
         <section className="nha-toolbar">
           <TextField
@@ -1152,6 +1218,7 @@ const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
                 <th>Name</th>
                 <th>Email</th>
                 <th>Issued</th>
+                <th>Email Status</th>
                 <th>Verification</th>
               </tr>
             </thead>
@@ -1166,6 +1233,26 @@ const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
                     <a href={`mailto:${claim.email}`}>{claim.email}</a>
                   </td>
                   <td>{formatDate(claim.issuedAt)}</td>
+                  <td>
+                    <span
+                      className={
+                        claim.emailError
+                          ? 'nha-pill nha-pill--danger'
+                          : claim.emailSentAt
+                          ? 'nha-pill'
+                          : 'nha-pill nha-pill--neutral'
+                      }
+                    >
+                      {claim.emailError
+                        ? 'Failed'
+                        : claim.emailSentAt
+                        ? 'Sent'
+                        : 'Pending'}
+                    </span>
+                    {claim.emailError && (
+                      <div className="nha-muted">{claim.emailError}</div>
+                    )}
+                  </td>
                   <td>{claim.verificationId || '-'}</td>
                 </tr>
               ))}
@@ -1716,6 +1803,13 @@ const Stat = ({ label, value }) => (
   <div className="nha-stat">
     <div className="nha-stat__label">{label}</div>
     <div className="nha-stat__value">{value}</div>
+  </div>
+);
+
+const GuardItem = ({ label, value }) => (
+  <div className="nha-guard">
+    <span className="nha-guard__label">{label}</span>
+    <strong className="nha-guard__value">{value}</strong>
   </div>
 );
 

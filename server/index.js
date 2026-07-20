@@ -1,4 +1,5 @@
 import crypto from 'node:crypto';
+import fs from 'node:fs/promises';
 import https from 'node:https';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,14 +10,18 @@ import {
   completeNombaCertificateVerification,
   completeNombaEmailVerification,
   consumeNombaEmailVerification,
+  countNombaCertificateClaimsForEmailSince,
   countNombaCertificateClaims,
   countNombaCertificateRecipients,
+  countNombaCertificateVerificationsForEmailSince,
+  countNombaCertificateVerificationsForFingerprintSince,
   countNombaPendingVerifications,
   countNombaRegistrations,
   createNombaCertificateVerification,
   createNombaEmailVerification,
   getActiveNombaCertificateVerification,
   getActiveNombaEmailVerification,
+  getLatestNombaCertificateVerificationForEmail,
   getNombaCertificateRecipientByEmail,
   getNombaCertificateSummary,
   getNombaEmailVerificationById,
@@ -30,13 +35,19 @@ import {
   listNombaPendingVerifications,
   listNombaRegistrations,
   pool,
+  updateNombaCertificateClaimEmailDelivery,
 } from './database.js';
 import { nombaCertificateEmailSeedStats } from './nombaCertificateEligibleEmails.js';
+import {
+  buildCertificateSvg,
+  getCertificateFileName,
+} from '../src/Pages/NombaHackathon/certificateTemplate.js';
 
 dotenv.config();
 dotenv.config({ path: '.env.local', override: true });
 
 const app = express();
+app.set('trust proxy', 1);
 const port = process.env.PORT || 3001;
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -59,6 +70,30 @@ const certificateVerificationTtlMs = Number(
 const certificateVerificationMaxAttempts = Number(
   process.env.CERTIFICATE_VERIFICATION_MAX_ATTEMPTS ||
     emailVerificationMaxAttempts
+);
+const certificateRequestCooldownMs = Number(
+  process.env.CERTIFICATE_REQUEST_COOLDOWN_MS || 60 * 1000
+);
+const certificateRequestEmailHourlyLimit = Number(
+  process.env.CERTIFICATE_REQUEST_EMAIL_HOURLY_LIMIT || 5
+);
+const certificateRequestEmailDailyLimit = Number(
+  process.env.CERTIFICATE_REQUEST_EMAIL_DAILY_LIMIT || 12
+);
+const certificateRequestIpWindowMs = Number(
+  process.env.CERTIFICATE_REQUEST_IP_WINDOW_MS || 15 * 60 * 1000
+);
+const certificateRequestIpLimit = Number(
+  process.env.CERTIFICATE_REQUEST_IP_LIMIT || 30
+);
+const certificateVerifyIpWindowMs = Number(
+  process.env.CERTIFICATE_VERIFY_IP_WINDOW_MS || 15 * 60 * 1000
+);
+const certificateVerifyIpLimit = Number(
+  process.env.CERTIFICATE_VERIFY_IP_LIMIT || 60
+);
+const certificateClaimEmailDailyLimit = Number(
+  process.env.CERTIFICATE_CLAIM_EMAIL_DAILY_LIMIT || 3
 );
 const reverificationLinkTtlMs = Number(
   process.env.REVERIFICATION_LINK_TTL_MS || 7 * 24 * 60 * 60 * 1000
@@ -295,6 +330,159 @@ const getEmailVerificationSecret = () =>
   process.env.ADMIN_API_KEY ||
   process.env.NOMBA_ADMIN_API_KEY;
 
+const inMemoryRateLimits = new Map();
+
+const getClientIp = (req) =>
+  String(req.ip || req.socket?.remoteAddress || 'unknown').replace(
+    /^::ffff:/,
+    ''
+  );
+
+const getCertificateRequestFingerprint = (req) => {
+  const secret = getEmailVerificationSecret();
+  const source = [
+    getClientIp(req),
+    req.get('user-agent') || 'unknown-agent',
+  ].join('|');
+
+  if (!secret) {
+    return '';
+  }
+
+  return crypto
+    .createHmac('sha256', secret)
+    .update(`nomba-certificate-request:${source}`)
+    .digest('hex');
+};
+
+const checkMemoryRateLimit = ({ key, limit, windowMs }) => {
+  const now = Date.now();
+  const cutoff = now - windowMs;
+  const timestamps = (inMemoryRateLimits.get(key) || []).filter(
+    (timestamp) => timestamp > cutoff
+  );
+
+  if (timestamps.length >= limit) {
+    const retryAfterMs = Math.max(1000, timestamps[0] + windowMs - now);
+    inMemoryRateLimits.set(key, timestamps);
+
+    return {
+      allowed: false,
+      retryAfterSeconds: Math.ceil(retryAfterMs / 1000),
+    };
+  }
+
+  timestamps.push(now);
+  inMemoryRateLimits.set(key, timestamps);
+
+  if (inMemoryRateLimits.size > 2000) {
+    for (const [storedKey, storedTimestamps] of inMemoryRateLimits.entries()) {
+      const nextTimestamps = storedTimestamps.filter(
+        (timestamp) => timestamp > cutoff
+      );
+
+      if (nextTimestamps.length > 0) {
+        inMemoryRateLimits.set(storedKey, nextTimestamps);
+      } else {
+        inMemoryRateLimits.delete(storedKey);
+      }
+    }
+  }
+
+  return { allowed: true, retryAfterSeconds: 0 };
+};
+
+const sendRateLimitResponse = (res, message, retryAfterSeconds = 60) => {
+  res.set('Retry-After', String(retryAfterSeconds));
+  res.status(429).json({
+    error: message,
+    retryAfterSeconds,
+  });
+};
+
+const getSinceIso = (windowMs) => new Date(Date.now() - windowMs).toISOString();
+
+const getCertificateRequestGuard = async ({ email, requestFingerprint }) => {
+  const latestVerification =
+    await getLatestNombaCertificateVerificationForEmail(email);
+
+  if (latestVerification?.createdAt) {
+    const latestCreatedAt = new Date(latestVerification.createdAt).getTime();
+    const retryAfterMs =
+      latestCreatedAt + certificateRequestCooldownMs - Date.now();
+
+    if (retryAfterMs > 0) {
+      return {
+        allowed: false,
+        message: 'Please wait before requesting another certificate code.',
+        retryAfterSeconds: Math.ceil(retryAfterMs / 1000),
+      };
+    }
+  }
+
+  const [emailHourlyCount, emailDailyCount, fingerprintWindowCount] =
+    await Promise.all([
+      countNombaCertificateVerificationsForEmailSince({
+        email,
+        since: getSinceIso(60 * 60 * 1000),
+      }),
+      countNombaCertificateVerificationsForEmailSince({
+        email,
+        since: getSinceIso(24 * 60 * 60 * 1000),
+      }),
+      countNombaCertificateVerificationsForFingerprintSince({
+        requestFingerprint,
+        since: getSinceIso(certificateRequestIpWindowMs),
+      }),
+    ]);
+
+  if (emailHourlyCount >= certificateRequestEmailHourlyLimit) {
+    return {
+      allowed: false,
+      message:
+        'Too many certificate code requests for this email. Please try again later.',
+      retryAfterSeconds: 60 * 60,
+    };
+  }
+
+  if (emailDailyCount >= certificateRequestEmailDailyLimit) {
+    return {
+      allowed: false,
+      message:
+        "This email has reached today's certificate code request limit. Please try again tomorrow.",
+      retryAfterSeconds: 24 * 60 * 60,
+    };
+  }
+
+  if (fingerprintWindowCount >= certificateRequestIpLimit) {
+    return {
+      allowed: false,
+      message: 'Too many certificate requests. Please try again shortly.',
+      retryAfterSeconds: Math.ceil(certificateRequestIpWindowMs / 1000),
+    };
+  }
+
+  return { allowed: true, retryAfterSeconds: 0 };
+};
+
+const getCertificateClaimGuard = async (email) => {
+  const claimDailyCount = await countNombaCertificateClaimsForEmailSince({
+    email,
+    since: getSinceIso(24 * 60 * 60 * 1000),
+  });
+
+  if (claimDailyCount >= certificateClaimEmailDailyLimit) {
+    return {
+      allowed: false,
+      message:
+        "This email has reached today's certificate generation limit. Please try again tomorrow.",
+      retryAfterSeconds: 24 * 60 * 60,
+    };
+  }
+
+  return { allowed: true, retryAfterSeconds: 0 };
+};
+
 const getConfigurationStatus = () => {
   const emailProviderConfigured = Boolean(
     process.env.RESEND_API_KEY && resendFromEmail
@@ -313,6 +501,18 @@ const getConfigurationStatus = () => {
         : 'missing',
   };
 };
+
+const getCertificateGuardSettings = () => ({
+  requestCooldownMs: certificateRequestCooldownMs,
+  requestEmailHourlyLimit: certificateRequestEmailHourlyLimit,
+  requestEmailDailyLimit: certificateRequestEmailDailyLimit,
+  requestIpWindowMs: certificateRequestIpWindowMs,
+  requestIpLimit: certificateRequestIpLimit,
+  verifyIpWindowMs: certificateVerifyIpWindowMs,
+  verifyIpLimit: certificateVerifyIpLimit,
+  codeMaxAttempts: certificateVerificationMaxAttempts,
+  claimEmailDailyLimit: certificateClaimEmailDailyLimit,
+});
 
 const createVerificationCode = () =>
   crypto.randomInt(0, 1000000).toString().padStart(6, '0');
@@ -572,22 +772,28 @@ const renderEmailShell = ({ previewText, eyebrow, title, children }) => `
   </html>
 `;
 
-const sendEmail = async ({ to, subject, text, html }) => {
+const sendEmail = async ({ to, subject, text, html, attachments = [] }) => {
   if (!process.env.RESEND_API_KEY) {
     throw new Error('Email verification is not configured.');
+  }
+
+  const payload = {
+    from: resendFromEmail,
+    to: [to],
+    subject,
+    text,
+    html,
+  };
+
+  if (attachments.length > 0) {
+    payload.attachments = attachments;
   }
 
   const response = await postJson('https://api.resend.com/emails', {
     headers: {
       Authorization: `Bearer ${process.env.RESEND_API_KEY}`,
     },
-    payload: {
-      from: resendFromEmail,
-      to: [to],
-      subject,
-      text,
-      html,
-    },
+    payload,
   });
   const { data } = response;
 
@@ -746,6 +952,81 @@ const sendCertificateVerificationEmail = async ({
         </p>
       `,
     }),
+  });
+};
+
+let certificateBrandAssetsPromise = null;
+
+const fileToDataUrl = async (relativePath, mimeType) => {
+  const fileBuffer = await fs.readFile(path.join(projectRoot, relativePath));
+  return `data:${mimeType};base64,${fileBuffer.toString('base64')}`;
+};
+
+const getCertificateBrandAssets = async () => {
+  if (!certificateBrandAssetsPromise) {
+    certificateBrandAssetsPromise = Promise.all([
+      fileToDataUrl('src/assets/Images/NewLogo.svg', 'image/svg+xml'),
+      fileToDataUrl(
+        'src/assets/Images/nomba-hackathon/nomba-mark.png',
+        'image/png'
+      ),
+    ])
+      .then(([devCareer, nomba]) => ({ devCareer, nomba }))
+      .catch((error) => {
+        certificateBrandAssetsPromise = null;
+        console.error('Unable to load certificate brand assets:', error);
+        return null;
+      });
+  }
+
+  return certificateBrandAssetsPromise;
+};
+
+const buildCertificateAttachment = async (certificateName) => {
+  const brandAssets = await getCertificateBrandAssets();
+  const certificateSvg = buildCertificateSvg(certificateName, brandAssets);
+
+  return {
+    filename: getCertificateFileName(certificateName, 'svg'),
+    content: Buffer.from(certificateSvg, 'utf8').toString('base64'),
+  };
+};
+
+const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
+  const attachment = await buildCertificateAttachment(certificateName);
+  const displayName = escapeHtml(certificateName || 'there');
+
+  return sendEmail({
+    to: email,
+    subject: 'Your Nomba Hackathon certificate is ready',
+    text: [
+      `Hi ${certificateName || 'there'},`,
+      '',
+      `Congratulations on completing the ${hackathonName}.`,
+      'Your certificate is attached to this email.',
+      '',
+      'You can also return to the hackathon page to verify your email and download it again.',
+      '',
+      emailSenderName,
+    ].join('\n'),
+    html: renderEmailShell({
+      previewText: `Your ${hackathonName} certificate is attached.`,
+      eyebrow: 'Certificate ready',
+      title: 'Your certificate is attached',
+      children: `
+        <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          Congratulations on completing the <strong>${escapeHtml(
+            hackathonName
+          )}</strong>. Your certificate is attached to this email.
+        </p>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          You can also return to the hackathon page to verify your email and download it again whenever you need it.
+        </p>
+        ${renderSocialLinks()}
+      `,
+    }),
+    attachments: [attachment],
   });
 };
 
@@ -1684,6 +1965,22 @@ app.post('/api/nomba-hackathon/certificates/request', async (req, res) => {
     return;
   }
 
+  const requestFingerprint = getCertificateRequestFingerprint(req);
+  const requestIpGuard = checkMemoryRateLimit({
+    key: `certificate-request:${requestFingerprint || getClientIp(req)}`,
+    limit: certificateRequestIpLimit,
+    windowMs: certificateRequestIpWindowMs,
+  });
+
+  if (!requestIpGuard.allowed) {
+    sendRateLimitResponse(
+      res,
+      'Too many certificate requests. Please try again shortly.',
+      requestIpGuard.retryAfterSeconds
+    );
+    return;
+  }
+
   const certificateRequest = normalizeCertificateRequest(req.body);
   const errors = validateCertificateRequest(certificateRequest);
 
@@ -1707,6 +2004,20 @@ app.post('/api/nomba-hackathon/certificates/request', async (req, res) => {
       return;
     }
 
+    const requestGuard = await getCertificateRequestGuard({
+      email: certificateRequest.email,
+      requestFingerprint,
+    });
+
+    if (!requestGuard.allowed) {
+      sendRateLimitResponse(
+        res,
+        requestGuard.message,
+        requestGuard.retryAfterSeconds
+      );
+      return;
+    }
+
     const code = createVerificationCode();
     const expiresAt = new Date(
       Date.now() + certificateVerificationTtlMs
@@ -1716,6 +2027,7 @@ app.post('/api/nomba-hackathon/certificates/request', async (req, res) => {
       certificateName: certificateRequest.certificateName,
       codeHash: hashVerificationCode(certificateRequest.email, code),
       expiresAt,
+      requestFingerprint,
     });
 
     await sendCertificateVerificationEmail({
@@ -1741,6 +2053,22 @@ app.post('/api/nomba-hackathon/certificates/request', async (req, res) => {
 
 app.post('/api/nomba-hackathon/certificates/verify', async (req, res) => {
   if (!requireDatabase(res)) {
+    return;
+  }
+
+  const requestFingerprint = getCertificateRequestFingerprint(req);
+  const verifyIpGuard = checkMemoryRateLimit({
+    key: `certificate-verify:${requestFingerprint || getClientIp(req)}`,
+    limit: certificateVerifyIpLimit,
+    windowMs: certificateVerifyIpWindowMs,
+  });
+
+  if (!verifyIpGuard.allowed) {
+    sendRateLimitResponse(
+      res,
+      'Too many certificate verification attempts. Please try again shortly.',
+      verifyIpGuard.retryAfterSeconds
+    );
     return;
   }
 
@@ -1783,13 +2111,51 @@ app.post('/api/nomba-hackathon/certificates/verify', async (req, res) => {
       return;
     }
 
+    const claimGuard = await getCertificateClaimGuard(email);
+
+    if (!claimGuard.allowed) {
+      sendRateLimitResponse(
+        res,
+        claimGuard.message,
+        claimGuard.retryAfterSeconds
+      );
+      return;
+    }
+
     const claim = await completeNombaCertificateVerification({
       id: verification.id,
       email,
     });
 
+    let certificateEmailSent = false;
+    let certificateEmailMessage =
+      'We could not email your certificate automatically, but you can download it here.';
+
+    try {
+      await sendCertificateDeliveryEmail({
+        email: claim.email,
+        certificateName: claim.certificateName,
+      });
+      certificateEmailSent = true;
+      certificateEmailMessage =
+        'We also emailed a copy of your certificate to you.';
+      await updateNombaCertificateClaimEmailDelivery({
+        id: claim.id,
+        emailSentAt: new Date().toISOString(),
+      });
+    } catch (emailError) {
+      const emailErrorDetail = getEmailErrorDetail(emailError);
+      console.error('Unable to email Nomba certificate:', emailErrorDetail);
+      await updateNombaCertificateClaimEmailDelivery({
+        id: claim.id,
+        emailError: emailErrorDetail,
+      });
+    }
+
     res.status(201).json({
       success: true,
+      certificateEmailSent,
+      certificateEmailMessage,
       certificate: {
         id: claim.id,
         email: claim.email,
@@ -1817,6 +2183,7 @@ app.get(
       res.json({
         summary,
         seed: nombaCertificateEmailSeedStats,
+        guards: getCertificateGuardSettings(),
       });
     } catch (error) {
       console.error('Unable to load Nomba certificate summary:', error);
