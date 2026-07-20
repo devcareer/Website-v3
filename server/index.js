@@ -1009,30 +1009,53 @@ const sendCertificateDeliveryEmail = async ({ email, certificateName }) => {
 
   return sendEmail({
     to: email,
-    subject: 'Your Nomba Hackathon certificate is ready',
+    subject: 'Congratulations - your Nomba Hackathon certificate is here',
     text: [
       `Hi ${certificateName || 'there'},`,
       '',
-      `Congratulations on completing the ${hackathonName}.`,
-      'Your certificate is attached to this email.',
+      `Congratulations on completing the ${hackathonName}. It was an honor to have you as part of this program, and we are grateful for the time, creativity, and energy you brought into the hackathon.`,
+      '',
+      'This certificate recognizes your participation and contribution to building thoughtful payment solutions for Nigeria alongside the DevCareer and Nomba community.',
+      '',
+      'Your certificate is attached to this email as a PNG file. You can keep it for your records, add it to your portfolio, or share it with your network.',
       '',
       'You can also return to the hackathon page to verify your email and download it again.',
+      '',
+      'Thank you for building with us. We are excited to see what you keep creating next.',
       '',
       emailSenderName,
     ].join('\n'),
     html: renderEmailShell({
-      previewText: `Your ${hackathonName} certificate is attached.`,
+      previewText: `Congratulations on completing the ${hackathonName}. Your certificate is attached.`,
       eyebrow: 'Certificate ready',
-      title: 'Your certificate is attached',
+      title: 'Congratulations on completing the hackathon',
       children: `
         <p style="margin: 0 0 16px; color: #252316; font-size: 16px; line-height: 1.7;">Hi ${displayName},</p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
           Congratulations on completing the <strong>${escapeHtml(
             hackathonName
-          )}</strong>. Your certificate is attached to this email.
+          )}</strong>. It was an honor to have you as part of this program, and we are grateful for the time, creativity, and energy you brought into the hackathon.
         </p>
         <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
-          You can also return to the hackathon page to verify your email and download it again whenever you need it.
+          This certificate recognizes your participation and contribution to building thoughtful payment solutions for Nigeria alongside the <strong>DevCareer</strong> and <strong>Nomba</strong> community.
+        </p>
+        <table role="presentation" width="100%" cellspacing="0" cellpadding="0" style="margin: 22px 0;">
+          <tr>
+            <td style="background: #fff7d8; border: 1px solid #f2df8d; border-radius: 18px; padding: 18px;">
+              <p style="margin: 0 0 10px; color: #191917; font-size: 15px; font-weight: 800;">Your certificate is attached</p>
+              <p style="margin: 0; color: #4f4a33; font-size: 14px; line-height: 1.7;">
+                We attached your certificate as a high-resolution PNG file. You can keep it for your records, add it to your portfolio, or share it with your network.
+              </p>
+            </td>
+          </tr>
+        </table>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          You can also return to the <a href="${escapeHtml(
+            hackathonPageUrl
+          )}" target="_blank" rel="noopener noreferrer" style="color: #0d7a5f; font-weight: 800;">hackathon page</a> to verify your email and download it again whenever you need it.
+        </p>
+        <p style="margin: 0 0 18px; color: #4a4631; font-size: 15px; line-height: 1.7;">
+          Thank you for building with us. We are excited to see what you keep creating next.
         </p>
         ${renderSocialLinks()}
       `,
