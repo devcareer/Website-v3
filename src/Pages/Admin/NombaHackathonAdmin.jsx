@@ -1,6 +1,7 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Stack, TextField } from '@mui/material';
 import {
+  Add,
   Email,
   FileDownload,
   KeyboardArrowDown,
@@ -26,6 +27,16 @@ const CERTIFICATES_ADMIN_PATH = '/hackathon/admin/certificates';
 
 const getTotalPages = (total) => Math.max(1, Math.ceil(total / RESULTS_LIMIT));
 const SHOW_ALL_PAGE_SIZE = 1000;
+const certificateEmailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const parseCertificateRecipientEmails = (value) => {
+  const emails = String(value || '')
+    .split(/[\s,;]+/)
+    .map((email) => email.trim().toLowerCase())
+    .filter(Boolean);
+
+  return [...new Set(emails)];
+};
 
 const formatDate = (value) => {
   if (!value) {
@@ -863,6 +874,10 @@ const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [query, setQuery] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const [isAddingRecipients, setIsAddingRecipients] = useState(false);
+  const [recipientEmailsInput, setRecipientEmailsInput] = useState('');
+  const [recipientAddMessage, setRecipientAddMessage] = useState('');
+  const [recipientAddError, setRecipientAddError] = useState('');
   const [error, setError] = useState('');
   const [lastLoadedAt, setLastLoadedAt] = useState(null);
 
@@ -971,6 +986,72 @@ const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
   const handleQueryChange = (event) => {
     setCurrentPage(0);
     setQuery(event.target.value);
+  };
+
+  const handleAddRecipients = async (event) => {
+    event.preventDefault();
+    const emails = parseCertificateRecipientEmails(recipientEmailsInput);
+    const invalidEmails = emails.filter(
+      (email) => !certificateEmailPattern.test(email)
+    );
+    const validEmails = emails.filter((email) =>
+      certificateEmailPattern.test(email)
+    );
+
+    setRecipientAddMessage('');
+    setRecipientAddError('');
+
+    if (validEmails.length === 0) {
+      setRecipientAddError('Enter at least one valid email address.');
+      return;
+    }
+
+    if (validEmails.length > 500) {
+      setRecipientAddError('You can add up to 500 emails at a time.');
+      return;
+    }
+
+    setIsAddingRecipients(true);
+
+    try {
+      const response = await fetch(
+        '/api/admin/nomba-hackathon/certificates/recipients',
+        {
+          method: 'POST',
+          credentials: 'include',
+          headers: {
+            ...authHeaders,
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ emails: validEmails }),
+        }
+      );
+      const data = await parseJsonResponse(
+        response,
+        'Unable to add eligible certificate emails.'
+      );
+      const addedCount = data.addedCount || 0;
+      const existingCount = data.existingCount || 0;
+      const invalidCount = invalidEmails.length + (data.invalidCount || 0);
+      const summaryParts = [
+        `${addedCount} added`,
+        `${existingCount} already eligible`,
+      ];
+
+      if (invalidCount > 0) {
+        summaryParts.push(`${invalidCount} invalid skipped`);
+      }
+
+      setRecipientAddMessage(summaryParts.join(', '));
+      setRecipientEmailsInput(
+        invalidEmails.length > 0 ? invalidEmails.join('\n') : ''
+      );
+      await loadCertificates({ quiet: true });
+    } catch (addError) {
+      setRecipientAddError(addError.message);
+    } finally {
+      setIsAddingRecipients(false);
+    }
   };
 
   const recipientPageStart =
@@ -1125,6 +1206,51 @@ const CertificatesDashboard = ({ adminEmail, token, onLogout }) => {
         </section>
 
         {error && <div className="nha-error">{error}</div>}
+
+        <section className="nha-add-panel" aria-label="Add eligible emails">
+          <div className="nha-add-panel__copy">
+            <div className="nha-guard-panel__eyebrow">Eligibility List</div>
+            <h2>Add Certificate Emails</h2>
+            <p>
+              Add qualified participants to the server-side certificate list.
+              Paste one email or many emails separated by commas, spaces, or new
+              lines.
+            </p>
+          </div>
+          <form className="nha-add-panel__form" onSubmit={handleAddRecipients}>
+            <TextField
+              className="nha-add-panel__input"
+              label="Eligible email addresses"
+              value={recipientEmailsInput}
+              onChange={(event) => setRecipientEmailsInput(event.target.value)}
+              placeholder="participant@example.com"
+              multiline
+              minRows={3}
+            />
+            <div className="nha-add-panel__footer">
+              <div>
+                {recipientAddMessage && (
+                  <div className="nha-success">{recipientAddMessage}</div>
+                )}
+                {recipientAddError && (
+                  <div className="nha-error nha-error--inline">
+                    {recipientAddError}
+                  </div>
+                )}
+              </div>
+              <LoadingButton
+                className="nha-action"
+                type="submit"
+                loading={isAddingRecipients}
+                variant="contained"
+                disableElevation
+                startIcon={<Add />}
+              >
+                Add Emails
+              </LoadingButton>
+            </div>
+          </form>
+        </section>
 
         <div className="nha-section-heading">
           <div>

@@ -567,6 +567,57 @@ export const getNombaCertificateRecipientByEmail = async (email) => {
   return result.rows[0] || null;
 };
 
+export const addNombaCertificateRecipients = async ({
+  emails,
+  source = 'admin',
+}) => {
+  const result = await pool.query(
+    `
+      WITH input_emails AS (
+        SELECT DISTINCT LOWER(email) AS email
+        FROM UNNEST($1::text[]) AS email
+      ),
+      inserted AS (
+        INSERT INTO nomba_hackathon_certificate_recipients (email, source, updated_at)
+        SELECT email, $2, NOW()
+        FROM input_emails
+        ON CONFLICT (email) DO NOTHING
+        RETURNING
+          email,
+          source,
+          created_at AS "createdAt",
+          updated_at AS "updatedAt"
+      )
+      SELECT
+        'inserted' AS status,
+        email,
+        source,
+        "createdAt",
+        "updatedAt"
+      FROM inserted
+      UNION ALL
+      SELECT
+        'existing' AS status,
+        recipient.email,
+        recipient.source,
+        recipient.created_at AS "createdAt",
+        recipient.updated_at AS "updatedAt"
+      FROM nomba_hackathon_certificate_recipients recipient
+      INNER JOIN input_emails input
+        ON input.email = recipient.email
+      WHERE NOT EXISTS (
+        SELECT 1
+        FROM inserted
+        WHERE inserted.email = recipient.email
+      )
+      ORDER BY email ASC;
+    `,
+    [emails, source]
+  );
+
+  return result.rows;
+};
+
 export const createNombaCertificateVerification = async ({
   email,
   certificateName,

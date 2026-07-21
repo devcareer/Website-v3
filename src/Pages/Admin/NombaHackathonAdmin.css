@@ -182,6 +182,56 @@
   background: #ffffff;
 }
 
+.nha-add-panel {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 18px;
+  margin-top: 20px;
+  padding: 16px;
+  border: 1px solid #d8e0ec;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.nha-add-panel__copy h2 {
+  margin: 6px 0 0;
+  color: #172033;
+  font-family: Gilroy, 'IBM Plex Mono', sans-serif;
+  font-size: 18px;
+  line-height: 1.2;
+}
+
+.nha-add-panel__copy p {
+  margin: 8px 0 0;
+  color: #617089;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.nha-add-panel__form {
+  display: grid;
+  gap: 12px;
+}
+
+.nha-add-panel__input .MuiOutlinedInput-root {
+  align-items: flex-start;
+  border-radius: 8px;
+  font-family: 'IBM Plex Mono', monospace;
+}
+
+.nha-add-panel__footer {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.nha-success {
+  color: #0d7a5f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
 .nha-search {
   flex: 1;
   min-width: 220px;
@@ -369,13 +419,22 @@
   font-size: 13px;
 }
 
+.nha-error--inline {
+  margin-top: 4px;
+}
+
 @media (max-width: 840px) {
   .nha-header,
   .nha-toolbar,
   .nha-section-heading,
-  .nha-pagination {
+  .nha-pagination,
+  .nha-add-panel__footer {
     flex-direction: column;
     align-items: stretch;
+  }
+
+  .nha-add-panel {
+    grid-template-columns: 1fr;
   }
 
   .nha-header__actions,

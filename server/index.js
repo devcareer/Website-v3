@@ -8,6 +8,7 @@ import dotenv from 'dotenv';
 import express from 'express';
 import sharp from 'sharp';
 import {
+  addNombaCertificateRecipients,
   completeNombaCertificateVerification,
   completeNombaEmailVerification,
   consumeNombaEmailVerification,
@@ -256,6 +257,25 @@ const normalizeCertificateRequest = (body) => ({
     body?.name || body?.certificateName
   ),
 });
+
+const normalizeCertificateRecipientEmails = (body) => {
+  const rawEmails = Array.isArray(body?.emails)
+    ? body.emails
+    : String(body?.emails || body?.email || '')
+        .split(/[\s,;]+/)
+        .filter(Boolean);
+  const normalizedEmails = rawEmails.map(normalizeEmail).filter(Boolean);
+  const uniqueEmails = [...new Set(normalizedEmails)];
+  const validEmails = uniqueEmails.filter((email) => emailPattern.test(email));
+  const invalidEmails = uniqueEmails.filter(
+    (email) => !emailPattern.test(email)
+  );
+
+  return {
+    validEmails,
+    invalidEmails,
+  };
+};
 
 const validateCertificateRequest = ({ email, certificateName }) => {
   const errors = {};
@@ -2367,6 +2387,64 @@ app.get(
     } catch (error) {
       console.error('Unable to list Nomba certificate recipients:', error);
       res.status(500).json({ error: 'Unable to load certificate recipients.' });
+    }
+  }
+);
+
+app.post(
+  '/api/admin/nomba-hackathon/certificates/recipients',
+  requireAdminToken,
+  async (req, res) => {
+    if (!requireDatabase(res)) {
+      return;
+    }
+
+    const { validEmails, invalidEmails } = normalizeCertificateRecipientEmails(
+      req.body
+    );
+
+    if (validEmails.length === 0) {
+      res.status(400).json({
+        error: 'Enter at least one valid email address.',
+        invalidEmails,
+      });
+      return;
+    }
+
+    if (validEmails.length > 500) {
+      res.status(400).json({
+        error: 'You can add up to 500 eligible certificate emails at a time.',
+        invalidEmails,
+      });
+      return;
+    }
+
+    try {
+      const source = req.adminSession?.email
+        ? `admin:${req.adminSession.email}`
+        : 'admin';
+      const rows = await addNombaCertificateRecipients({
+        emails: validEmails,
+        source,
+      });
+      const addedRecipients = rows.filter((row) => row.status === 'inserted');
+      const existingRecipients = rows.filter(
+        (row) => row.status === 'existing'
+      );
+
+      res.status(201).json({
+        recipients: rows,
+        addedRecipients,
+        existingRecipients,
+        invalidEmails,
+        addedCount: addedRecipients.length,
+        existingCount: existingRecipients.length,
+        invalidCount: invalidEmails.length,
+        totalSubmitted: validEmails.length + invalidEmails.length,
+      });
+    } catch (error) {
+      console.error('Unable to add Nomba certificate recipients:', error);
+      res.status(500).json({ error: 'Unable to add certificate recipients.' });
     }
   }
 );

@@ -67,6 +67,7 @@ For local development, put these values in `.env.local`. That file is ignored by
 - Admin CSV export: `GET /api/admin/nomba-hackathon/registrations?format=csv`
 - Admin certificate summary: `GET /api/admin/nomba-hackathon/certificates/summary`
 - Admin certificate recipients: `GET /api/admin/nomba-hackathon/certificates/recipients`
+- Admin add certificate recipients: `POST /api/admin/nomba-hackathon/certificates/recipients`
 - Admin certificate claims: `GET /api/admin/nomba-hackathon/certificates/claims`
 
 Pass the admin token with either header:
