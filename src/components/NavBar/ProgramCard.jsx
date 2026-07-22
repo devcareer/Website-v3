@@ -4,7 +4,7 @@ import nombaMark from '../../assets/Images/nomba-hackathon/nomba-mark.png';
 import raenestLogo from '../../assets/Images/Raenest_Cobalt_.png';
 import tbdLogo from '../../assets/Images/TBD-Logo.png';
 
-const ONGOING_HACKATHONS = [
+const FEATURED_HACKATHONS = [
   {
     name: 'Nomba Hackathon 2026',
     link: '/programs/nomba-hackathon',
@@ -20,6 +20,11 @@ const STATUS_STYLES = {
     label: 'Ongoing',
     backgroundColor: '#E8F6EE',
     color: '#17633B',
+  },
+  ended: {
+    label: 'Ended',
+    backgroundColor: '#F1F1F1',
+    color: '#5A5A5A',
   },
   past: {
     label: 'Past',
@@ -195,9 +200,9 @@ const ProgramCard = () => {
               mb: '8px',
             }}
           >
-            Ongoing Hackathons
+            Featured Hackathon
           </Typography>
-          <Stack gap={1}>{ONGOING_HACKATHONS.map((hackathon) => renderHackathonCard(hackathon, 'ongoing'))}</Stack>
+          <Stack gap={1}>{FEATURED_HACKATHONS.map((hackathon) => renderHackathonCard(hackathon, 'ended'))}</Stack>
         </Box>
 
         <Box sx={{ width: '100%' }}>
