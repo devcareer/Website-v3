@@ -83,7 +83,7 @@ const AboutUs = () => {
           <Card image={tobi} name="Olagoke Tobi" position="Operations" />
           <Card image={chidi} name="Chidi Okoye" position="Programs" />
           <Card image={toibat} name="Toibat Bamigboye" position="Channel Lead" />
-          {/* <Card image={grace} name="Grace Chibueze" position="Content Manager" /> */}
+          <Card image={grace} name="Grace Chibueze" position="Content Manager" />
         </Box>
       </Container>
       <Container maxWidth="false" sx={{ mt: '56px' }} disableGutters>
