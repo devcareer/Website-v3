@@ -78,7 +78,7 @@ const AboutUs = () => {
           justifyItems="center"
         >
           <Card image={favour} name="Favour Chibueze" position="Community Lead" />
-          {/* <Card image={olaitan} name="Olaitan Adedokun" position="Programs Manager" className="border"/> */}
+          <Card image={olaitan} name="Olaitan Adedokun" position="Programs Manager" className="border"/>
           <Card image={glory} name="Glory Edamkue" position="Community Manager"/>
           <Card image={tobi} name="Olagoke Tobi" position="Operations" />
           <Card image={chidi} name="Chidi Okoye" position="Programs" />
