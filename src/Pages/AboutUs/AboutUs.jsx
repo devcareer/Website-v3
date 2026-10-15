@@ -7,6 +7,10 @@ import {
   victoria,
   tobi,
   chidi,
+  glory,
+  olaitan,
+  grace,
+  toibat,
   learning,
   Wennovation,
   Swahilipot,
@@ -74,10 +78,12 @@ const AboutUs = () => {
           justifyItems="center"
         >
           <Card image={favour} name="Favour Chibueze" position="Community Lead" />
-          <Card image={joshua} name="Miebaka Joshua" position="Branding" />
-          <Card image={victoria} name="Victoria Aladesuyi" position="Community Manager" className="border" />
+          {/* <Card image={olaitan} name="Olaitan Adedokun" position="Programs Manager" className="border"/> */}
+          <Card image={glory} name="Glory Edamkue" position="Community Manager"/>
           <Card image={tobi} name="Olagoke Tobi" position="Operations" />
           <Card image={chidi} name="Chidi Okoye" position="Programs" />
+          <Card image={toibat} name="Toibat Bamigboye" position="Channel Lead" />
+          {/* <Card image={grace} name="Grace Chibueze" position="Content Manager" /> */}
         </Box>
       </Container>
       <Container maxWidth="false" sx={{ mt: '56px' }} disableGutters>

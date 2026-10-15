@@ -4,8 +4,17 @@ import { Typography, Box } from '@mui/material';
 
 const Card = ({ image, name, position, className }) => {
     return (
-        <Box>
-            <Box component="img" src={ image } alt={name} className={className} />
+        <Box sx={{ width: '100%', height: '100%' }}>
+            <Box component="img" src={ image } alt={name} className={className}
+            sx={{
+                width: '100%',
+                height: '260px',
+                objectFit: 'cover',
+                objectPosition: 'center top',
+                display: 'block',
+                borderRadius: '8px',
+                mb: 2,
+            }}/>
             <Typography component="h2" variant="body1" fontWeight={700} color="#181818" textTransform="uppercase">
                 {name}
             </Typography>
