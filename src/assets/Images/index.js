@@ -92,4 +92,5 @@ export { default as StepFour } from './Step-4.png';
 export { default as DnhBannerImage } from './bannerImage.png';
 export { default as bannerImageLines } from './bannerImageLines.png';
 export { default as DataCampLogo } from './datacamp.jpeg';
+export { default as cyberiadLogo } from './cyberiad.jpg';
 // export { ReactComponent as Dollar } from './dollar-circle.svg';

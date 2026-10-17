@@ -5,6 +5,7 @@ import {
   Kuda,
   Eden,
   DataCampLogo,
+  cyberiadLogo,
 } from './assets/Images';
 export const partners = [
   {
@@ -86,6 +87,12 @@ export const partners = [
   {
     src: 'https://res.cloudinary.com/okoyecb/image/upload/v1688074850/bongohive-512x512_rbt5h9.png',
     alt: 'bongohive',
+    maxWidth: '150px',
+  },
+  {
+    src: cyberiadLogo,
+    alt: 'cyberiad',
+    href: "https://cyberiadlabs.com/",
     maxWidth: '150px',
   },
 ];
